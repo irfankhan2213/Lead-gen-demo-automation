@@ -8,10 +8,15 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    let apiHost = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+    
+    // Clean trailing slashes and query strings (like '?') that cause Next.js build failures
+    apiHost = apiHost.replace(/\/+$/, '').split('?')[0];
+
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/api/:path*`,
+        destination: `${apiHost}/api/:path*`,
       },
     ];
   },
