@@ -12,8 +12,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
+const url = new URL(redisUrl);
 
-export const redisConnection = new Redis(redisUrl, {
+export const redisConnection = new Redis({
+  host: url.hostname,
+  port: parseInt(url.port || '6379', 10),
+  username: url.username || undefined,
+  password: url.password || undefined,
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
   retryStrategy: (times: number) => Math.min(times * 50, 2000),
