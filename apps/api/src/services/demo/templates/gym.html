@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="{{META_DESCRIPTION}}" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary: {{PRIMARY_COLOR}}; --accent: {{ACCENT_COLOR}}; --dark: #0a0a0a; --mid: #1a1a1a; --text-light: #a0a0a0; --border: #2a2a2a; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--dark); color: #fff; }
+    nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 999; }
+    .logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: 0.05em; color: #fff; }
+    .logo span { color: var(--primary); }
+    .join-btn { background: var(--primary); color: #fff; padding: 0.65rem 1.5rem; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .hero { min-height: 100vh; background: var(--dark); display: flex; align-items: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; right: 0; top: 0; width: 55%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--dark)); opacity: 0.15; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }
+    .hero-content { position: relative; z-index: 1; max-width: 650px; }
+    .hero-pre { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--primary); font-weight: 600; margin-bottom: 1rem; }
+    .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3.5rem, 7vw, 6.5rem); font-weight: 800; line-height: 0.95; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 1.5rem; }
+    .hero h1 span { color: var(--primary); }
+    .hero p { color: var(--text-light); font-size: 1.05rem; max-width: 480px; margin-bottom: 2.5rem; line-height: 1.7; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.9rem; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-ghost { border: 1px solid var(--border); color: #fff; padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; transition: border-color 0.2s; }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.4); }
+
+    .stats { background: var(--mid); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2rem; display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Barlow Condensed', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
+
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .tag { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--primary); font-weight: 700; }
+    h2 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; margin-top: 0.5rem; line-height: 1; }
+
+    .services-sec { background: var(--dark); }
+    .programs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; margin-top: 3rem; background: var(--border); border: 1px solid var(--border); }
+    .program { background: var(--dark); padding: 2.5rem; transition: background 0.2s; }
+    .program:hover { background: var(--mid); }
+    .prog-num { font-family: 'Barlow Condensed', sans-serif; font-size: 3rem; font-weight: 800; color: var(--border); line-height: 1; margin-bottom: 1rem; }
+    .program h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    .program p { color: var(--text-light); font-size: 0.9rem; line-height: 1.7; }
+
+    .about-sec { background: var(--mid); }
+    .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-visual { background: linear-gradient(135deg, var(--primary), #000); border-radius: 8px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 6rem; }
+    .about-body p { color: var(--text-light); margin-top: 1.5rem; line-height: 1.8; }
+
+    .reviews-sec { background: var(--dark); }
+    .rev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .rev-card { background: var(--mid); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; }
+    .rev-stars { color: var(--primary); margin-bottom: 1rem; }
+    .rev-text { color: var(--text-light); font-style: italic; font-size: 0.95rem; line-height: 1.7; }
+    .rev-author { font-weight: 600; margin-top: 1rem; font-size: 0.875rem; }
+
+    .cta-strip { background: var(--primary); padding: 5rem 2rem; text-align: center; }
+    .cta-strip h2 { color: #fff; }
+    .cta-strip p { color: rgba(255,255,255,0.8); margin: 1rem 0 2rem; }
+    .cta-strip a { background: #fff; color: var(--primary); padding: 1rem 2.5rem; border-radius: 4px; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .contact-sec { background: var(--mid); }
+    .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .c-info p { color: var(--text-light); margin-top: 1rem; }
+    .c-items { margin-top: 2rem; }
+    .c-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; color: var(--text-light); }
+    .c-icon { width: 40px; height: 40px; background: var(--primary); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .c-form { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 2.5rem; }
+    .c-form h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1.5rem; }
+    input, textarea { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; background: var(--mid); color: #fff; margin-bottom: 1rem; }
+    input::placeholder, textarea::placeholder { color: var(--text-light); }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    textarea { min-height: 100px; resize: vertical; }
+    .submit { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    footer { background: var(--dark); border-top: 1px solid var(--border); padding: 2.5rem; text-align: center; }
+    footer .logo { display: block; margin-bottom: 0.5rem; }
+    footer p { color: var(--text-light); font-size: 0.85rem; }
+    .demo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(90deg,#7c3aed,#4f46e5); color:#fff; padding:0.8rem 1.5rem; display:flex; align-items:center; justify-content:center; gap:1rem; font-size:0.9rem; z-index:9999; flex-wrap:wrap; }
+    .demo-banner a { background:#fff; color:#7c3aed; padding:0.35rem 0.9rem; border-radius:50px; font-weight:700; text-decoration:none; font-size:0.85rem; }
+    @media (max-width: 768px) { .about-layout, .c-grid { grid-template-columns: 1fr; } .hero-bg { width: 100%; opacity: 0.1; clip-path: none; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <a href="#contact" class="join-btn">{{CTA_PRIMARY}}</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-pre">💪 {{CITY}}</div>
+      <h1>{{HERO_HEADLINE}}<br/><span>{{CITY}}</span></h1>
+      <p>{{HERO_SUBLINE}}</p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-primary" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
+        <a href="#services" class="btn-ghost" id="hero-cta-secondary">View Programs</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num">{{GOOGLE_RATING}}⭐</div><div class="stat-lbl">Rating</div></div>
+    <div class="stat"><div class="stat-num">{{REVIEW_COUNT}}+</div><div class="stat-lbl">Members</div></div>
+    <div class="stat"><div class="stat-num">{{SERVICE_COUNT}}+</div><div class="stat-lbl">Programs</div></div>
+    <div class="stat"><div class="stat-num">24/7</div><div class="stat-lbl">Support</div></div>
+  </div>
+
+  <section class="services-sec" id="services">
+    <div class="container">
+      <div class="tag">Training Programs</div>
+      <h2>{{SERVICES_HEADING}}</h2>
+      <div class="programs-grid">
+        <div class="program"><div class="prog-num">01</div><h3>{{SERVICE_1_NAME}}</h3><p>{{SERVICE_1_DESC}}</p></div>
+        <div class="program"><div class="prog-num">02</div><h3>{{SERVICE_2_NAME}}</h3><p>{{SERVICE_2_DESC}}</p></div>
+        <div class="program"><div class="prog-num">03</div><h3>{{SERVICE_3_NAME}}</h3><p>{{SERVICE_3_DESC}}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-sec" id="about">
+    <div class="container about-layout">
+      <div class="about-visual">💪</div>
+      <div class="about-body">
+        <div class="tag">Our Story</div>
+        <h2>{{ABOUT_HEADING}}</h2>
+        <p>{{ABOUT_PARA_1}}</p>
+        <p>{{ABOUT_PARA_2}}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reviews-sec" id="reviews">
+    <div class="container" style="text-align:center">
+      <div class="tag">Member Reviews</div>
+      <h2>{{TESTIMONIAL_HEADING}}</h2>
+      <div class="rev-grid">
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"{{TESTIMONIAL_1}}"</div><div class="rev-author">— {{TESTIMONIAL_1_AUTHOR}}</div></div>
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"{{TESTIMONIAL_2}}"</div><div class="rev-author">— {{TESTIMONIAL_2_AUTHOR}}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-strip">
+    <h2>{{CTA_SECTION_HEADING}}</h2>
+    <p>{{CTA_SECTION_SUB}}</p>
+    <a href="#contact" id="mid-cta">{{CTA_PRIMARY}}</a>
+  </div>
+
+  <section class="contact-sec" id="contact">
+    <div class="container c-grid">
+      <div class="c-info">
+        <div class="tag">Location</div>
+        <h2>Find Us</h2>
+        <p>Come see our facilities — tours welcome anytime during operating hours.</p>
+        <div class="c-items">
+          <div class="c-item"><div class="c-icon">📍</div><span>{{ADDRESS}}</span></div>
+          <div class="c-item"><div class="c-icon">📞</div><span>{{PHONE}}</span></div>
+        </div>
+      </div>
+      <div class="c-form">
+        <h3>Start Today</h3>
+        <form id="join-form">
+          <input type="text" placeholder="Full Name" required />
+          <input type="email" placeholder="Email Address" required />
+          <input type="tel" placeholder="Phone Number" />
+          <textarea placeholder="Your fitness goals or questions"></textarea>
+          <button type="submit" class="submit" id="form-submit-btn">{{CTA_PRIMARY}}</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="logo" style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;">{{BUSINESS_NAME}}</div>
+    <p>{{FOOTER_TAGLINE}}</p>
+    <p style="margin-top:0.75rem">© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+  </footer>
+
+  <div class="demo-banner">
+    <span>✨ <strong>Demo site</strong> by Evolve Expert Agency</span>
+    <a href="mailto:{{FROM_EMAIL}}" id="demo-banner-cta">Get Yours →</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(a => { a.addEventListener('click', e => { e.preventDefault(); document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); }); });
+    document.getElementById('join-form').addEventListener('submit', function(e) { e.preventDefault(); const b = document.getElementById('form-submit-btn'); b.textContent = '✅ We\'ll be in touch!'; b.style.background = '#10b981'; setTimeout(() => { b.textContent = '{{CTA_PRIMARY}}'; b.style.background = ''; this.reset(); }, 3000); });
+  </script>
+</body>
+</html>

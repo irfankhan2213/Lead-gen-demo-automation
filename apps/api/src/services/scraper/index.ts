@@ -1,0 +1,145 @@
+/**
+ * @file Scraper orchestrator — coordinates all scrapers for a single campaign run.
+ * This is the main entry point for the scrape pipeline.
+ *
+ * Flow:
+ *  1. Google Maps search → list of businesses
+ *  2. For each business in parallel: website + Reddit + Yelp
+ *  3. Merge all data into a LeadData object
+ *  4. Save to DB
+ *  5. Emit SSE events throughout
+ */
+
+import { v4 as uuidv4 } from 'uuid';
+import logger from '../../lib/logger.js';
+import { createSSELogger } from '../../lib/sse.js';
+import { createLead, updateLeadAIAnalysis, updateLeadDemo, incrementCampaignCounter } from '../../db/queries.js';
+import { scrapeGoogleMaps } from './googleMaps.js';
+import { scrapeBusinessWebsite } from './website.js';
+import { scrapeRedditMentions } from './reddit.js';
+import { scrapeYelpReviews } from './yelp.js';
+import { scrapeInstagramProfile } from './instagram.js';
+import { analyzesBusiness } from '../ai/analyzesBusiness.js';
+import { generateQueue } from '../../lib/queue.js';
+import type {
+  ScrapeInput,
+  LeadData,
+  GoogleMapsBusiness,
+  WebsiteScrapedData,
+} from '@acquisition-engine/shared';
+
+/**
+ * Orchestrates a full business profile scrape for a niche + city.
+ * Emits real-time SSE events to the dashboard.
+ *
+ * @param input - Scrape job input including jobId, niche, city
+ */
+export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<void> {
+  const log = createSSELogger(input.jobId);
+  const { niche, city, campaignId } = input;
+
+  log.log(`🔍 Searching Google Maps for "${niche}" in "${city}"...`);
+
+  let businesses: GoogleMapsBusiness[] = [];
+  try {
+    businesses = await scrapeGoogleMaps(niche, city, 20);
+    log.success(`✅ Found ${businesses.length} businesses on Google Maps`);
+  } catch (err) {
+    log.error(`❌ Google Maps scrape failed: ${(err as Error).message}`);
+    return;
+  }
+
+  // Process each business sequentially to respect rate limits
+  for (const business of businesses) {
+    log.log(`📋 Processing: ${business.name}`);
+
+    try {
+      // Run enrichment scrapers in parallel
+      const [websiteResult, redditResult, yelpResult, igResult] = await Promise.allSettled([
+        business.website_url
+          ? scrapeBusinessWebsite(business.website_url)
+          : Promise.resolve<WebsiteScrapedData>({}),
+        scrapeRedditMentions(business.name, city),
+        scrapeYelpReviews(business.name, city),
+        scrapeInstagramProfile(
+          typeof business === 'object' && 'social_links' in business
+            ? (business as GoogleMapsBusiness & { social_links?: { instagram?: string } }).social_links?.instagram
+            : undefined
+        ),
+      ]);
+
+      const websiteData = websiteResult.status === 'fulfilled' ? websiteResult.value : {};
+      const redditData = redditResult.status === 'fulfilled' ? redditResult.value : [];
+      const yelpData = yelpResult.status === 'fulfilled' ? yelpResult.value : '';
+      const igData = igResult.status === 'fulfilled' ? igResult.value : {};
+
+      // Merge all scraped data
+      const leadData: LeadData = {
+        campaign_id: campaignId,
+        niche,
+        city,
+        business_name: business.name,
+        address: business.address,
+        phone: business.phone || undefined,
+        website_url: business.website_url,
+        google_maps_url: business.google_maps_url,
+        google_rating: business.google_rating,
+        google_review_count: business.google_review_count,
+        // From website scraper
+        brand_colors: websiteData.brand_colors,
+        brand_fonts: websiteData.brand_fonts,
+        tagline: websiteData.tagline,
+        about_text: websiteData.about_text,
+        services: websiteData.services,
+        menu_or_pricing: websiteData.menu_or_pricing,
+        social_links: websiteData.social_links,
+        // From other scrapers
+        reddit_mentions: redditData,
+        yelp_reviews_summary: yelpData || undefined,
+        instagram_bio: igData.instagram_bio,
+        instagram_post_themes: igData.instagram_post_themes,
+      };
+
+      // Save to database
+      const lead = await createLead(leadData);
+      log.success(`💾 Saved: ${business.name} (ID: ${lead.id})`, { leadId: lead.id });
+
+      // Increment campaign counter
+      if (campaignId) {
+        await incrementCampaignCounter(campaignId, 'leads_count').catch(() => {});
+      }
+
+      // Run AI analysis immediately
+      log.log(`🤖 Running AI analysis for ${business.name}...`);
+      try {
+        const analysis = await analyzesBusiness(leadData);
+        await updateLeadAIAnalysis(lead.id, analysis);
+        log.success(`✨ AI score: ${analysis.opportunity_score}/10 — ${analysis.opportunity_reason}`);
+
+        // Auto-queue demo generation for high-opportunity leads
+        if (analysis.opportunity_score >= 7) {
+          const genJobId = uuidv4();
+          await generateQueue.add('generate-demo' as any, {
+            jobId: genJobId,
+            leadId: lead.id,
+          });
+          log.log(`📋 Queued for demo generation (score: ${analysis.opportunity_score}/10)`);
+        } else if (analysis.opportunity_score <= 4) {
+          log.log(`⏭️ Skipping demo (score: ${analysis.opportunity_score}/10 — already has good site)`);
+        } else {
+          log.log(`👁️ Score ${analysis.opportunity_score}/10 — added to manual review queue`);
+        }
+      } catch (aiErr) {
+        log.warn(`⚠️ AI analysis skipped: ${(aiErr as Error).message}`);
+      }
+
+      // Delay between businesses to be respectful to servers
+      await new Promise((r) => setTimeout(r, 2000 + Math.random() * 1000));
+    } catch (err) {
+      log.error(`❌ Failed to process ${business.name}: ${(err as Error).message}`);
+      logger.error('Scrape orchestrator error', { business: business.name, error: (err as Error).stack });
+    }
+  }
+
+  log.success(`🎉 Campaign scrape complete! Processed ${businesses.length} businesses.`);
+}

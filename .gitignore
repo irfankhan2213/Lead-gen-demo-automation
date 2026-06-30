@@ -1,0 +1,38 @@
+# ─── Secrets (NEVER commit these) ───────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# ─── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ─── Build outputs ────────────────────────────────────────────────────────────
+dist/
+.next/
+out/
+build/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+
+# ─── OS / Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ─── Playwright / Test artifacts ──────────────────────────────────────────────
+test-results/
+playwright-report/
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+.turbo/
+*.tsbuildinfo

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="{{META_DESCRIPTION}}" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary: {{PRIMARY_COLOR}}; --accent: {{ACCENT_COLOR}}; --blush: #fdf6f0; --muted: #f5ece5; --text: #2c1810; --text-light: #9c7a6d; --border: #ead5c8; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--blush); color: var(--text); }
+    nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(253,246,240,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 999; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--text); }
+    .book-btn { background: var(--primary); color: #fff; padding: 0.65rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+
+    .hero { min-height: 100vh; background: linear-gradient(to bottom right, var(--muted), var(--blush)); display: flex; align-items: center; padding: 7rem 4rem 5rem; }
+    .hero-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1200px; margin: 0 auto; align-items: center; }
+    .hero-pre { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--primary); font-weight: 600; margin-bottom: 1rem; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.8rem, 5vw, 5rem); line-height: 1.1; color: var(--text); margin-bottom: 1.5rem; }
+    .hero h1 em { color: var(--primary); font-style: italic; }
+    .hero p { color: var(--text-light); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2.5rem; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 0.9rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-outline { border: 2px solid var(--border); color: var(--text); padding: 0.9rem 2rem; border-radius: 50px; text-decoration: none; font-size: 0.95rem; transition: border-color 0.2s; }
+    .btn-outline:hover { border-color: var(--primary); }
+    .hero-visual { background: linear-gradient(135deg, var(--primary), var(--accent, var(--primary))); border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 8rem; }
+
+    .feature-bar { background: #fff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2rem; display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+    .feat { text-align: center; }
+    .feat-val { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--primary); }
+    .feat-lbl { font-size: 0.8rem; color: var(--text-light); }
+
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .tag { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--primary); font-weight: 600; }
+    h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 3.5vw, 3.2rem); margin-top: 0.5rem; color: var(--text); }
+
+    .services-sec { background: var(--muted); }
+    .s-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .s-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; transition: transform 0.2s; }
+    .s-card:hover { transform: translateY(-4px); }
+    .s-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .s-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; }
+    .s-card p { color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem; }
+
+    .about-sec { background: #fff; }
+    .ab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .ab-visual { background: linear-gradient(135deg, var(--primary), var(--accent, var(--primary))); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 6rem; }
+    .ab-text p { color: var(--text-light); margin-top: 1.5rem; line-height: 1.8; }
+
+    .reviews-sec { background: var(--blush); }
+    .r-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .r-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; }
+    .r-stars { color: var(--primary); margin-bottom: 0.75rem; }
+    .r-text { font-style: italic; color: var(--text-light); font-size: 0.95rem; line-height: 1.7; }
+    .r-author { font-weight: 600; margin-top: 0.75rem; font-size: 0.875rem; }
+
+    .cta-strip { background: var(--primary); padding: 5rem 2rem; text-align: center; }
+    .cta-strip h2 { font-family: 'DM Serif Display', serif; color: #fff; }
+    .cta-strip p { color: rgba(255,255,255,0.8); margin: 1rem 0 2rem; }
+    .cta-strip a { background: #fff; color: var(--primary); padding: 1rem 2.5rem; border-radius: 50px; font-weight: 700; text-decoration: none; }
+
+    .contact-sec { background: var(--muted); }
+    .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .c-info p { color: var(--text-light); margin-top: 1rem; }
+    .c-items { margin-top: 2rem; }
+    .c-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .c-icon { width: 40px; height: 40px; background: var(--primary); color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .c-form { background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 2.5rem; }
+    .c-form h3 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; margin-bottom: 1.5rem; }
+    input, textarea { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 0.95rem; background: var(--blush); color: var(--text); margin-bottom: 1rem; }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    textarea { min-height: 100px; resize: vertical; }
+    .submit { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 50px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+    footer { background: var(--text); padding: 2.5rem; text-align: center; }
+    footer .logo { color: #fff; display: block; margin-bottom: 0.5rem; font-size: 1.3rem; }
+    footer p { color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+
+    .demo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(90deg,#7c3aed,#4f46e5); color:#fff; padding:0.8rem 1.5rem; display:flex; align-items:center; justify-content:center; gap:1rem; font-size:0.9rem; z-index:9999; flex-wrap:wrap; }
+    .demo-banner a { background:#fff; color:#7c3aed; padding:0.35rem 0.9rem; border-radius:50px; font-weight:700; text-decoration:none; font-size:0.85rem; }
+    @media (max-width: 768px) { .hero-layout, .ab-grid, .c-grid { grid-template-columns: 1fr; } .hero { padding: 7rem 1.5rem 4rem; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <a href="#contact" class="book-btn">{{CTA_PRIMARY}}</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-layout">
+      <div>
+        <div class="hero-pre">✨ {{CITY}}</div>
+        <h1>{{HERO_HEADLINE}}</h1>
+        <p>{{HERO_SUBLINE}}</p>
+        <div class="hero-btns">
+          <a href="#contact" class="btn-primary" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
+          <a href="#services" class="btn-outline" id="hero-cta-secondary">{{CTA_SECONDARY}}</a>
+        </div>
+      </div>
+      <div class="hero-visual">💄</div>
+    </div>
+  </section>
+
+  <div class="feature-bar">
+    <div class="feat"><div class="feat-val">{{GOOGLE_RATING}}⭐</div><div class="feat-lbl">Rating</div></div>
+    <div class="feat"><div class="feat-val">{{REVIEW_COUNT}}+</div><div class="feat-lbl">Happy Clients</div></div>
+    <div class="feat"><div class="feat-val">{{SERVICE_COUNT}}+</div><div class="feat-lbl">Services</div></div>
+    <div class="feat"><div class="feat-val">100%</div><div class="feat-lbl">Premium Products</div></div>
+  </div>
+
+  <section class="services-sec" id="services">
+    <div class="container" style="text-align:center">
+      <div class="tag">Our Specialties</div>
+      <h2>{{SERVICES_HEADING}}</h2>
+      <div class="s-grid" style="text-align:left">
+        <div class="s-card"><div class="s-icon">💅</div><h3>{{SERVICE_1_NAME}}</h3><p>{{SERVICE_1_DESC}}</p></div>
+        <div class="s-card"><div class="s-icon">✂️</div><h3>{{SERVICE_2_NAME}}</h3><p>{{SERVICE_2_DESC}}</p></div>
+        <div class="s-card"><div class="s-icon">🌸</div><h3>{{SERVICE_3_NAME}}</h3><p>{{SERVICE_3_DESC}}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-sec" id="about">
+    <div class="container ab-grid">
+      <div class="ab-visual">💄</div>
+      <div class="ab-text">
+        <div class="tag">About Us</div>
+        <h2>{{ABOUT_HEADING}}</h2>
+        <p>{{ABOUT_PARA_1}}</p>
+        <p>{{ABOUT_PARA_2}}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reviews-sec" id="reviews">
+    <div class="container" style="text-align:center">
+      <div class="tag">Client Love</div>
+      <h2>{{TESTIMONIAL_HEADING}}</h2>
+      <div class="r-grid" style="text-align:left">
+        <div class="r-card"><div class="r-stars">★★★★★</div><div class="r-text">"{{TESTIMONIAL_1}}"</div><div class="r-author">— {{TESTIMONIAL_1_AUTHOR}}</div></div>
+        <div class="r-card"><div class="r-stars">★★★★★</div><div class="r-text">"{{TESTIMONIAL_2}}"</div><div class="r-author">— {{TESTIMONIAL_2_AUTHOR}}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-strip">
+    <h2>{{CTA_SECTION_HEADING}}</h2>
+    <p>{{CTA_SECTION_SUB}}</p>
+    <a href="#contact" id="mid-cta">{{CTA_PRIMARY}}</a>
+  </div>
+
+  <section class="contact-sec" id="contact">
+    <div class="container c-grid">
+      <div class="c-info">
+        <div class="tag">Visit Us</div>
+        <h2>Book Your Appointment</h2>
+        <p>We can't wait to pamper you. Walk-ins welcome when available.</p>
+        <div class="c-items">
+          <div class="c-item"><div class="c-icon">📍</div><span>{{ADDRESS}}</span></div>
+          <div class="c-item"><div class="c-icon">📞</div><span>{{PHONE}}</span></div>
+        </div>
+      </div>
+      <div class="c-form">
+        <h3>Book Now</h3>
+        <form id="book-form">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Email Address" required />
+          <input type="tel" placeholder="Phone Number" />
+          <input type="text" placeholder="Preferred Date & Time" />
+          <textarea placeholder="Which service are you interested in?"></textarea>
+          <button type="submit" class="submit" id="form-submit-btn">{{CTA_PRIMARY}}</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="logo" style="font-family:'DM Serif Display',serif;">{{BUSINESS_NAME}}</div>
+    <p>{{FOOTER_TAGLINE}}</p>
+    <p style="margin-top:0.75rem">© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+  </footer>
+
+  <div class="demo-banner">
+    <span>✨ <strong>Demo site</strong> by Evolve Expert Agency</span>
+    <a href="mailto:{{FROM_EMAIL}}" id="demo-banner-cta">Claim Yours →</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(a => { a.addEventListener('click', e => { e.preventDefault(); document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); }); });
+    document.getElementById('book-form').addEventListener('submit', function(e) { e.preventDefault(); const b = document.getElementById('form-submit-btn'); b.textContent = '✅ Booked!'; b.style.background = '#10b981'; setTimeout(() => { b.textContent = '{{CTA_PRIMARY}}'; b.style.background = ''; this.reset(); }, 3000); });
+  </script>
+</body>
+</html>

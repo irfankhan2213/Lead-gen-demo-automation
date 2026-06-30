@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="{{META_DESCRIPTION}}" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary: {{PRIMARY_COLOR}}; --accent: {{ACCENT_COLOR}}; --bg: #f8fafc; --text: #0f172a; --text-light: #64748b; --border: #e2e8f0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); }
+    nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(248,250,252,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 999; }
+    .logo { font-weight: 800; font-size: 1.3rem; color: var(--primary); }
+    .book-btn { background: var(--primary); color: #fff; padding: 0.65rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.9rem; }
+    .hero { min-height: 100vh; background: linear-gradient(135deg, var(--primary) 0%, #0ea5e9 60%, var(--accent, #0284c7) 100%); display: flex; align-items: center; padding: 8rem 2rem 4rem; }
+    .hero-inner { max-width: 700px; margin: 0 auto; text-align: center; color: #fff; }
+    .hero-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 0.4rem 1.2rem; border-radius: 50px; font-size: 0.8rem; display: inline-block; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
+    .hero p { font-size: 1.15rem; opacity: 0.85; margin-bottom: 2.5rem; }
+    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-white { background: #fff; color: var(--primary); padding: 0.9rem 2rem; border-radius: 50px; font-weight: 700; text-decoration: none; font-size: 0.95rem; }
+    .btn-outline-white { border: 2px solid rgba(255,255,255,0.5); color: #fff; padding: 0.9rem 2rem; border-radius: 50px; text-decoration: none; font-size: 0.95rem; }
+    .trust-bar { background: #fff; padding: 2rem; display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+    .trust-item { text-align: center; }
+    .trust-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+    .trust-lbl { font-size: 0.8rem; color: var(--text-light); }
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .tag { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--primary); }
+    h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 800; margin-top: 0.5rem; line-height: 1.2; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .s-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; transition: transform 0.2s, box-shadow 0.2s; }
+    .s-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .s-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), var(--accent, var(--primary))); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 1rem; }
+    .s-card h3 { font-size: 1.15rem; font-weight: 700; }
+    .s-card p { color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem; }
+    .about-section { background: #fff; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-img { background: linear-gradient(135deg, var(--primary), var(--accent, #0ea5e9)); border-radius: 24px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+    .about-text p { color: var(--text-light); margin-top: 1.5rem; line-height: 1.8; }
+    .reviews-section { background: var(--bg); }
+    .r-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .r-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; }
+    .r-stars { color: #f59e0b; margin-bottom: 0.75rem; }
+    .r-text { font-style: italic; color: var(--text-light); font-size: 0.95rem; }
+    .r-author { font-weight: 700; margin-top: 0.75rem; font-size: 0.875rem; }
+    .cta-band { background: var(--primary); padding: 5rem 2rem; text-align: center; color: #fff; }
+    .cta-band h2 { color: #fff; }
+    .cta-band p { opacity: 0.8; margin: 1rem 0 2rem; font-size: 1.05rem; }
+    .cta-band a { background: #fff; color: var(--primary); padding: 1rem 2.5rem; border-radius: 50px; font-weight: 800; text-decoration: none; font-size: 1rem; }
+    .contact-section { background: #fff; }
+    .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .c-info p { color: var(--text-light); margin-top: 1rem; }
+    .c-items { margin-top: 2rem; }
+    .c-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .c-icon { width: 42px; height: 42px; background: var(--primary); color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .c-form { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; }
+    .c-form h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; }
+    input, textarea, select { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 0.95rem; background: #fff; margin-bottom: 1rem; }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    textarea { min-height: 100px; resize: vertical; }
+    .submit { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+    footer { background: var(--text); color: rgba(255,255,255,0.5); padding: 2.5rem; text-align: center; }
+    footer strong { color: #fff; display: block; margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .demo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(90deg,#7c3aed,#4f46e5); color:#fff; padding:0.8rem 1.5rem; display:flex; align-items:center; justify-content:center; gap:1rem; font-size:0.9rem; z-index:9999; flex-wrap:wrap; }
+    .demo-banner a { background:#fff; color:#7c3aed; padding:0.35rem 0.9rem; border-radius:50px; font-weight:700; text-decoration:none; font-size:0.85rem; }
+    @media (max-width: 768px) { .about-grid, .c-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <a href="#contact" class="book-btn">{{CTA_PRIMARY}}</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">🏥 {{CITY}}</div>
+      <h1>{{HERO_HEADLINE}}</h1>
+      <p>{{HERO_SUBLINE}}</p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-white" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
+        <a href="#services" class="btn-outline-white" id="hero-cta-secondary">Our Services</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-bar">
+    <div class="trust-item"><div class="trust-val">{{GOOGLE_RATING}}⭐</div><div class="trust-lbl">Patient Rating</div></div>
+    <div class="trust-item"><div class="trust-val">{{REVIEW_COUNT}}+</div><div class="trust-lbl">Happy Patients</div></div>
+    <div class="trust-item"><div class="trust-val">10+</div><div class="trust-lbl">Years Experience</div></div>
+    <div class="trust-item"><div class="trust-val">{{SERVICE_COUNT}}+</div><div class="trust-lbl">Services</div></div>
+  </div>
+
+  <section id="services">
+    <div class="container">
+      <div class="tag">What We Offer</div>
+      <h2>{{SERVICES_HEADING}}</h2>
+      <div class="services-grid">
+        <div class="s-card"><div class="s-icon">🦷</div><h3>{{SERVICE_1_NAME}}</h3><p>{{SERVICE_1_DESC}}</p></div>
+        <div class="s-card"><div class="s-icon">🩺</div><h3>{{SERVICE_2_NAME}}</h3><p>{{SERVICE_2_DESC}}</p></div>
+        <div class="s-card"><div class="s-icon">💊</div><h3>{{SERVICE_3_NAME}}</h3><p>{{SERVICE_3_DESC}}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section" id="about">
+    <div class="container about-grid">
+      <div class="about-img">🏥</div>
+      <div class="about-text">
+        <div class="tag">About Us</div>
+        <h2>{{ABOUT_HEADING}}</h2>
+        <p>{{ABOUT_PARA_1}}</p>
+        <p>{{ABOUT_PARA_2}}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reviews-section" id="reviews">
+    <div class="container" style="text-align:center">
+      <div class="tag">Patient Reviews</div>
+      <h2>{{TESTIMONIAL_HEADING}}</h2>
+      <div class="r-grid">
+        <div class="r-card"><div class="r-stars">★★★★★</div><div class="r-text">"{{TESTIMONIAL_1}}"</div><div class="r-author">— {{TESTIMONIAL_1_AUTHOR}}</div></div>
+        <div class="r-card"><div class="r-stars">★★★★★</div><div class="r-text">"{{TESTIMONIAL_2}}"</div><div class="r-author">— {{TESTIMONIAL_2_AUTHOR}}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <h2>{{CTA_SECTION_HEADING}}</h2>
+    <p>{{CTA_SECTION_SUB}}</p>
+    <a href="#contact" id="mid-cta">{{CTA_PRIMARY}}</a>
+  </div>
+
+  <section class="contact-section" id="contact">
+    <div class="container c-grid">
+      <div class="c-info">
+        <div class="tag">Contact</div>
+        <h2>Book an Appointment</h2>
+        <p>Call us or fill in the form — our team will confirm your appointment within 24 hours.</p>
+        <div class="c-items">
+          <div class="c-item"><div class="c-icon">📍</div><span>{{ADDRESS}}</span></div>
+          <div class="c-item"><div class="c-icon">📞</div><span>{{PHONE}}</span></div>
+        </div>
+      </div>
+      <div class="c-form">
+        <h3>Request Appointment</h3>
+        <form id="appt-form">
+          <input type="text" placeholder="Full Name" required />
+          <input type="email" placeholder="Email Address" required />
+          <input type="tel" placeholder="Phone Number" />
+          <input type="text" placeholder="Preferred Date & Time" />
+          <textarea placeholder="Reason for visit or any concerns"></textarea>
+          <button type="submit" class="submit" id="form-submit-btn">Book Appointment</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <strong>{{BUSINESS_NAME}}</strong>
+    <p>{{FOOTER_TAGLINE}}</p>
+    <p style="margin-top:0.75rem">© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+  </footer>
+
+  <div class="demo-banner">
+    <span>✨ <strong>Demo site</strong> by Evolve Expert Agency</span>
+    <a href="mailto:{{FROM_EMAIL}}" id="demo-banner-cta">Claim Yours →</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(a => { a.addEventListener('click', e => { e.preventDefault(); document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); }); });
+    document.getElementById('appt-form').addEventListener('submit', function(e) { e.preventDefault(); const b = document.getElementById('form-submit-btn'); b.textContent = '✅ Request Received!'; b.style.background = '#10b981'; setTimeout(() => { b.textContent = 'Book Appointment'; b.style.background = ''; this.reset(); }, 3000); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="{{META_DESCRIPTION}}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: {{PRIMARY_COLOR}};
+      --accent: {{ACCENT_COLOR}};
+      --cream: #faf8f5;
+      --text: #1a1a1a;
+      --text-light: #6b6b6b;
+      --border: #e5ddd0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(250,248,245,0.96); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 3rem; display: flex; align-items: center; justify-content: space-between;
+      z-index: 999;
+    }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--text); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: var(--text-light); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--primary); }
+    .reserve-btn {
+      background: var(--primary); color: #fff;
+      padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;
+      font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s;
+    }
+    .reserve-btn:hover { opacity: 0.85; }
+
+    .hero {
+      height: 100vh; position: relative;
+      background: linear-gradient(to bottom right, var(--text) 0%, #3d2000 50%, var(--primary) 100%);
+      display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.01) 10px, rgba(255,255,255,0.01) 20px);
+    }
+    .hero-content { position: relative; z-index: 1; padding: 2rem; }
+    .hero-pre { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 1.5rem; }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 7rem); color: #fff; font-weight: 600;
+      line-height: 1.05; margin-bottom: 1.5rem;
+    }
+    .hero-divider { width: 60px; height: 2px; background: var(--accent, var(--primary)); margin: 0 auto 1.5rem; }
+    .hero p { color: rgba(255,255,255,0.7); font-size: 1.15rem; max-width: 500px; margin: 0 auto 2.5rem; }
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cta-gold {
+      background: var(--accent, #d4a853); color: #1a1a1a;
+      padding: 1rem 2.5rem; border-radius: 4px;
+      font-weight: 700; text-decoration: none; font-size: 0.95rem;
+      transition: transform 0.2s; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .cta-gold:hover { transform: translateY(-2px); }
+    .cta-ghost {
+      border: 2px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.85);
+      padding: 1rem 2.5rem; border-radius: 4px; text-decoration: none;
+      font-size: 0.95rem; letter-spacing: 0.05em; text-transform: uppercase;
+      transition: border-color 0.2s;
+    }
+    .cta-ghost:hover { border-color: rgba(255,255,255,0.7); }
+
+    .awards { background: #fff; padding: 2rem 3rem; border-bottom: 1px solid var(--border); }
+    .awards-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+    .award { text-align: center; }
+    .award-icon { font-size: 2rem; }
+    .award-label { font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .menu { padding: 6rem 3rem; }
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .section-label { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--primary); font-weight: 600; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 4vw, 3.5rem); margin-top: 0.5rem; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
+    .menu-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 2rem; display: flex; gap: 1.5rem; align-items: start; }
+    .menu-emoji { font-size: 2.5rem; flex-shrink: 0; }
+    .menu-item-name { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; }
+    .menu-item-desc { color: var(--text-light); font-size: 0.9rem; margin-top: 0.35rem; }
+    .menu-item-price { font-weight: 700; color: var(--primary); font-size: 1.1rem; margin-top: 0.5rem; }
+
+    .ambiance { background: var(--text); padding: 6rem 3rem; text-align: center; }
+    .ambiance h2 { color: #fff; margin-top: 0.5rem; }
+    .ambiance .section-label { color: var(--accent, var(--primary)); }
+    .ambiance p { color: rgba(255,255,255,0.65); max-width: 580px; margin: 1.5rem auto 2.5rem; font-size: 1.05rem; }
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 900px; margin: 0 auto; }
+    .photo-placeholder {
+      aspect-ratio: 1; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .testimonials { padding: 6rem 3rem; background: var(--cream); }
+    .testimonial-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 3rem auto 0; }
+    .tcard { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
+    .tcard-stars { color: #f59e0b; margin-bottom: 1rem; }
+    .tcard-text { font-style: italic; color: var(--text-light); }
+    .tcard-author { font-weight: 600; margin-top: 1rem; font-size: 0.9rem; }
+
+    .cta-strip { background: var(--primary); padding: 4rem 3rem; text-align: center; }
+    .cta-strip h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; }
+    .cta-strip p { color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
+
+    .contact-section { padding: 6rem 3rem; }
+    .contact-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .info-block p { color: var(--text-light); margin-top: 1.5rem; font-size: 1rem; }
+    .info-items { margin-top: 2rem; }
+    .info-item { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.25rem; }
+    .info-icon { width: 42px; height: 42px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .form-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; }
+    .form-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin-bottom: 1.5rem; }
+    input, textarea { width: 100%; padding: 0.875rem 1rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem; background: var(--cream); }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    textarea { min-height: 110px; resize: vertical; }
+    .submit-btn { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .submit-btn:hover { opacity: 0.9; }
+
+    footer { background: var(--text); padding: 3rem; text-align: center; }
+    footer .logo { color: #fff; display: block; margin-bottom: 1rem; }
+    footer p { color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+
+    .demo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(90deg,#7c3aed,#4f46e5); color:#fff; padding:0.8rem 1.5rem; display:flex; align-items:center; justify-content:center; gap:1rem; font-size:0.9rem; z-index:9999; flex-wrap:wrap; text-align:center; }
+    .demo-banner a { background:#fff; color:#7c3aed; padding:0.4rem 1rem; border-radius:50px; font-weight:700; text-decoration:none; font-size:0.85rem; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .contact-inner { grid-template-columns: 1fr; }
+      .photo-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <div class="nav-links">
+      <a href="#menu">Menu</a>
+      <a href="#ambiance">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="reserve-btn">{{CTA_PRIMARY}}</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-pre">📍 {{CITY}}</div>
+      <h1>{{HERO_HEADLINE}}</h1>
+      <div class="hero-divider"></div>
+      <p>{{HERO_SUBLINE}}</p>
+      <div class="hero-cta">
+        <a href="#contact" class="cta-gold" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
+        <a href="#menu" class="cta-ghost" id="hero-cta-secondary">View Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="awards">
+    <div class="awards-inner">
+      <div class="award"><div class="award-icon">⭐</div><div class="award-label">{{GOOGLE_RATING}} Google Rating</div></div>
+      <div class="award"><div class="award-icon">👨‍🍳</div><div class="award-label">Fresh Daily</div></div>
+      <div class="award"><div class="award-icon">🏆</div><div class="award-label">Local Favourite</div></div>
+      <div class="award"><div class="award-icon">❤️</div><div class="award-label">{{REVIEW_COUNT}}+ Reviews</div></div>
+    </div>
+  </div>
+
+  <section class="menu" id="menu">
+    <div class="section-header">
+      <div class="section-label">What We Serve</div>
+      <h2>{{SERVICES_HEADING}}</h2>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-item"><div class="menu-emoji">🍽️</div><div><div class="menu-item-name">{{SERVICE_1_NAME}}</div><div class="menu-item-desc">{{SERVICE_1_DESC}}</div></div></div>
+      <div class="menu-item"><div class="menu-emoji">🥘</div><div><div class="menu-item-name">{{SERVICE_2_NAME}}</div><div class="menu-item-desc">{{SERVICE_2_DESC}}</div></div></div>
+      <div class="menu-item"><div class="menu-emoji">🍷</div><div><div class="menu-item-name">{{SERVICE_3_NAME}}</div><div class="menu-item-desc">{{SERVICE_3_DESC}}</div></div></div>
+    </div>
+  </section>
+
+  <section class="ambiance" id="ambiance">
+    <div class="section-label">Our Story</div>
+    <h2>{{ABOUT_HEADING}}</h2>
+    <p>{{ABOUT_PARA_1}}</p>
+    <div class="photo-grid">
+      <div class="photo-placeholder">🍴</div>
+      <div class="photo-placeholder">🌿</div>
+      <div class="photo-placeholder">🕯️</div>
+    </div>
+  </section>
+
+  <section class="testimonials" id="reviews">
+    <div style="text-align:center">
+      <div class="section-label">Reviews</div>
+      <h2>{{TESTIMONIAL_HEADING}}</h2>
+    </div>
+    <div class="testimonial-cards">
+      <div class="tcard"><div class="tcard-stars">★★★★★</div><div class="tcard-text">"{{TESTIMONIAL_1}}"</div><div class="tcard-author">— {{TESTIMONIAL_1_AUTHOR}}</div></div>
+      <div class="tcard"><div class="tcard-stars">★★★★★</div><div class="tcard-text">"{{TESTIMONIAL_2}}"</div><div class="tcard-author">— {{TESTIMONIAL_2_AUTHOR}}</div></div>
+    </div>
+  </section>
+
+  <div class="cta-strip">
+    <h2>{{CTA_SECTION_HEADING}}</h2>
+    <p>{{CTA_SECTION_SUB}}</p>
+    <a href="#contact" class="cta-gold" id="mid-cta">{{CTA_PRIMARY}}</a>
+  </div>
+
+  <section class="contact-section" id="contact">
+    <div class="contact-inner">
+      <div class="info-block">
+        <div class="section-label">Find Us</div>
+        <h2>Visit Our Restaurant</h2>
+        <p>We'd love to have you. Walk-ins welcome — reservations recommended for weekends.</p>
+        <div class="info-items">
+          <div class="info-item"><div class="info-icon">📍</div><span>{{ADDRESS}}</span></div>
+          <div class="info-item"><div class="info-icon">📞</div><span>{{PHONE}}</span></div>
+        </div>
+      </div>
+      <div class="form-card">
+        <h3>Make a Reservation</h3>
+        <form id="res-form">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Email" required />
+          <input type="tel" placeholder="Phone Number" />
+          <input type="text" placeholder="Party Size" />
+          <textarea placeholder="Special requests or preferred date/time"></textarea>
+          <button type="submit" class="submit-btn" id="form-submit-btn">Reserve a Table</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="logo" style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;">{{BUSINESS_NAME}}</div>
+    <p>{{FOOTER_TAGLINE}}</p>
+    <p style="margin-top:1rem">© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+  </footer>
+
+  <div class="demo-banner">
+    <span>✨ <strong>Free demo</strong> built by Evolve Expert Agency — want your own?</span>
+    <a href="mailto:{{FROM_EMAIL}}" id="demo-banner-cta">Get Started →</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); });
+    });
+    document.getElementById('res-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('form-submit-btn');
+      btn.textContent = '✅ Reservation Requested!';
+      btn.style.background = '#10b981';
+      setTimeout(() => { btn.textContent = 'Reserve a Table'; btn.style.background = ''; this.reset(); }, 3000);
+    });
+  </script>
+</body>
+</html>
