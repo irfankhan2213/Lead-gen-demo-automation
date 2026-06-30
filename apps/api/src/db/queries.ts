@@ -16,7 +16,8 @@ import type {
   DemoStatus,
 } from '@acquisition-engine/shared';
 
-// ─── Connection Pool ──────────────────────────────────────────────────────────
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
