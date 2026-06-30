@@ -23,6 +23,10 @@ export const pool = new Pool({
   max: 20,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
+  // Supabase requires SSL; local Docker does not — auto-detect
+  ssl: process.env.DATABASE_URL?.includes('supabase.co')
+    ? { rejectUnauthorized: false }
+    : false,
 });
 
 pool.on('error', (err) => logger.error('Unexpected DB pool error', { error: err.message }));
