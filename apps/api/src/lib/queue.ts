@@ -13,14 +13,46 @@ dotenv.config();
 
 const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
 
-export const redisConnection = new Redis(redisUrl, {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-  retryStrategy: (times: number) => Math.min(times * 50, 2000),
-});
+const getRedisOptions = () => {
+  const options: any = {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    retryStrategy: (times: number) => Math.min(times * 50, 2000),
+  };
 
-redisConnection.on('connect', () => logger.info('Redis connected'));
-redisConnection.on('error', (err: any) => logger.error('Redis error', { error: err.message }));
+  try {
+    const parsed = new URL(redisUrl);
+    options.host = parsed.hostname;
+    options.port = parsed.port ? parseInt(parsed.port, 10) : 6379;
+    
+    if (parsed.username) {
+      options.username = decodeURIComponent(parsed.username);
+    }
+    if (parsed.password) {
+      options.password = decodeURIComponent(parsed.password);
+    }
+    if (parsed.protocol === 'rediss:') {
+      options.tls = { rejectUnauthorized: false };
+    }
+  } catch (err) {
+    logger.warn('Failed to parse REDIS_URL with URL parser, using direct fallback', { error: (err as Error).message });
+  }
+
+  return options;
+};
+
+// If parsing succeeded, instantiate using options, otherwise fall back to url string
+let redisOptions = getRedisOptions();
+export const redisConnection = redisOptions.host 
+  ? new Redis(redisOptions)
+  : new Redis(redisUrl, {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+      retryStrategy: (times: number) => Math.min(times * 50, 2000),
+    });
+
+redisConnection.on('connect', () => logger.info('Redis connected successfully'));
+redisConnection.on('error', (err: any) => logger.error('Redis connection error', { error: err.message }));
 
 // ─── Queue Config ─────────────────────────────────────────────────────────────
 
