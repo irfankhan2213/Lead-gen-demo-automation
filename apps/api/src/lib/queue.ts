@@ -20,6 +20,19 @@ const getRedisOptions = () => {
     retryStrategy: (times: number) => Math.min(times * 50, 2000),
   };
 
+  // 1. Try individual Railway environment variables first (most reliable)
+  if (process.env.REDISHOST) {
+    options.host = process.env.REDISHOST;
+    options.port = process.env.REDISPORT ? parseInt(process.env.REDISPORT, 10) : 6379;
+    options.username = process.env.REDISUSER || 'default';
+    options.password = process.env.REDISPASSWORD || process.env.REDIS_PASSWORD;
+    if (process.env.REDIS_TLS === 'true' || (process.env.REDIS_URL && process.env.REDIS_URL.startsWith('rediss:'))) {
+      options.tls = { rejectUnauthorized: false };
+    }
+    return options;
+  }
+
+  // 2. Fall back to parsing REDIS_URL
   try {
     const parsed = new URL(redisUrl);
     options.host = parsed.hostname;
