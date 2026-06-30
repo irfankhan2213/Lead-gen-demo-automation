@@ -18,6 +18,8 @@ import type {
 
 import dotenv from 'dotenv';
 dotenv.config();
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

@@ -10,6 +10,8 @@ import type { ScrapeJobData, GenerateJobData, OutreachJobData } from '@acquisiti
 
 import dotenv from 'dotenv';
 dotenv.config();
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
 
 const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
 
