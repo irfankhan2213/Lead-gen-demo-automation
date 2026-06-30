@@ -41,15 +41,26 @@ app.use(
   })
 );
 
-// ─── CORS ─────────────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-      process.env.DASHBOARD_URL ?? 'http://localhost:3000',
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like server-to-server, curl, etc.)
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const isLocal = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
+      const isVercel = origin.endsWith('.vercel.app');
+      const isCustomDashboard = process.env.DASHBOARD_URL ? origin === process.env.DASHBOARD_URL : false;
+
+      if (isLocal || isVercel || isCustomDashboard) {
+        callback(null, true);
+      } else {
+        logger.warn(`Blocked by CORS: ${origin}`);
+        callback(null, false); // Block origin but don't crash Express
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   })
