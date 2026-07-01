@@ -21,8 +21,19 @@ dotenv.config();
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
+let dbUrl = process.env.DATABASE_URL;
+if (dbUrl && dbUrl.includes('sslmode=')) {
+  try {
+    const urlObj = new URL(dbUrl);
+    urlObj.searchParams.delete('sslmode');
+    dbUrl = urlObj.toString();
+  } catch (err) {
+    logger.warn('Failed to parse database connection string during cleanup', { error: (err as Error).message });
+  }
+}
+
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: dbUrl,
   max: 20,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
