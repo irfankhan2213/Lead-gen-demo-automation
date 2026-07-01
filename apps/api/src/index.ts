@@ -102,28 +102,7 @@ app.get('/health', (_req, res) => {
   });
 });
 
-import { pool } from './db/queries.js';
-app.get('/api/debug-db', async (_req, res) => {
-  try {
-    const start = Date.now();
-    const result = await pool.query('SELECT NOW()');
-    res.json({
-      success: true,
-      time: result.rows[0].now,
-      latencyMs: Date.now() - start,
-      databaseUrlEnvExists: !!process.env.DATABASE_URL,
-      databaseUrlLength: process.env.DATABASE_URL?.length ?? 0
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: (err as Error).message,
-      stack: (err as Error).stack,
-      databaseUrlEnvExists: !!process.env.DATABASE_URL,
-      databaseUrlLength: process.env.DATABASE_URL?.length ?? 0
-    });
-  }
-});
+
 
 // ─── SSE — Real-time Event Stream ─────────────────────────────────────────────
 /**
