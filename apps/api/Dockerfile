@@ -4,8 +4,8 @@ FROM mcr.microsoft.com/playwright:v1.44.0-focal
 # Set working directory
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm globally (pin version 9 to support Node 20)
+RUN npm install -g pnpm@9
 
 # Copy root monorepo config files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
