@@ -24,8 +24,7 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
   if (effectiveGroqKey) {
     const models = [
       'llama-3.3-70b-versatile',
-      'mixtral-8x7b-32768',
-      'llama3-8b-8192',
+      'llama-3.1-8b-instant',
       'gemma2-9b-it'
     ];
 
@@ -54,8 +53,7 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
         }
 
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Groq API returned status ${response.status}: ${errorText}`);
+          throw new Error('AI service returned an unexpected response. Please try again.');
         }
 
         const data = await response.json() as {
@@ -73,14 +71,12 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
       }
     }
 
-    throw lastError || new Error('All Groq models failed or were rate limited');
+    throw lastError || new Error('The AI assistant is temporarily busy. Please try again shortly.');
   }
 
   // Fallback to Anthropic Claude
   logger.info('Calling LLM via Anthropic API...');
-  if (!effectiveAnthropicKey) {
-    throw new Error('No valid LLM API key found. Please set ANTHROPIC_API_KEY or GROQ_API_KEY.');
-  }
+    throw new Error('AI service configuration is incomplete. Please set the required API keys.');
 
   try {
     const anthropic = new Anthropic({ apiKey: effectiveAnthropicKey });
@@ -91,7 +87,7 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
     });
 
     const content = response.content[0];
-    return content.type === 'text' ? content.text : '';
+    return content.type === 'text' ? (content as any).text : '';
   } catch (err) {
     logger.error('Anthropic LLM call failed', { error: (err as Error).message });
     throw err;

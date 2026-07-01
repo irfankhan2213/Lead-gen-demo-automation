@@ -13,7 +13,7 @@ import logger from '../../lib/logger.js';
 import type { RedditMention } from '@acquisition-engine/shared';
 
 const REDDIT_SEARCH_URL = 'https://www.reddit.com/search.json';
-const USER_AGENT = 'AcquisitionEngine/1.0 (lead research tool)';
+const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 /** Basic positive/negative keyword lists for naive sentiment */
 const POSITIVE_WORDS = new Set([
