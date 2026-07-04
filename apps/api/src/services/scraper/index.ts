@@ -73,6 +73,15 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
       const yelpData = yelpResult.status === 'fulfilled' ? yelpResult.value : '';
       const igData = igResult.status === 'fulfilled' ? igResult.value : {};
 
+      // ─── Quality Gate: skip leads without contact info ────────────────────
+      const finalPhone = websiteData.phone || business.phone || undefined;
+      const finalEmail = websiteData.email || undefined;
+
+      if (!finalEmail && !finalPhone) {
+        log.warn(`⏭️ Skipping ${business.name} — no email or phone found`);
+        continue;
+      }
+
       // Merge all scraped data
       const leadData: LeadData = {
         campaign_id: campaignId,
@@ -81,9 +90,9 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         business_name: business.name,
         address: business.address,
         // Phone: prefer website (has tel: link) → Google Maps detail page
-        phone: websiteData.phone || business.phone || undefined,
+        phone: finalPhone,
         // Email: from website scraper (mailto or contact page)
-        email: websiteData.email || undefined,
+        email: finalEmail,
         website_url: business.website_url,
         google_maps_url: business.google_maps_url,
         google_rating: business.google_rating,
