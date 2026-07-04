@@ -165,10 +165,10 @@ export async function scrapeGoogleMaps(
 }
 
 /**
- * Visits a Google Maps detail page to extract phone and website.
+ * Visits a Google Maps detail page to extract phone, website, and address.
+ * Uses Playwright native locators (not cheerio) because Maps detail pages
+ * are fully JS-rendered and content won't appear in a static HTML dump.
  * Mutates the business object in place.
- * @param page - An already-open Playwright page
- * @param business - The business to enrich
  */
 async function enrichBusinessFromDetailPage(
   page: import('playwright').Page,
@@ -177,35 +177,57 @@ async function enrichBusinessFromDetailPage(
   if (!business.google_maps_url.includes('/maps/place/')) return;
 
   await page.goto(business.google_maps_url, { waitUntil: 'domcontentloaded', timeout: 20_000 });
-  await delay(800);
+  await delay(1000);
 
-  const html = await page.content();
-  const $ = cheerio.load(html);
+  // ─── Phone ─────────────────────────────────────────────────────────────────
+  // Google Maps renders the phone in an aria-label like "Phone: +1 555-123-4567"
+  // and also in a button with data-tooltip="Copy phone number"
+  try {
+    const phoneSelectors = [
+      '[data-tooltip="Copy phone number"]',
+      '[aria-label^="Phone:"]',
+      'button[aria-label*="phone" i]',
+    ];
+    for (const sel of phoneSelectors) {
+      const el = page.locator(sel).first();
+      if (await el.isVisible({ timeout: 2000 }).catch(() => false)) {
+        const raw = await el.getAttribute('aria-label') ?? await el.textContent() ?? '';
+        const cleaned = raw.replace(/^Phone:\s*/i, '').trim();
+        if (cleaned) { business.phone = cleaned; break; }
+      }
+    }
+  } catch { /* phone not available */ }
 
-  // Phone: aria-label contains "Phone:" or data-tooltip="Copy phone number"
-  const phoneEl = $('[data-tooltip="Copy phone number"], [aria-label^="Phone:"]').first();
-  if (phoneEl.length) {
-    const phoneRaw = phoneEl.attr('aria-label') ?? phoneEl.attr('data-tooltip') ?? '';
-    business.phone = phoneRaw.replace(/Phone:\s*/i, '').trim();
-  }
+  // ─── Website ───────────────────────────────────────────────────────────────
+  try {
+    const websiteSelectors = [
+      '[data-tooltip="Open website"]',
+      'a[aria-label*="website" i]',
+      'a[data-item-id*="authority"]',
+    ];
+    for (const sel of websiteSelectors) {
+      const el = page.locator(sel).first();
+      if (await el.isVisible({ timeout: 2000 }).catch(() => false)) {
+        const href = await el.getAttribute('href');
+        if (href) { business.website_url = href; break; }
+      }
+    }
+  } catch { /* website not available */ }
 
-  // Website: button/link with data-tooltip="Open website"
-  const websiteEl = $('[data-tooltip="Open website"], a[aria-label*="website" i]').first();
-  if (websiteEl.length) {
-    business.website_url = websiteEl.attr('href') ?? undefined;
-  }
-
-  // Address: more accurate from detail page
-  const addrEl = $('[data-tooltip="Copy address"], [aria-label^="Address:"]').first();
-  if (addrEl.length) {
-    business.address = (addrEl.attr('aria-label') ?? '').replace(/Address:\s*/i, '').trim();
-  }
-
-  // Photos
-  const photoUrls: string[] = [];
-  $('img[src*="lh5.googleusercontent.com"], img[src*="lh3.googleusercontent.com"]').each((_, el) => {
-    const src = $(el).attr('src');
-    if (src && !photoUrls.includes(src)) photoUrls.push(src);
-  });
-  if (photoUrls.length) business.photos = photoUrls.slice(0, 5);
+  // ─── Address ───────────────────────────────────────────────────────────────
+  try {
+    const addrSelectors = [
+      '[data-tooltip="Copy address"]',
+      '[aria-label^="Address:"]',
+    ];
+    for (const sel of addrSelectors) {
+      const el = page.locator(sel).first();
+      if (await el.isVisible({ timeout: 2000 }).catch(() => false)) {
+        const raw = await el.getAttribute('aria-label') ?? '';
+        const cleaned = raw.replace(/^Address:\s*/i, '').trim();
+        if (cleaned) { business.address = cleaned; break; }
+      }
+    }
+  } catch { /* address not available */ }
 }
+

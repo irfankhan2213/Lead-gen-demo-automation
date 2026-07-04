@@ -80,7 +80,10 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         city,
         business_name: business.name,
         address: business.address,
-        phone: business.phone || undefined,
+        // Phone: prefer website (has tel: link) → Google Maps detail page
+        phone: websiteData.phone || business.phone || undefined,
+        // Email: from website scraper (mailto or contact page)
+        email: websiteData.email || undefined,
         website_url: business.website_url,
         google_maps_url: business.google_maps_url,
         google_rating: business.google_rating,

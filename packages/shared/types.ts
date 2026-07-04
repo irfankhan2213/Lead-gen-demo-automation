@@ -72,6 +72,10 @@ export interface WebsiteScrapedData {
   menu_or_pricing?: Record<string, string>[];
   social_links?: SocialLinks;
   meta_description?: string;
+  /** Email found via mailto links or regex scan of the website / contact page */
+  email?: string;
+  /** Phone found via tel: links or regex scan of the website / contact page */
+  phone?: string;
 }
 
 export interface RedditMention {

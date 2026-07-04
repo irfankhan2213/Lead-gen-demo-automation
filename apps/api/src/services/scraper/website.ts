@@ -1,6 +1,7 @@
 /**
  * @file Website scraper — extracts brand data from a business's own website.
- * Looks for: colors, fonts, tagline, about text, services, pricing, social links.
+ * Looks for: colors, fonts, tagline, about text, services, pricing, social links,
+ * email addresses, and phone numbers.
  *
  * @param url - The business website URL to scrape
  * @returns WebsiteScrapedData object (all fields optional)
@@ -11,8 +12,44 @@ import * as cheerio from 'cheerio';
 import logger from '../../lib/logger.js';
 import type { WebsiteScrapedData, SocialLinks } from '@acquisition-engine/shared';
 
+/** Matches most common email patterns in text/HTML */
+const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+
+/** Matches common phone number formats: (555) 123-4567, +1-555-123-4567, 555.123.4567, etc. */
+const PHONE_REGEX = /(\+?\d{1,3}[\s\-.]?)?(\(?\d{3}\)?[\s\-.]?\d{3}[\s\-.]?\d{4})/g;
+
+/** Junk emails to ignore (noreply, support, wordpress, etc.) */
+const JUNK_EMAIL_PATTERNS = /noreply|no-reply|donotreply|@sentry|@example|@wordpress|@wix|placeholder/i;
+
 /**
- * Scrapes a business website for brand intelligence.
+ * Extracts all unique real emails from HTML content/text, filtering out junk.
+ */
+function extractEmails(text: string): string[] {
+  const matches = text.match(EMAIL_REGEX) ?? [];
+  const seen = new Set<string>();
+  return matches.filter((e) => {
+    const lower = e.toLowerCase();
+    if (JUNK_EMAIL_PATTERNS.test(lower)) return false;
+    if (seen.has(lower)) return false;
+    seen.add(lower);
+    return true;
+  });
+}
+
+/**
+ * Extracts the best phone number from text, preferring longer formatted numbers.
+ */
+function extractPhone(text: string): string | undefined {
+  const matches = text.match(PHONE_REGEX) ?? [];
+  const cleaned = matches
+    .map((m) => m.trim())
+    .filter((m) => m.replace(/\D/g, '').length >= 10)
+    .sort((a, b) => b.length - a.length);
+  return cleaned[0];
+}
+
+/**
+ * Scrapes a business website for brand intelligence including contact info.
  * @param url - Full URL to scrape (e.g. "https://example.com")
  * @returns Parsed brand data or empty object if scraping fails
  */
@@ -43,33 +80,25 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
 
     // ─── Extract Brand Colors ─────────────────────────────────────────────────
     const colors = new Set<string>();
-
-    // From inline styles
     $('[style]').each((_, el) => {
       const style = $(el).attr('style') ?? '';
       const hexMatches = style.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g) ?? [];
       hexMatches.forEach((c) => colors.add(c.toLowerCase()));
     });
-
-    // From CSS in <style> tags
     $('style').each((_, el) => {
       const css = $(el).html() ?? '';
       const hexMatches = css.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g) ?? [];
       hexMatches.forEach((c) => colors.add(c.toLowerCase()));
     });
-
-    // Extract theme-color meta tag
     const themeColor = $('meta[name="theme-color"]').attr('content');
     if (themeColor) colors.add(themeColor.toLowerCase());
-
-    // Filter out near-white and near-black generic colors
     const filteredColors = [...colors].filter((c) => {
       const hex = c.replace('#', '');
       const r = parseInt(hex.substring(0, 2), 16);
       const g = parseInt(hex.substring(2, 4), 16);
       const b = parseInt(hex.substring(4, 6), 16);
       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      return luminance > 0.1 && luminance < 0.9; // exclude very dark/light
+      return luminance > 0.1 && luminance < 0.9;
     });
 
     // ─── Extract Fonts ────────────────────────────────────────────────────────
@@ -87,7 +116,6 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
     const ogDesc = $('meta[property="og:description"]').attr('content') ?? '';
     const h1Text = $('h1').first().text().trim();
     const heroText = $('[class*="hero"] p, [class*="banner"] p, [class*="headline"] p').first().text().trim();
-
     const tagline = heroText || h1Text || metaDesc || ogDesc || '';
 
     // ─── Extract About Text ───────────────────────────────────────────────────
@@ -118,9 +146,7 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
     for (const sel of serviceSelectors) {
       $(sel).each((_, el) => {
         const text = $(el).text().trim();
-        if (text && text.length < 80 && !services.includes(text)) {
-          services.push(text);
-        }
+        if (text && text.length < 80 && !services.includes(text)) services.push(text);
       });
     }
 
@@ -143,6 +169,65 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
       if (name && price) pricing.push({ name, price });
     });
 
+    // ─── Extract Email from main page ─────────────────────────────────────────
+    const mailtoEmails: string[] = [];
+    $('a[href^="mailto:"]').each((_, el) => {
+      const href = $(el).attr('href') ?? '';
+      const email = href.replace(/^mailto:/i, '').split('?')[0].trim();
+      if (email && !JUNK_EMAIL_PATTERNS.test(email)) mailtoEmails.push(email);
+    });
+    const pageText = $.text();
+    const textEmails = extractEmails(pageText);
+    const allEmails = [...new Set([...mailtoEmails, ...textEmails])];
+
+    // ─── Extract Phone from main page ─────────────────────────────────────────
+    let phoneFromTel: string | undefined;
+    $('a[href^="tel:"]').each((_, el) => {
+      if (phoneFromTel) return;
+      phoneFromTel = $(el).attr('href')?.replace(/^tel:/i, '').trim();
+    });
+    const phoneFromText = extractPhone(pageText);
+    let foundPhone = phoneFromTel || phoneFromText;
+
+    // ─── Visit /contact page for deeper extraction ────────────────────────────
+    let contactEmail: string | undefined;
+    let contactPhone: string | undefined;
+    try {
+      const baseUrl = new URL(normalizedUrl);
+      const contactUrl = `${baseUrl.origin}/contact`;
+      if (contactUrl !== normalizedUrl) {
+        await page.goto(contactUrl, { waitUntil: 'domcontentloaded', timeout: 12_000 });
+        const contactHtml = await page.content();
+        const $c = cheerio.load(contactHtml);
+
+        // mailto links on contact page
+        $c('a[href^="mailto:"]').each((_, el) => {
+          if (contactEmail) return;
+          const href = $c(el).attr('href') ?? '';
+          const email = href.replace(/^mailto:/i, '').split('?')[0].trim();
+          if (email && !JUNK_EMAIL_PATTERNS.test(email)) contactEmail = email;
+        });
+
+        if (!contactEmail) {
+          const contactText = $c.text();
+          const contactEmails = extractEmails(contactText);
+          if (contactEmails.length) contactEmail = contactEmails[0];
+        }
+
+        // Phone from contact page
+        $c('a[href^="tel:"]').each((_, el) => {
+          if (contactPhone) return;
+          contactPhone = $c(el).attr('href')?.replace(/^tel:/i, '').trim();
+        });
+        if (!contactPhone) contactPhone = extractPhone($c.text());
+      }
+    } catch {
+      // Contact page may not exist — silently continue
+    }
+
+    const finalEmail = contactEmail ?? allEmails[0];
+    const finalPhone = contactPhone ?? foundPhone;
+
     const result: WebsiteScrapedData = {
       brand_colors: filteredColors.slice(0, 5),
       brand_fonts: fonts.slice(0, 3),
@@ -152,11 +237,15 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
       menu_or_pricing: pricing.slice(0, 10),
       social_links: Object.keys(socialLinks).length ? socialLinks : undefined,
       meta_description: metaDesc || undefined,
+      email: finalEmail,
+      phone: finalPhone,
     };
 
     logger.info(`Website scraped: ${normalizedUrl}`, {
       colors: result.brand_colors?.length,
       services: result.services?.length,
+      email: finalEmail ? '✓' : '✗',
+      phone: finalPhone ? '✓' : '✗',
     });
 
     return result;
