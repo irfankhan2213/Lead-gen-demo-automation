@@ -8,9 +8,10 @@ import { Worker, Job } from 'bullmq';
 import logger from '../lib/logger.js';
 import { redisConnection } from '../lib/queue.js';
 import { createSSELogger } from '../lib/sse.js';
-import { getLeadById, recordFollowUp, incrementCampaignCounter } from '../db/queries.js';
+import { getLeadById, recordFollowUp, incrementCampaignCounter, updateLeadOutreach } from '../db/queries.js';
 import { sendEmailNow, sendFollowUpEmail } from '../services/outreach/email.js';
 import { scheduleFollowUpSequence } from '../services/outreach/sequences.js';
+import { writeEmail } from '../services/ai/writeEmail.js';
 import type { OutreachJobData } from '@acquisition-engine/shared';
 
 const worker = new Worker<OutreachJobData>(
@@ -37,7 +38,15 @@ const worker = new Worker<OutreachJobData>(
     } else {
       // Send initial outreach email
       if (!lead.email_subject || !lead.email_body) {
-        throw new Error(`Lead ${leadId} has no email content — generate email first`);
+        if (!lead.demo_url) {
+          throw new Error(`Lead ${leadId} has no email content and no demo_url to generate it`);
+        }
+        log.log(`🤖 Generating email copy for ${lead.business_name}...`);
+        const generatedEmail = await writeEmail(lead, lead.demo_url);
+        lead.email_subject = generatedEmail.subject;
+        lead.email_body = generatedEmail.body;
+        await updateLeadOutreach(leadId, generatedEmail.subject, generatedEmail.body, lead.outreach_status);
+        log.success(`✅ Email copy generated`);
       }
 
       log.log(`✉️ Sending outreach to ${lead.business_name} at ${lead.email}...`);

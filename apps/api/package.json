@@ -14,6 +14,7 @@
   "dependencies": {
     "@acquisition-engine/shared": "workspace:*",
     "@anthropic-ai/sdk": "^0.26.0",
+    "@google/generative-ai": "^0.24.1",
     "@supabase/server": "^1.2.0",
     "@supabase/supabase-js": "^2.110.0",
     "bullmq": "^5.7.0",

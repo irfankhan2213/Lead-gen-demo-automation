@@ -260,6 +260,21 @@ export async function updateLeadDeployment(
 }
 
 /**
+ * Clears a lead's deployed demo URL and HTML after deletion.
+ * @param id - Lead UUID
+ */
+export async function clearLeadDemo(id: string): Promise<Lead> {
+  const rows = await query<Lead>(
+    `UPDATE leads SET
+      demo_html = NULL, demo_url = NULL, vercel_deployment_id = NULL,
+      demo_status = 'none'
+    WHERE id = $1 RETURNING *`,
+    [id]
+  );
+  return rows[0];
+}
+
+/**
  * Updates a lead's outreach fields after email generation and/or sending.
  * @param id - Lead UUID
  * @param emailSubject - Email subject line

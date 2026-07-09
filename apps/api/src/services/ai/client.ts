@@ -13,14 +13,29 @@ const groqKey = process.env.GROQ_API_KEY;
 const effectiveGroqKey = groqKey || (anthropicKey?.startsWith('gsk_') ? anthropicKey : undefined);
 const effectiveAnthropicKey = anthropicKey?.startsWith('gsk_') ? undefined : anthropicKey;
 
-/**
- * Sends a prompt to the configured LLM provider (Groq or Anthropic).
- *
- * @param prompt - The input prompt text
- * @param maxTokens - Maximum response tokens (default 1024)
- * @returns Response text content
- */
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const geminiKey = process.env.GEMINI_API_KEY;
+
 export async function callLLM(prompt: string, maxTokens = 1024): Promise<string> {
+  // 1. Try Gemini First
+  if (geminiKey) {
+    logger.info('Calling LLM via Gemini API...');
+    try {
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.2 }
+      });
+      const content = result.response.text();
+      if (content) return content;
+    } catch (err) {
+      logger.error('Gemini LLM call failed. Falling back...', { error: (err as Error).message });
+    }
+  }
+
+  // 2. Try Groq Second
   if (effectiveGroqKey) {
     const models = [
       'llama-3.3-70b-versatile',
@@ -70,26 +85,25 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
         lastError = err as Error;
       }
     }
-
-    throw lastError || new Error('The AI assistant is temporarily busy. Please try again shortly.');
   }
 
-  // Fallback to Anthropic Claude
-  logger.info('Calling LLM via Anthropic API...');
-    throw new Error('AI service configuration is incomplete. Please set the required API keys.');
+  // 3. Fallback to Anthropic Claude
+  if (effectiveAnthropicKey) {
+    logger.info('Calling LLM via Anthropic API...');
+    try {
+      const anthropic = new Anthropic({ apiKey: effectiveAnthropicKey });
+      const response = await anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: maxTokens,
+        messages: [{ role: 'user', content: prompt }],
+      });
 
-  try {
-    const anthropic = new Anthropic({ apiKey: effectiveAnthropicKey });
-    const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: maxTokens,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    const content = response.content[0];
-    return content.type === 'text' ? (content as any).text : '';
-  } catch (err) {
-    logger.error('Anthropic LLM call failed', { error: (err as Error).message });
-    throw err;
+      const content = response.content[0];
+      return content.type === 'text' ? (content as any).text : '';
+    } catch (err) {
+      logger.error('Anthropic LLM call failed', { error: (err as Error).message });
+    }
   }
+
+  throw new Error('AI service configuration is incomplete or all models failed. Please check the API keys.');
 }

@@ -14,8 +14,10 @@ import {
   getLeadById,
   getDashboardStats,
   getOutreachLogForLead,
+  clearLeadDemo,
 } from '../db/queries.js';
 import { pool } from '../db/queries.js';
+import { deleteDemoFromVercel } from '../services/hosting/vercel.js';
 import logger from '../lib/logger.js';
 
 const router = Router();
@@ -77,6 +79,28 @@ router.get('/:id/log', async (req: Request, res: Response) => {
   } catch (err) {
     logger.error('Failed to get outreach log', { id: req.params.id, error: (err as Error).message });
     res.status(500).json({ error: 'Failed to fetch log' });
+  }
+});
+
+// DELETE /api/leads/:id/demo — delete the Vercel demo and clear it from the DB
+router.delete('/:id/demo', async (req: Request, res: Response) => {
+  try {
+    const lead = await getLeadById(req.params.id);
+    if (!lead) return res.status(404).json({ error: 'Lead not found' });
+    
+    if (lead.vercel_deployment_id) {
+      try {
+        await deleteDemoFromVercel(lead.vercel_deployment_id);
+      } catch (vercelErr) {
+        logger.warn(`Failed to delete Vercel deployment for lead ${lead.id}`, { error: (vercelErr as Error).message });
+      }
+    }
+
+    const updatedLead = await clearLeadDemo(req.params.id);
+    res.json({ message: 'Demo deleted successfully', lead: updatedLead });
+  } catch (err) {
+    logger.error('Failed to delete demo', { id: req.params.id, error: (err as Error).message });
+    res.status(500).json({ error: 'Failed to delete demo' });
   }
 });
 

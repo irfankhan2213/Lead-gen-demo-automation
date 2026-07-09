@@ -64,6 +64,8 @@ export async function deployDemoToVercel(
       outputDirectory: null,
       buildCommand: null,
       installCommand: null,
+      ssoProtection: null,
+      passwordProtection: null,
     },
     target: 'production',
   };
@@ -101,4 +103,38 @@ export async function deployDemoToVercel(
   logger.info(`Deployed successfully: ${demoUrl}`, { deploymentId, projectName });
 
   return { demoUrl, deploymentId };
+}
+
+/**
+ * Deletes a demo HTML site from Vercel.
+ *
+ * @param deploymentId - Vercel deployment ID
+ */
+export async function deleteDemoFromVercel(deploymentId: string): Promise<void> {
+  const token = process.env.VERCEL_TOKEN;
+  if (!token) throw new Error('VERCEL_TOKEN not set in environment');
+
+  const teamId = process.env.VERCEL_TEAM_ID;
+  logger.info(`Deleting Vercel deployment: ${deploymentId}`);
+
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  const url = teamId
+    ? `${VERCEL_API}/v13/deployments/${deploymentId}?teamId=${teamId}`
+    : `${VERCEL_API}/v13/deployments/${deploymentId}`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers,
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    logger.error('Vercel deployment deletion failed', { status: response.status, error });
+    throw new Error(`Vercel delete error ${response.status}: ${error}`);
+  }
+
+  logger.info(`Deleted successfully: ${deploymentId}`);
 }

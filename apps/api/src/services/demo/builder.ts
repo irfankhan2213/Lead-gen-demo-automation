@@ -99,7 +99,7 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
 
   // Build Google Maps embed URL
   const mapsQuery = encodeURIComponent(`${lead.business_name ?? ''} ${lead.address ?? lead.city}`);
-  const mapsEmbed = `https://www.google.com/maps/embed/v1/place?key=YOUR_KEY&q=${mapsQuery}`;
+  const mapsEmbed = `https://maps.google.com/maps?q=${mapsQuery}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 
   // Replacement map
   const tokens: Record<string, string> = {

@@ -26,7 +26,7 @@ BUSINESS INFO:
 - Niche: ${lead.niche}
 - City: ${lead.city}
 - Tagline: ${lead.tagline ?? 'none'}
-- Services: ${(lead.services ?? []).slice(0, 6).join(', ')}
+- Services: ${(lead.services && lead.services.length > 0) ? lead.services.slice(0, 6).join(', ') : 'none (Please invent 3 realistic, highly specific services for this niche)'}
 - Rating: ${lead.google_rating ? `${lead.google_rating}/5 (${lead.google_review_count} reviews)` : 'not available'}
 - Brand DNA: ${lead.brand_dna ?? 'professional local business'}
 - Tone: ${lead.tone ?? 'professional'}
@@ -43,11 +43,11 @@ Return ONLY valid JSON with this structure:
   "about_para_1": "First about paragraph (2-3 sentences, warm and specific)",
   "about_para_2": "Second about paragraph (1-2 sentences, mention city and local pride)",
   "services_heading": "Our Services heading",
-  "service_1_name": "${(lead.services ?? ['Service 1'])[0]}",
+  "service_1_name": "${(lead.services && lead.services.length > 0) ? lead.services[0] : 'Specific Service 1'}",
   "service_1_desc": "1 sentence description of service 1",
-  "service_2_name": "${(lead.services ?? ['Service', 'Service 2'])[1] ?? 'Service 2'}",
+  "service_2_name": "${(lead.services && lead.services.length > 1) ? lead.services[1] : 'Specific Service 2'}",
   "service_2_desc": "1 sentence description of service 2",
-  "service_3_name": "${(lead.services ?? ['Service', 'Service', 'Service 3'])[2] ?? 'Service 3'}",
+  "service_3_name": "${(lead.services && lead.services.length > 2) ? lead.services[2] : 'Specific Service 3'}",
   "service_3_desc": "1 sentence description of service 3",
   "testimonial_heading": "What Our Clients Say",
   "testimonial_1": "A realistic positive review from a happy customer (1-2 sentences)",
