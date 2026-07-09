@@ -61,7 +61,12 @@ Return ONLY valid JSON with this structure:
 
 Write in the tone: ${lead.tone ?? 'professional'}. 
 Be specific to the business — mention ${lead.city} where natural.
-Do NOT use placeholder text. Make it sound like a real, professional site.`;
+Do NOT use placeholder text. Make it sound like a real, professional site.
+
+CRITICAL JSON FORMATTING RULES:
+- Return ONLY valid JSON, nothing else. No markdown blocks.
+- Escape all newlines in the text using \\n. Do not use literal newlines inside the JSON string.
+- Escape any quotes using \\".`;
 
   const text = await callLLM(prompt, 2048);
   const jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();

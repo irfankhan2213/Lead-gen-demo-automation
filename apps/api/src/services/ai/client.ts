@@ -26,7 +26,7 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const result = await model.generateContent({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.2 }
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.2, responseMimeType: 'application/json' }
       });
       const content = result.response.text();
       if (content) return content;
@@ -59,6 +59,7 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
             messages: [{ role: 'user', content: prompt }],
             max_tokens: maxTokens,
             temperature: 0.2,
+            response_format: { type: "json_object" }
           }),
         });
 

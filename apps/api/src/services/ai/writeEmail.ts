@@ -49,7 +49,11 @@ BUSINESS DATA:
 
 DEMO URL: ${demoUrl}
 
-Return ONLY valid JSON — no markdown, no explanation:
+CRITICAL JSON FORMATTING RULES:
+- Return ONLY valid JSON, nothing else. No markdown blocks.
+- Escape all newlines in the body text using \\n. Do not use literal newlines inside the JSON string.
+- Escape any quotes using \\".
+
 {
   "subject": "...",
   "body": "..."
@@ -103,7 +107,11 @@ ${templates[followUpNumber]}
 
 BUSINESS: ${lead.business_name} | ${lead.city} | ${lead.niche}
 
-Return ONLY valid JSON:
+CRITICAL JSON FORMATTING RULES:
+- Return ONLY valid JSON, nothing else. No markdown blocks.
+- Escape all newlines in the body text using \\n. Do not use literal newlines inside the JSON string.
+- Escape any quotes using \\".
+
 {
   "subject": "Re: [original subject or short new subject]",
   "body": "..."

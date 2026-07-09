@@ -73,7 +73,12 @@ RECOMMENDED_TEMPLATE must be one of: restaurant | clinic | gym | salon | generic
 
 Be specific with the headline and CTA — reference their actual business name, location, and niche.
 If they have no website, score them 8–10.
-If they have poor Google presence (low reviews, bad rating), score them 7–9.`;
+If they have poor Google presence (low reviews, bad rating), score them 7–9.
+
+CRITICAL JSON FORMATTING RULES:
+- Return ONLY valid JSON, nothing else. No markdown blocks.
+- Escape all newlines in the text using \\n. Do not use literal newlines inside the JSON string.
+- Escape any quotes using \\".`;
 
   try {
     const text = await callLLM(prompt, 1024);
