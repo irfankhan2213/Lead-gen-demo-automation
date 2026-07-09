@@ -48,7 +48,7 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
 
   let businesses: GoogleMapsBusiness[] = [];
   try {
-    businesses = await scrapeGoogleMaps(niche, city, 20);
+    businesses = await scrapeGoogleMaps(niche, city, input.limit ?? 20);
     log.success(`✅ Found ${businesses.length} businesses on Google Maps`);
   } catch (err) {
     log.error(`❌ Google Maps scrape failed: ${(err as Error).message}`);

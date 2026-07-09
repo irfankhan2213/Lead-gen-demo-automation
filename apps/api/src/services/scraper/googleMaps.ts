@@ -28,7 +28,7 @@ const delay = (base = DELAY_MS) =>
 export async function scrapeGoogleMaps(
   niche: string,
   city: string,
-  maxResults = 20
+  maxResults: number | 'unlimited' = 20
 ): Promise<GoogleMapsBusiness[]> {
   const browser = await chromium.launch({
     headless: true,
@@ -69,10 +69,23 @@ export async function scrapeGoogleMaps(
 
     // Scroll to load more results
     const resultsPanel = page.locator('[role="feed"]').first();
-    for (let i = 0; i < 5; i++) {
+    const maxScrolls = maxResults === 'unlimited' ? 50 : Math.ceil(maxResults / 5) + 2;
+    let previousHeight = 0;
+    
+    for (let i = 0; i < maxScrolls; i++) {
       try {
-        await resultsPanel.evaluate((el) => ((el as any).scrollTop += 600));
+        const currentHeight = await resultsPanel.evaluate((el) => {
+          (el as any).scrollTop += 800;
+          return (el as any).scrollHeight;
+        });
         await delay(800);
+        
+        // Break early if we hit the bottom of the list and height stops growing
+        if (currentHeight === previousHeight && i > 3) {
+          logger.info('Reached end of Google Maps results');
+          break;
+        }
+        previousHeight = currentHeight as number;
       } catch { break; }
     }
 
@@ -91,7 +104,7 @@ export async function scrapeGoogleMaps(
 
     for (const selector of listingSelectors) {
       $(selector).each((_, el) => {
-        if (businesses.length >= maxResults) return;
+        if (maxResults !== 'unlimited' && businesses.length >= maxResults) return;
 
         const $el = $(el);
         const name = $el.find('.qBF1Pd, .fontHeadlineSmall, h3').first().text().trim();
@@ -125,8 +138,9 @@ export async function scrapeGoogleMaps(
     if (businesses.length < 3) {
       logger.warn('Cheerio parsing got few results, trying Playwright locators...');
       const items = await page.locator('a[href*="/maps/place/"]').all();
-
-      for (const item of items.slice(0, maxResults)) {
+      
+      const limit = maxResults === 'unlimited' ? items.length : maxResults;
+      for (const item of items.slice(0, limit)) {
         try {
           const name = await item.locator('.qBF1Pd, .fontHeadlineSmall').first().textContent({ timeout: 1000 }) ?? '';
           const href = await item.getAttribute('href') ?? '';
@@ -147,7 +161,8 @@ export async function scrapeGoogleMaps(
     logger.info(`Google Maps scraper found ${businesses.length} businesses for "${niche}" in "${city}"`);
 
     // Enrich each listing with phone and website by visiting detail pages
-    for (const business of businesses.slice(0, maxResults)) {
+    const businessesToEnrich = maxResults === 'unlimited' ? businesses : businesses.slice(0, maxResults);
+    for (const business of businessesToEnrich) {
       try {
         await enrichBusinessFromDetailPage(page, business);
         await delay(1200);

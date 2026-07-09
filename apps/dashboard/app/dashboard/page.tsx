@@ -60,6 +60,7 @@ function NewCampaignModal({
 }) {
   const [niche, setNiche] = useState('');
   const [city, setCity] = useState('');
+  const [limit, setLimit] = useState<string>('20');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -74,7 +75,11 @@ function NewCampaignModal({
       const res = await fetch(`${API_URL}/api/scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ niche: niche.trim(), city: city.trim() }),
+        body: JSON.stringify({ 
+          niche: niche.trim(), 
+          city: city.trim(),
+          limit: limit === 'unlimited' ? 'unlimited' : parseInt(limit, 10),
+        }),
       });
 
       if (!res.ok) {
@@ -122,6 +127,20 @@ function NewCampaignModal({
               onChange={e => setCity(e.target.value)}
               required
             />
+          </div>
+          <div>
+            <label className="label">Leads to Generate</label>
+            <select 
+              className="input bg-[var(--bg-elevated)]"
+              value={limit}
+              onChange={e => setLimit(e.target.value)}
+            >
+              <option value="10">10 Leads</option>
+              <option value="20">20 Leads</option>
+              <option value="50">50 Leads</option>
+              <option value="100">100 Leads</option>
+              <option value="unlimited">Unlimited (Scrape until dead end)</option>
+            </select>
           </div>
 
           {error && (

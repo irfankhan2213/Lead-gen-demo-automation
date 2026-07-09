@@ -28,6 +28,7 @@ const scrapeSchema = z.object({
   city: z.string().min(2).max(100).trim(),
   businessName: z.string().max(255).trim().optional(),
   campaignName: z.string().max(255).trim().optional(),
+  limit: z.union([z.number().min(1), z.literal('unlimited')]).optional().default(20),
 });
 
 /**
@@ -37,7 +38,7 @@ const scrapeSchema = z.object({
  */
 router.post('/', scrapeRateLimit, async (req: Request, res: Response) => {
   try {
-    const { niche, city, businessName, campaignName } = scrapeSchema.parse(req.body);
+    const { niche, city, businessName, campaignName, limit } = scrapeSchema.parse(req.body);
     const jobId = uuidv4();
 
     // Create a campaign record
@@ -54,6 +55,7 @@ router.post('/', scrapeRateLimit, async (req: Request, res: Response) => {
       city,
       businessName,
       campaignId: campaign.id,
+      limit,
     }, { jobId });
 
     logger.info(`Scrape job queued: ${jobId}`, { niche, city, campaignId: campaign.id });

@@ -48,6 +48,8 @@ export interface ScrapeInput {
   businessName?: string;
   /** Optional campaign ID to associate leads with */
   campaignId?: string;
+  /** Optional limit on how many businesses to scrape */
+  limit?: number | 'unlimited';
 }
 
 export interface GoogleMapsBusiness {
@@ -223,6 +225,7 @@ export interface ScrapeRequest {
   city: string;
   businessName?: string;
   campaignId?: string;
+  limit?: number | 'unlimited';
 }
 
 export interface ScrapeResponse {
@@ -276,6 +279,7 @@ export interface ScrapeJobData {
   city: string;
   businessName?: string;
   campaignId?: string;
+  limit?: number | 'unlimited';
 }
 
 export interface GenerateJobData {
