@@ -195,14 +195,16 @@ export async function updateLeadAIAnalysis(
     hero_subline: string;
     cta_text: string;
     primary_colors?: string[];
+    estimated_revenue_potential: 'Low' | 'Medium' | 'High';
   }
 ): Promise<Lead> {
   const rows = await query<Lead>(
     `UPDATE leads SET
       brand_dna = $1, tone = $2, pain_points = $3, opportunity_score = $4,
       opportunity_reason = $5, recommended_template = $6, hero_headline = $7,
-      hero_subline = $8, cta_text = $9, brand_colors = COALESCE($10, brand_colors)
-    WHERE id = $11 RETURNING *`,
+      hero_subline = $8, cta_text = $9, brand_colors = COALESCE($10, brand_colors),
+      estimated_revenue_potential = $11
+    WHERE id = $12 RETURNING *`,
     [
       analysis.brand_dna,
       analysis.tone,
@@ -214,6 +216,7 @@ export async function updateLeadAIAnalysis(
       analysis.hero_subline,
       analysis.cta_text,
       analysis.primary_colors ? JSON.stringify(analysis.primary_colors) : null,
+      analysis.estimated_revenue_potential,
       id,
     ]
   );

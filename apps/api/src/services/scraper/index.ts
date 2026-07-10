@@ -79,12 +79,12 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
       const yelpData = yelpResult.status === 'fulfilled' ? yelpResult.value : '';
       const igData = igResult.status === 'fulfilled' ? igResult.value : {};
 
-      // ─── Quality Gate: skip leads without contact info ────────────────────
+      // ─── Quality Gate: STRICT EMAIL ENFORCEMENT ────────────────────────────
       const finalPhone = websiteData.phone || business.phone || undefined;
       const finalEmail = websiteData.email || undefined;
 
-      if (!finalEmail && !finalPhone) {
-        log.warn(`⏭️ Skipping ${business.name} — no email or phone found`);
+      if (!finalEmail) {
+        log.warn(`⏭️ Skipping ${business.name} — NO EMAIL FOUND. Email is strictly required.`);
         continue;
       }
 

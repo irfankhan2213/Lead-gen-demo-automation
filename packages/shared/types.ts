@@ -108,6 +108,7 @@ export interface AIAnalysis {
   hero_headline: string;
   hero_subline: string;
   cta_text: string;
+  estimated_revenue_potential: 'Low' | 'Medium' | 'High';
 }
 
 export interface GeneratedEmail {
@@ -155,6 +156,7 @@ export interface Lead {
   hero_headline?: string;
   hero_subline?: string;
   cta_text?: string;
+  estimated_revenue_potential?: 'Low' | 'Medium' | 'High';
   // Demo
   demo_status: DemoStatus;
   demo_html?: string;

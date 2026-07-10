@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS leads (
   hero_headline TEXT,
   hero_subline TEXT,
   cta_text TEXT,
+  estimated_revenue_potential VARCHAR(50),
 
   -- Demo
   demo_status VARCHAR(50) NOT NULL DEFAULT 'none',

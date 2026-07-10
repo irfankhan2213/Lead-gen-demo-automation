@@ -43,8 +43,8 @@ export async function analyzesBusiness(businessData: Partial<LeadData>): Promise
     instagram_bio: businessData.instagram_bio,
   };
 
-  const prompt = `You are a senior digital strategist analyzing a local business for outreach purposes.
-A digital agency wants to build this business a free demo website as a cold outreach hook.
+  const prompt = `You are a B2B sales evaluator and digital strategist analyzing a local business for outreach purposes.
+A digital agency wants to build this business a free demo website as a cold outreach hook to eventually sell them high-ticket SEO or web design services.
 
 BUSINESS DATA:
 ${JSON.stringify(dataForPrompt, null, 2)}
@@ -56,24 +56,27 @@ Analyze this business and return ONLY valid JSON with exactly this structure —
   "tone": "professional",
   "pain_points": ["specific weakness 1", "specific weakness 2", "specific weakness 3"],
   "opportunity_score": 8,
-  "opportunity_reason": "one sentence explaining the score — why do they need a better website?",
+  "opportunity_reason": "one sentence explaining the score — why do they need a better website and are they a profitable lead?",
   "recommended_template": "restaurant",
   "hero_headline": "a powerful, specific headline for their demo site",
   "hero_subline": "supporting line under headline, specific to their business",
-  "cta_text": "call to action button text specific to their business"
+  "cta_text": "call to action button text specific to their business",
+  "estimated_revenue_potential": "Medium"
 }
 
 SCORING GUIDE for opportunity_score (1–10):
-- 1–3: Business has a great modern website already — skip
-- 4–6: Website exists but has issues — manual review
-- 7–10: No website OR website is very poor — auto-generate demo
+- 1–2: Fake/Spam business, extremely low budget, or no clear services — SKIP
+- 3–4: Business has a great modern website already, or very low LTV — SKIP
+- 5–6: Website exists but has issues, medium LTV — manual review
+- 7–10: High LTV (e.g. MedSpa, Lawyers, High-End Services), poor/no website, clearly established business — AUTO-GENERATE DEMO
 
 TONE must be one of: professional | playful | bold | warm | luxury | minimal
 RECOMMENDED_TEMPLATE must be one of: restaurant | clinic | gym | salon | generic
+ESTIMATED_REVENUE_POTENTIAL must be one of: Low | Medium | High
 
 Be specific with the headline and CTA — reference their actual business name, location, and niche.
-If they have no website, score them 8–10.
-If they have poor Google presence (low reviews, bad rating), score them 7–9.
+CRITICAL: If the business looks like spam, a residential home, or has zero digital footprint indicating they are a real established business, score them very low (1-3) and set revenue potential to Low.
+If they are a high-ticket business (e.g. they sell expensive services/products), set revenue potential to High.
 
 CRITICAL JSON FORMATTING RULES:
 - Return ONLY valid JSON, nothing else. No markdown blocks.

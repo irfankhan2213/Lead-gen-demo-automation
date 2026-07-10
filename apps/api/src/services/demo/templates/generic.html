@@ -7,243 +7,340 @@
   <meta name="description" content="{{META_DESCRIPTION}}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
       --primary: {{PRIMARY_COLOR}};
       --accent: {{ACCENT_COLOR}};
-      --dark: #1a1a1a;
-      --text: #333;
-      --text-light: #666;
-      --bg: #fffdf9;
-      --card-bg: #fff;
-      --border: #e8e0d0;
+      --dark: #0f172a;
+      --dark-light: #1e293b;
+      --text: #334155;
+      --text-light: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.4);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.7;
+      overflow-x: hidden;
     }
+
+    /* ── Utilities ── */
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    h1, h2, h3, h4, .serif { font-family: 'Playfair Display', serif; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 1rem;
+      padding: 0.4rem 1rem;
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
+      border-radius: 50px;
+    }
+    section { padding: 8rem 0; position: relative; }
 
     /* ── Nav ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0;
-      background: rgba(255,253,249,0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex; align-items: center; justify-content: space-between;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1rem 0;
       z-index: 1000;
+      transition: all 0.3s ease;
     }
-    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--dark); }
-    .nav-tagline { font-size: 0.8rem; color: var(--text-light); font-style: italic; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--dark); letter-spacing: -0.02em; }
+    .nav-tagline { font-size: 0.85rem; color: var(--text-light); font-weight: 500; }
     .nav-cta {
       background: var(--primary);
-      color: #fff; padding: 0.6rem 1.4rem;
-      border-radius: 50px; font-size: 0.9rem; font-weight: 500;
+      color: #fff; padding: 0.7rem 1.6rem;
+      border-radius: 50px; font-size: 0.95rem; font-weight: 600;
       text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
     }
-    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); opacity: 0.95; }
 
     /* ── Hero ── */
     .hero {
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--dark) 0%, #2d1a0e 60%, var(--primary) 100%);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 4rem;
+      display: flex; align-items: center; justify-content: center;
       position: relative;
+      padding-top: 5rem;
+      background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05), transparent 25%),
+                  radial-gradient(circle at 85% 30%, rgba(255,255,255,0.05), transparent 25%);
+      background-color: var(--dark);
       overflow: hidden;
     }
     .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--dark) 0%, #1e293b 50%, var(--primary) 150%);
+      opacity: 0.9; z-index: 0;
+    }
+    /* Abstract mesh gradient blob */
+    .hero-blob {
+      position: absolute; top: -20%; right: -10%;
+      width: 60vw; height: 60vw;
+      background: var(--primary);
+      border-radius: 50%;
+      filter: blur(120px); opacity: 0.4;
+      animation: float 10s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    .hero-blob-2 {
+      position: absolute; bottom: -20%; left: -10%;
+      width: 50vw; height: 50vw;
+      background: var(--accent);
+      border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: float 12s ease-in-out infinite alternate-reverse;
+      z-index: 0;
+    }
+    @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-30px, 30px) scale(1.1); } }
+
+    .hero-content {
+      position: relative; z-index: 1; text-align: center; max-width: 900px;
+      padding: 0 2rem;
     }
     .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.9);
-      padding: 0.4rem 1rem; border-radius: 50px;
-      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.95);
+      padding: 0.5rem 1.25rem; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-size: clamp(3rem, 7vw, 5.5rem);
       color: #fff; line-height: 1.1;
-      margin-bottom: 1.5rem; max-width: 800px;
+      margin-bottom: 1.5rem; letter-spacing: -0.02em;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.2);
     }
     .hero p {
-      font-size: 1.2rem; color: rgba(255,255,255,0.75);
-      max-width: 560px; margin-bottom: 2.5rem;
+      font-size: clamp(1.1rem, 2vw, 1.3rem); color: rgba(255,255,255,0.85);
+      max-width: 600px; margin: 0 auto 3rem; font-weight: 300;
     }
-    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
-      background: var(--accent, var(--primary));
-      color: #fff; padding: 1rem 2.4rem;
-      border-radius: 50px; font-size: 1rem; font-weight: 600;
+      background: #fff; color: var(--dark);
+      padding: 1.1rem 2.5rem; border-radius: 50px;
+      font-size: 1.05rem; font-weight: 700;
       text-decoration: none; border: none; cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255,255,255,0.3); }
     .btn-outline {
-      background: transparent; color: #fff;
-      border: 2px solid rgba(255,255,255,0.4);
-      padding: 1rem 2.4rem; border-radius: 50px;
-      font-size: 1rem; text-decoration: none;
-      transition: all 0.2s;
+      background: rgba(255,255,255,0.05); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px);
+      padding: 1.1rem 2.5rem; border-radius: 50px;
+      font-size: 1.05rem; font-weight: 600; text-decoration: none;
+      transition: all 0.3s ease;
     }
-    .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); }
+    .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.6); transform: translateY(-2px); }
 
     /* ── Stats Bar ── */
+    .stats-wrapper {
+      margin-top: -4rem; position: relative; z-index: 10;
+      padding: 0 2rem;
+    }
     .stats-bar {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 2rem;
-      display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap;
+      max-width: 1000px; margin: 0 auto;
+      background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px; padding: 2.5rem;
+      display: flex; justify-content: space-around; gap: 2rem; flex-wrap: wrap;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.05);
     }
     .stat { text-align: center; }
-    .stat-value { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary); font-weight: 700; }
-    .stat-label { font-size: 0.85rem; color: var(--text-light); }
-
-    /* ── Sections ── */
-    section { padding: 5rem 2rem; }
-    .container { max-width: 1100px; margin: 0 auto; }
-    .section-tag {
-      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em;
-      text-transform: uppercase; color: var(--primary);
-      margin-bottom: 0.75rem;
-    }
-    h2 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--dark); line-height: 1.2; }
+    .stat-value { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--primary); font-weight: 700; line-height: 1.2; }
+    .stat-label { font-size: 0.9rem; color: var(--text-light); font-weight: 500; margin-top: 0.25rem; }
 
     /* ── About ── */
-    .about { background: var(--bg); }
-    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .about h2 { font-size: clamp(2.5rem, 4vw, 3.5rem); color: var(--dark); line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+    .about-img-wrapper { position: relative; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
     .about-img {
-      border-radius: 16px; overflow: hidden;
-      background: linear-gradient(135deg, var(--primary), var(--dark));
-      aspect-ratio: 4/3;
-      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .about-img::after {
+      content: ''; position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover;
+      opacity: 0.4; mix-blend-mode: overlay;
     }
     .about-img-placeholder {
-      font-family: 'Playfair Display', serif;
-      font-size: 4rem; color: rgba(255,255,255,0.4);
+      font-family: 'Playfair Display', serif; font-size: 6rem; color: #fff;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; z-index: 2;
     }
-    .about-content p { color: var(--text-light); margin-top: 1.5rem; font-size: 1.05rem; }
-    .about-content p + p { margin-top: 1rem; }
-
+    .about-content p { color: var(--text-light); font-size: 1.1rem; margin-bottom: 1.5rem; }
+    
     /* ── Services ── */
-    .services { background: var(--dark); }
-    .services h2 { color: #fff; }
-    .services .section-tag { color: var(--accent, var(--primary)); }
-    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .services { background: #fff; }
+    .services-header { text-align: center; max-width: 600px; margin: 0 auto 4rem; }
+    .services h2 { font-size: clamp(2.5rem, 4vw, 3.5rem); color: var(--dark); letter-spacing: -0.02em; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
     .service-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px; padding: 2rem;
-      transition: transform 0.2s, background 0.2s;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 24px; padding: 3rem 2rem;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative; overflow: hidden;
+      z-index: 1;
     }
-    .service-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+    }
+    .service-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); background: #fff; }
+    .service-card:hover::before { transform: scaleX(1); }
     .service-icon {
-      width: 48px; height: 48px; background: var(--primary);
-      border-radius: 12px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; margin-bottom: 1.2rem;
+      width: 60px; height: 60px;
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
+      color: var(--primary);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin-bottom: 1.5rem;
+      transition: transform 0.3s ease;
     }
-    .service-card h3 { color: #fff; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .service-card p { color: rgba(255,255,255,0.6); font-size: 0.95rem; }
+    .service-card:hover .service-icon { transform: scale(1.1) rotate(-5deg); }
+    .service-card h3 { color: var(--dark); font-size: 1.3rem; margin-bottom: 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
+    .service-card p { color: var(--text-light); font-size: 1rem; line-height: 1.6; }
 
     /* ── Testimonials ── */
-    .testimonials { background: var(--bg); }
-    .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .testimonials { background: var(--bg); position: relative; overflow: hidden; }
+    .test-blob {
+      position: absolute; width: 400px; height: 400px;
+      background: var(--accent); opacity: 0.1; filter: blur(80px);
+      border-radius: 50%; top: -100px; right: -100px;
+    }
+    .testimonials-header { text-align: center; margin-bottom: 4rem; position: relative; z-index: 2; }
+    .testimonials-header h2 { font-size: clamp(2.5rem, 4vw, 3.5rem); color: var(--dark); }
+    .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; position: relative; z-index: 2; }
     .testimonial-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px; padding: 2rem;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
     }
-    .stars { color: #f59e0b; font-size: 1.1rem; margin-bottom: 1rem; }
-    .testimonial-card p { color: var(--text); font-style: italic; margin-bottom: 1rem; }
-    .testimonial-author { font-weight: 600; color: var(--text-light); font-size: 0.9rem; }
-
+    .stars { color: #fbbf24; font-size: 1.2rem; margin-bottom: 1.5rem; letter-spacing: 2px; }
+    .testimonial-card p { color: var(--text); font-size: 1.1rem; font-style: italic; margin-bottom: 2rem; line-height: 1.8; }
+    .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+    .author-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-light); font-size: 1.2rem; }
+    .author-info h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; color: var(--dark); font-weight: 700; margin: 0; }
+    
     /* ── CTA Section ── */
-    .cta-section {
-      background: linear-gradient(135deg, var(--primary), var(--dark));
-      text-align: center; padding: 6rem 2rem;
+    .cta-section { padding: 0 2rem 8rem; }
+    .cta-inner {
+      max-width: 1000px; margin: 0 auto;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      border-radius: 32px; padding: 5rem 3rem; text-align: center;
+      position: relative; overflow: hidden;
+      box-shadow: 0 24px 50px rgba(0,0,0,0.15);
     }
-    .cta-section h2 { color: #fff; margin-bottom: 1rem; }
-    .cta-section p { color: rgba(255,255,255,0.8); font-size: 1.1rem; margin-bottom: 2.5rem; }
+    .cta-inner::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .cta-inner h2 { color: #fff; font-size: clamp(2.5rem, 4vw, 3.5rem); margin-bottom: 1.5rem; position: relative; z-index: 2; }
+    .cta-inner p { color: rgba(255,255,255,0.8); font-size: 1.2rem; margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto; position: relative; z-index: 2; }
+    .cta-inner .btn-primary { position: relative; z-index: 2; }
 
     /* ── Contact ── */
-    .contact { background: var(--bg); }
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-    .contact-info p { color: var(--text-light); margin-top: 1.5rem; }
-    .contact-details { margin-top: 2rem; }
-    .contact-item { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: var(--text); }
-    .contact-icon { width: 40px; height: 40px; background: var(--primary); color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .contact-form { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark); }
+    .contact { background: #fff; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; }
+    .contact-info h2 { font-size: clamp(2.5rem, 4vw, 3.5rem); color: var(--dark); margin-bottom: 1.5rem; }
+    .contact-info p { color: var(--text-light); font-size: 1.1rem; margin-bottom: 3rem; }
+    .contact-item { display: flex; align-items: flex-start; gap: 1.25rem; margin-bottom: 2rem; }
+    .contact-icon {
+      width: 48px; height: 48px; background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
+      color: var(--primary); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;
+    }
+    .contact-text h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.25rem; }
+    .contact-text p { color: var(--text-light); font-size: 1rem; margin: 0; }
+    
+    .contact-form {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 24px; padding: 3rem;
+    }
+    .contact-form h3 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 2rem; color: var(--dark); }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark-light); }
     .form-group input, .form-group textarea {
-      width: 100%; padding: 0.875rem 1rem;
-      border: 1px solid var(--border); border-radius: 10px;
+      width: 100%; padding: 1rem 1.25rem;
+      border: 1px solid var(--border); border-radius: 12px;
       font-family: inherit; font-size: 1rem; color: var(--dark);
-      background: var(--bg); transition: border-color 0.2s;
+      background: #fff; transition: all 0.3s ease;
     }
-    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
-    .form-group textarea { min-height: 120px; resize: vertical; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 99, 102, 241), 0.1); }
+    .form-group textarea { min-height: 140px; resize: vertical; }
     .form-submit {
-      width: 100%; padding: 1rem;
+      width: 100%; padding: 1.25rem;
       background: var(--primary); color: #fff;
-      border: none; border-radius: 10px;
-      font-family: inherit; font-size: 1rem; font-weight: 600;
-      cursor: pointer; transition: opacity 0.2s;
+      border: none; border-radius: 12px;
+      font-family: inherit; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: all 0.3s ease;
+      margin-top: 1rem;
     }
-    .form-submit:hover { opacity: 0.9; }
-
-    /* ── Map ── */
-    .map-embed { border-radius: 16px; overflow: hidden; height: 300px; background: var(--border); margin-top: 2rem; }
-    .map-embed iframe { width: 100%; height: 100%; border: none; }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.25); }
 
     /* ── Footer ── */
     footer {
-      background: var(--dark); color: rgba(255,255,255,0.6);
-      padding: 2.5rem; text-align: center;
+      background: var(--dark); color: rgba(255,255,255,0.7);
+      padding: 4rem 2rem 6rem; text-align: center;
     }
-    footer .footer-brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 1.2rem; margin-bottom: 0.5rem; }
-    footer p { font-size: 0.875rem; }
-    .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0; flex-wrap: wrap; }
-    .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
-    .footer-links a:hover { color: rgba(255,255,255,0.9); }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+    .footer-brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 2rem; margin-bottom: 1rem; }
+    .footer-links { display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; }
+    .footer-links a { color: #fff; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-bottom { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; font-size: 0.9rem; }
 
     /* ── Demo Banner ── */
     .demo-banner {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: linear-gradient(90deg, #6366f1, #8b5cf6);
-      color: #fff; padding: 0.75rem 1.5rem;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+      color: #fff; padding: 0.8rem 1.5rem;
       display: flex; align-items: center; justify-content: center;
-      gap: 1rem; font-size: 0.9rem; z-index: 9999;
+      gap: 1.5rem; font-size: 0.95rem; z-index: 9999;
       flex-wrap: wrap; text-align: center;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
     }
     .demo-banner strong { font-weight: 700; }
     .demo-banner a {
       background: #fff; color: #6366f1;
-      padding: 0.4rem 1rem; border-radius: 50px;
+      padding: 0.5rem 1.25rem; border-radius: 50px;
       font-weight: 700; text-decoration: none; font-size: 0.85rem;
-      transition: opacity 0.2s;
+      transition: transform 0.2s;
     }
-    .demo-banner a:hover { opacity: 0.9; }
+    .demo-banner a:hover { transform: translateY(-2px); }
 
+    @media (max-width: 992px) {
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-img { aspect-ratio: 16/9; }
+      .hero h1 { font-size: 3.5rem; }
+      .stats-bar { padding: 2rem; gap: 1.5rem; }
+    }
     @media (max-width: 768px) {
-      .about-grid, .contact-grid { grid-template-columns: 1fr; }
-      .stats-bar { gap: 2rem; }
-      nav { padding: 1rem; }
       .nav-tagline { display: none; }
+      .hero { padding-top: 6rem; }
+      .hero h1 { font-size: 2.8rem; }
+      .stat-value { font-size: 2rem; }
+      section { padding: 5rem 0; }
     }
   </style>
 </head>
@@ -251,55 +348,66 @@
 
   <!-- Navigation -->
   <nav>
-    <div>
-      <div class="nav-logo">{{BUSINESS_NAME}}</div>
-      <div class="nav-tagline">{{NAV_TAGLINE}}</div>
+    <div class="container nav-inner">
+      <div>
+        <div class="nav-logo">{{BUSINESS_NAME}}</div>
+        <div class="nav-tagline">{{NAV_TAGLINE}}</div>
+      </div>
+      <a href="#contact" class="nav-cta">{{CTA_PRIMARY}}</a>
     </div>
-    <a href="#contact" class="nav-cta">{{CTA_PRIMARY}}</a>
   </nav>
 
   <!-- Hero -->
-  <section class="hero">
-    <div class="hero-badge">📍 {{CITY}}</div>
-    <h1>{{HERO_HEADLINE}}</h1>
-    <p>{{HERO_SUBLINE}}</p>
-    <div class="hero-actions">
-      <a href="#contact" class="btn-primary" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
-      <a href="#about" class="btn-outline" id="hero-cta-secondary">{{CTA_SECONDARY}}</a>
+  <header class="hero">
+    <div class="hero-blob"></div>
+    <div class="hero-blob-2"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><span>📍</span> {{CITY}}</div>
+      <h1>{{HERO_HEADLINE}}</h1>
+      <p>{{HERO_SUBLINE}}</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
+        <a href="#services" class="btn-outline" id="hero-cta-secondary">{{CTA_SECONDARY}}</a>
+      </div>
     </div>
-  </section>
+  </header>
 
   <!-- Stats Bar -->
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-value">{{GOOGLE_RATING}}⭐</div>
-      <div class="stat-label">Google Rating</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">{{REVIEW_COUNT}}+</div>
-      <div class="stat-label">Happy Customers</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">{{YEARS_EST}}</div>
-      <div class="stat-label">Years Serving {{CITY}}</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">{{SERVICE_COUNT}}+</div>
-      <div class="stat-label">Services Offered</div>
+  <div class="stats-wrapper">
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-value">{{GOOGLE_RATING}}⭐</div>
+        <div class="stat-label">Google Rating</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">{{REVIEW_COUNT}}+</div>
+        <div class="stat-label">Happy Customers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">{{YEARS_EST}}</div>
+        <div class="stat-label">Years Serving {{CITY}}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">{{SERVICE_COUNT}}+</div>
+        <div class="stat-label">Services Offered</div>
+      </div>
     </div>
   </div>
 
   <!-- About -->
   <section class="about" id="about">
     <div class="container about-grid">
-      <div class="about-img">
-        <div class="about-img-placeholder">{{INITIAL}}</div>
+      <div class="about-img-wrapper">
+        <div class="about-img">
+          <div class="about-img-placeholder">{{INITIAL}}</div>
+        </div>
       </div>
       <div class="about-content">
         <div class="section-tag">About Us</div>
         <h2>{{ABOUT_HEADING}}</h2>
         <p>{{ABOUT_PARA_1}}</p>
         <p>{{ABOUT_PARA_2}}</p>
+        <a href="#contact" class="btn-primary" style="display:inline-block;margin-top:1.5rem;background:var(--primary);color:#fff">Work With Us</a>
       </div>
     </div>
   </section>
@@ -307,21 +415,23 @@
   <!-- Services -->
   <section class="services" id="services">
     <div class="container">
-      <div class="section-tag">What We Offer</div>
-      <h2>{{SERVICES_HEADING}}</h2>
+      <div class="services-header">
+        <div class="section-tag">What We Offer</div>
+        <h2>{{SERVICES_HEADING}}</h2>
+      </div>
       <div class="services-grid">
         <div class="service-card">
-          <div class="service-icon">🍽️</div>
+          <div class="service-icon">✨</div>
           <h3>{{SERVICE_1_NAME}}</h3>
           <p>{{SERVICE_1_DESC}}</p>
         </div>
         <div class="service-card">
-          <div class="service-icon">✨</div>
+          <div class="service-icon">🌟</div>
           <h3>{{SERVICE_2_NAME}}</h3>
           <p>{{SERVICE_2_DESC}}</p>
         </div>
         <div class="service-card">
-          <div class="service-icon">🌟</div>
+          <div class="service-icon">💫</div>
           <h3>{{SERVICE_3_NAME}}</h3>
           <p>{{SERVICE_3_DESC}}</p>
         </div>
@@ -331,19 +441,34 @@
 
   <!-- Testimonials -->
   <section class="testimonials" id="reviews">
+    <div class="test-blob"></div>
     <div class="container">
-      <div class="section-tag">Customer Reviews</div>
-      <h2>{{TESTIMONIAL_HEADING}}</h2>
+      <div class="testimonials-header">
+        <div class="section-tag">Client Stories</div>
+        <h2>{{TESTIMONIAL_HEADING}}</h2>
+      </div>
       <div class="testimonial-grid">
         <div class="testimonial-card">
           <div class="stars">★★★★★</div>
           <p>"{{TESTIMONIAL_1}}"</p>
-          <div class="testimonial-author">— {{TESTIMONIAL_1_AUTHOR}}</div>
+          <div class="testimonial-author">
+            <div class="author-avatar">{{INITIAL}}</div>
+            <div class="author-info">
+              <h4>{{TESTIMONIAL_1_AUTHOR}}</h4>
+              <span style="font-size:0.85rem;color:var(--text-light)">Verified Client</span>
+            </div>
+          </div>
         </div>
         <div class="testimonial-card">
           <div class="stars">★★★★★</div>
           <p>"{{TESTIMONIAL_2}}"</p>
-          <div class="testimonial-author">— {{TESTIMONIAL_2_AUTHOR}}</div>
+          <div class="testimonial-author">
+            <div class="author-avatar">{{INITIAL}}</div>
+            <div class="author-info">
+              <h4>{{TESTIMONIAL_2_AUTHOR}}</h4>
+              <span style="font-size:0.85rem;color:var(--text-light)">Verified Client</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -351,7 +476,7 @@
 
   <!-- CTA Section -->
   <section class="cta-section">
-    <div class="container">
+    <div class="cta-inner">
       <h2>{{CTA_SECTION_HEADING}}</h2>
       <p>{{CTA_SECTION_SUB}}</p>
       <a href="#contact" class="btn-primary" id="middle-cta">{{CTA_PRIMARY}}</a>
@@ -364,43 +489,40 @@
       <div class="contact-info">
         <div class="section-tag">Get In Touch</div>
         <h2>Visit Us</h2>
-        <p>We'd love to hear from you. Stop by or give us a call.</p>
-        <div class="contact-details">
-          <div class="contact-item">
-            <div class="contact-icon">📍</div>
-            <span>{{ADDRESS}}</span>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">📞</div>
-            <span>{{PHONE}}</span>
+        <p>We're ready to help. Reach out to us for more information or drop by our location.</p>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-text">
+            <h4>Location</h4>
+            <p>{{ADDRESS}}</p>
           </div>
         </div>
-        <div class="map-embed">
-          <iframe
-            src="{{GOOGLE_MAPS_EMBED}}"
-            allowfullscreen loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div class="contact-text">
+            <h4>Phone</h4>
+            <p>{{PHONE}}</p>
+          </div>
         </div>
       </div>
       <div class="contact-form">
-        <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:1.5rem;color:var(--dark)">Send Us a Message</h3>
+        <h3>Send Us a Message</h3>
         <form id="contact-form">
           <div class="form-group">
             <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" placeholder="Your name" required />
+            <input type="text" id="name" name="name" placeholder="John Doe" required />
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            <input type="email" id="email" name="email" placeholder="john@example.com" required />
           </div>
           <div class="form-group">
             <label for="phone-field">Phone Number</label>
-            <input type="tel" id="phone-field" name="phone" placeholder="Your phone number" />
+            <input type="tel" id="phone-field" name="phone" placeholder="(555) 123-4567" />
           </div>
           <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" placeholder="How can we help?" required></textarea>
+            <label for="message">How can we help?</label>
+            <textarea id="message" name="message" placeholder="Please describe what you are looking for..." required></textarea>
           </div>
           <button type="submit" class="form-submit" id="form-submit-btn">Send Message</button>
         </form>
@@ -410,20 +532,24 @@
 
   <!-- Footer -->
   <footer>
-    <div class="footer-brand">{{BUSINESS_NAME}}</div>
-    <p>{{FOOTER_TAGLINE}}</p>
-    <div class="footer-links">
-      <a href="#about">About</a>
-      <a href="#services">Services</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#contact">Contact</a>
+    <div class="container footer-inner">
+      <div class="footer-brand">{{BUSINESS_NAME}}</div>
+      <p style="max-width:400px;margin:0 auto">{{FOOTER_TAGLINE}}</p>
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-bottom">
+        <p>© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+      </div>
     </div>
-    <p>© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
   </footer>
 
-  <!-- Demo Banner — shows this is a demo site built by Evolve Expert Agency -->
+  <!-- Demo Banner -->
   <div class="demo-banner">
-    <span>✨ <strong>This is a free demo site</strong> built by Evolve Expert Agency — like what you see?</span>
+    <span>✨ <strong>This is a free demo site</strong> built by Evolve Expert Agency</span>
     <a href="mailto:{{FROM_EMAIL}}" id="demo-banner-cta">Claim Your Site →</a>
   </div>
 
@@ -437,7 +563,7 @@
       });
     });
 
-    // Form submission — no backend needed for demo
+    // Form submission
     document.getElementById('contact-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const btn = document.getElementById('form-submit-btn');
@@ -445,9 +571,21 @@
       btn.style.background = '#10b981';
       setTimeout(() => {
         btn.textContent = 'Send Message';
-        btn.style.background = '';
+        btn.style.background = 'var(--primary)';
         this.reset();
       }, 3000);
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 50) {
+        nav.style.background = 'rgba(255, 255, 255, 0.9)';
+        nav.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
+      } else {
+        nav.style.background = 'var(--glass-bg)';
+        nav.style.boxShadow = 'none';
+      }
     });
   </script>
 </body>

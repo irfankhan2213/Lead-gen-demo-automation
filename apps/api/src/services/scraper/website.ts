@@ -189,40 +189,50 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
     const phoneFromText = extractPhone(pageText);
     let foundPhone = phoneFromTel || phoneFromText;
 
-    // ─── Visit /contact page for deeper extraction ────────────────────────────
+    // ─── Visit common subpages for deeper extraction ────────────────────────────
     let contactEmail: string | undefined;
     let contactPhone: string | undefined;
-    try {
-      const baseUrl = new URL(normalizedUrl);
-      const contactUrl = `${baseUrl.origin}/contact`;
-      if (contactUrl !== normalizedUrl) {
-        await page.goto(contactUrl, { waitUntil: 'domcontentloaded', timeout: 12_000 });
-        const contactHtml = await page.content();
-        const $c = cheerio.load(contactHtml);
 
-        // mailto links on contact page
-        $c('a[href^="mailto:"]').each((_, el) => {
-          if (contactEmail) return;
-          const href = $c(el).attr('href') ?? '';
-          const email = href.replace(/^mailto:/i, '').split('?')[0].trim();
-          if (email && !JUNK_EMAIL_PATTERNS.test(email)) contactEmail = email;
-        });
+    const subpages = ['/contact', '/contact-us', '/about', '/about-us', '/team'];
+    const baseUrl = new URL(normalizedUrl);
+    
+    for (const path of subpages) {
+      // Stop searching if we found an email
+      if (contactEmail || (allEmails.length > 0)) break;
 
-        if (!contactEmail) {
-          const contactText = $c.text();
-          const contactEmails = extractEmails(contactText);
-          if (contactEmails.length) contactEmail = contactEmails[0];
+      try {
+        const subpageUrl = `${baseUrl.origin}${path}`;
+        if (subpageUrl !== normalizedUrl) {
+          await page.goto(subpageUrl, { waitUntil: 'domcontentloaded', timeout: 10_000 });
+          const contactHtml = await page.content();
+          const $c = cheerio.load(contactHtml);
+
+          // mailto links on contact page
+          $c('a[href^="mailto:"]').each((_, el) => {
+            if (contactEmail) return;
+            const href = $c(el).attr('href') ?? '';
+            const email = href.replace(/^mailto:/i, '').split('?')[0].trim();
+            if (email && !JUNK_EMAIL_PATTERNS.test(email)) contactEmail = email;
+          });
+
+          if (!contactEmail) {
+            const contactText = $c.text();
+            const contactEmails = extractEmails(contactText);
+            if (contactEmails.length) contactEmail = contactEmails[0];
+          }
+
+          // Phone from contact page
+          if (!contactPhone) {
+            $c('a[href^="tel:"]').each((_, el) => {
+              if (contactPhone) return;
+              contactPhone = $c(el).attr('href')?.replace(/^tel:/i, '').trim();
+            });
+            if (!contactPhone) contactPhone = extractPhone($c.text());
+          }
         }
-
-        // Phone from contact page
-        $c('a[href^="tel:"]').each((_, el) => {
-          if (contactPhone) return;
-          contactPhone = $c(el).attr('href')?.replace(/^tel:/i, '').trim();
-        });
-        if (!contactPhone) contactPhone = extractPhone($c.text());
+      } catch {
+        // Subpage may not exist — silently continue
       }
-    } catch {
-      // Contact page may not exist — silently continue
     }
 
     const finalEmail = contactEmail ?? allEmails[0];
