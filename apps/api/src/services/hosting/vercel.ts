@@ -64,8 +64,6 @@ export async function deployDemoToVercel(
       outputDirectory: null,
       buildCommand: null,
       installCommand: null,
-      ssoProtection: null,
-      passwordProtection: null,
     },
     target: 'production',
   };
