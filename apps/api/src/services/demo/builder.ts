@@ -28,6 +28,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import logger from '../../lib/logger.js';
 import { generateSiteCopy } from '../ai/generateSite.js';
+import { generateSiteHtmlFromScratch } from '../ai/generateSiteFromScratch.js';
 import type { Lead, TemplateType } from '@acquisition-engine/shared';
 
 const TEMPLATES_DIR = join(__dirname, 'templates');
@@ -73,6 +74,15 @@ function loadTemplate(type: TemplateType): string {
  * @returns Complete HTML string ready for deployment
  */
 export async function buildDemoSite(lead: Lead): Promise<string> {
+  if (lead.demo_mode === 'ai_scratch') {
+    logger.info(`Building demo for ${lead.business_name} using AI From Scratch mode`);
+    const html = await generateSiteHtmlFromScratch(lead);
+    logger.info(`AI demo built successfully for ${lead.business_name}`, {
+      htmlSize: `${Math.round(html.length / 1024)}KB`,
+    });
+    return html;
+  }
+
   const template = (lead.recommended_template ?? 'generic') as TemplateType;
   logger.info(`Building demo for ${lead.business_name} using template: ${template}`);
 
@@ -142,6 +152,7 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
     '{{YEAR}}':                  String(new Date().getFullYear()),
     '{{GOOGLE_MAPS_EMBED}}':     mapsEmbed,
     '{{FROM_EMAIL}}':            process.env.FROM_EMAIL ?? 'hello@evolveexpert.agency',
+    '{{HERO_IMAGE_URL}}':        lead.hero_image_url ?? 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600',
   };
 
   // Replace all tokens in the HTML

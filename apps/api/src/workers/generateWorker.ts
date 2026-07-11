@@ -45,6 +45,18 @@ const worker = new Worker<GenerateJobData>(
     await updateLeadDeployment(leadId, demoUrl, deploymentId);
     log.success(`🌐 Live at: ${demoUrl}`, { demoUrl, deploymentId });
 
+    // Auto-generate Email
+    log.log(`✍️ Generating AI email copy...`);
+    try {
+      const { writeEmail } = await import('../services/ai/writeEmail.js');
+      const { updateLeadOutreach } = await import('../db/queries.js');
+      const email = await writeEmail(lead, demoUrl);
+      await updateLeadOutreach(leadId, email.subject, email.body, 'queued');
+      log.success(`✉️ Email generated and queued`);
+    } catch (emailErr) {
+      log.warn(`⚠️ Failed to generate email: ${(emailErr as Error).message}`);
+    }
+
     // Update campaign counter
     if (lead.campaign_id) {
       await incrementCampaignCounter(lead.campaign_id, 'demos_generated').catch(() => {});

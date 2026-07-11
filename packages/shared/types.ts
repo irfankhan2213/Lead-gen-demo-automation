@@ -50,6 +50,8 @@ export interface ScrapeInput {
   campaignId?: string;
   /** Optional limit on how many businesses to scrape */
   limit?: number | 'unlimited';
+  /** Mode for generating demo sites */
+  demo_mode?: 'template' | 'ai_scratch';
 }
 
 export interface GoogleMapsBusiness {
@@ -61,6 +63,7 @@ export interface GoogleMapsBusiness {
   google_rating?: number;
   google_review_count?: number;
   category?: string;
+  hero_image_url?: string;
   photos?: string[];
   hours?: Record<string, string>;
 }
@@ -158,11 +161,13 @@ export interface Lead {
   cta_text?: string;
   estimated_revenue_potential?: 'Low' | 'Medium' | 'High';
   // Demo
+  demo_mode?: 'template' | 'ai_scratch';
   demo_status: DemoStatus;
   demo_html?: string;
   demo_url?: string;
   demo_deployed_at?: string;
   vercel_deployment_id?: string;
+  hero_image_url?: string;
   // Outreach
   outreach_status: OutreachStatus;
   email_subject?: string;
@@ -228,6 +233,7 @@ export interface ScrapeRequest {
   businessName?: string;
   campaignId?: string;
   limit?: number | 'unlimited';
+  demo_mode?: 'template' | 'ai_scratch';
 }
 
 export interface ScrapeResponse {
@@ -282,11 +288,13 @@ export interface ScrapeJobData {
   businessName?: string;
   campaignId?: string;
   limit?: number | 'unlimited';
+  demo_mode?: 'template' | 'ai_scratch';
 }
 
 export interface GenerateJobData {
   jobId: string;
   leadId: string;
+  demo_mode?: 'template' | 'ai_scratch';
 }
 
 export interface OutreachJobData {

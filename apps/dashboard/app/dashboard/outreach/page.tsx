@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Send, RefreshCw, Zap, Mail, CheckCircle } from 'lucide-react';
+import { Send, RefreshCw, Zap, Mail, CheckCircle, X } from 'lucide-react';
 import type { Lead } from '@acquisition-engine/shared';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -18,6 +18,7 @@ export default function OutreachPage() {
   const [bulkMsg, setBulkMsg] = useState('');
   const [generatingAll, setGeneratingAll] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
@@ -194,6 +195,14 @@ export default function OutreachPage() {
                           <Zap className="w-3 h-3" /> Generate
                         </button>
                       )}
+                      {lead.email_subject && (
+                        <button
+                          onClick={() => setSelectedLead(lead)}
+                          className="btn-secondary text-xs px-2 py-1"
+                        >
+                          Preview
+                        </button>
+                      )}
                       {lead.email_subject && lead.email && lead.outreach_status === 'queued' && (
                         <button
                           onClick={() => sendToLead(lead.id)}
@@ -203,7 +212,7 @@ export default function OutreachPage() {
                         </button>
                       )}
                       {['sent', 'opened', 'replied', 'booked'].includes(lead.outreach_status) && (
-                        <CheckCircle className="w-4 h-4 text-emerald-400" />
+                        <CheckCircle className="w-4 h-4 text-emerald-400 mt-1" />
                       )}
                     </div>
                   </td>
@@ -211,6 +220,44 @@ export default function OutreachPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {selectedLead && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="card-elevated w-full max-w-lg animate-fade-in">
+            <div className="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-[var(--text-primary)]">Email Preview</h2>
+                <p className="text-xs text-[var(--text-muted)] mt-1">To: {selectedLead.email} ({selectedLead.business_name})</p>
+              </div>
+              <button onClick={() => setSelectedLead(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Subject</label>
+                <div className="mt-1 p-3 bg-[var(--bg-elevated)] rounded-lg text-sm text-[var(--text-primary)] border border-[var(--border)]">
+                  {selectedLead.email_subject}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Body</label>
+                <div className="mt-1 p-3 bg-[var(--bg-elevated)] rounded-lg text-sm text-[var(--text-primary)] whitespace-pre-wrap border border-[var(--border)] font-mono text-xs">
+                  {selectedLead.email_body || 'Body not generated yet.'}
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button onClick={() => setSelectedLead(null)} className="btn-secondary">Close</button>
+              {selectedLead.outreach_status === 'queued' && selectedLead.email && (
+                 <button onClick={() => { sendToLead(selectedLead.id); setSelectedLead(null); }} className="btn-primary">
+                   <Send className="w-4 h-4" /> Send Now
+                 </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

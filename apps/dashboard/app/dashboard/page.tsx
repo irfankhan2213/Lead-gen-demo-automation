@@ -61,6 +61,7 @@ function NewCampaignModal({
   const [niche, setNiche] = useState('');
   const [city, setCity] = useState('');
   const [limit, setLimit] = useState<string>('20');
+  const [demoMode, setDemoMode] = useState<'template' | 'ai_scratch'>('template');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -79,6 +80,7 @@ function NewCampaignModal({
           niche: niche.trim(), 
           city: city.trim(),
           limit: limit === 'unlimited' ? 'unlimited' : parseInt(limit, 10),
+          demo_mode: demoMode,
         }),
       });
 
@@ -140,6 +142,17 @@ function NewCampaignModal({
               <option value="50">50 Leads</option>
               <option value="100">100 Leads</option>
               <option value="unlimited">Unlimited (Scrape until dead end)</option>
+            </select>
+          </div>
+          <div>
+            <label className="label">Demo Generation Mode</label>
+            <select 
+              className="input bg-[var(--bg-elevated)]"
+              value={demoMode}
+              onChange={e => setDemoMode(e.target.value as 'template' | 'ai_scratch')}
+            >
+              <option value="template">High-End Templates (Fast & Reliable)</option>
+              <option value="ai_scratch">AI Built From Scratch (Unique per lead)</option>
             </select>
           </div>
 

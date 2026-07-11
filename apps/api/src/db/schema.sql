@@ -79,11 +79,13 @@ CREATE TABLE IF NOT EXISTS leads (
   estimated_revenue_potential VARCHAR(50),
 
   -- Demo
+  demo_mode VARCHAR(50) DEFAULT 'template',
   demo_status VARCHAR(50) NOT NULL DEFAULT 'none',
   demo_html TEXT,
   demo_url VARCHAR(500),
   demo_deployed_at TIMESTAMPTZ,
   vercel_deployment_id VARCHAR(255),
+  hero_image_url TEXT,
 
   -- Outreach
   outreach_status VARCHAR(50) NOT NULL DEFAULT 'pending',

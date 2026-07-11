@@ -93,13 +93,15 @@ export async function createLead(data: LeadData): Promise<Lead> {
       phone, email, address, google_maps_url, google_rating, google_review_count,
       brand_colors, brand_fonts, tagline, about_text, services,
       menu_or_pricing, social_links, reddit_mentions, yelp_reviews_summary,
-      instagram_bio, instagram_post_themes, demo_status, outreach_status
+      instagram_bio, instagram_post_themes, demo_status, outreach_status,
+      hero_image_url, demo_mode
     ) VALUES (
       $1, $2, $3, $4, $5, $6,
       $7, $8, $9, $10, $11, $12,
       $13, $14, $15, $16, $17,
       $18, $19, $20, $21,
-      $22, $23, 'none', 'pending'
+      $22, $23, 'none', 'pending',
+      $24, $25
     ) RETURNING *`,
     [
       data.campaign_id ?? null,
@@ -125,6 +127,8 @@ export async function createLead(data: LeadData): Promise<Lead> {
       data.yelp_reviews_summary ?? null,
       data.instagram_bio ?? null,
       data.instagram_post_themes ?? null,
+      data.hero_image_url ?? null,
+      data.demo_mode ?? 'template',
     ]
   );
   return rows[0];

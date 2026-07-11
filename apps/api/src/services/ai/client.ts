@@ -17,16 +17,20 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const geminiKey = process.env.GEMINI_API_KEY;
 
-export async function callLLM(prompt: string, maxTokens = 1024): Promise<string> {
+export async function callLLM(prompt: string, maxTokens = 1024, jsonMode = false): Promise<string> {
   // 1. Try Gemini First
   if (geminiKey) {
     logger.info('Calling LLM via Gemini API...');
     try {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+      const generationConfig: any = { maxOutputTokens: maxTokens, temperature: 0.2 };
+      if (jsonMode) {
+        generationConfig.responseMimeType = 'application/json';
+      }
       const result = await model.generateContent({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.2, responseMimeType: 'application/json' }
+        generationConfig
       });
       const content = result.response.text();
       if (content) return content;
@@ -48,19 +52,23 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
     for (const model of models) {
       logger.info(`Calling LLM via Groq API (model: ${model})...`);
       try {
+        const bodyPayload: any = {
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+          temperature: 0.2,
+        };
+        if (jsonMode) {
+          bodyPayload.response_format = { type: "json_object" };
+        }
+
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${effectiveGroqKey}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            model,
-            messages: [{ role: 'user', content: prompt }],
-            max_tokens: maxTokens,
-            temperature: 0.2,
-            response_format: { type: "json_object" }
-          }),
+          body: JSON.stringify(bodyPayload),
         });
 
         if (response.status === 429) {
@@ -69,7 +77,8 @@ export async function callLLM(prompt: string, maxTokens = 1024): Promise<string>
         }
 
         if (!response.ok) {
-          throw new Error('AI service returned an unexpected response. Please try again.');
+          const errorText = await response.text();
+          throw new Error(`AI service returned an unexpected response: ${response.status} ${errorText}`);
         }
 
         const data = await response.json() as {

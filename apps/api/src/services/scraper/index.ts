@@ -103,6 +103,8 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         google_maps_url: business.google_maps_url,
         google_rating: business.google_rating,
         google_review_count: business.google_review_count,
+        hero_image_url: business.hero_image_url,
+        demo_mode: input.demo_mode ?? 'template',
         // From website scraper
         brand_colors: websiteData.brand_colors,
         brand_fonts: websiteData.brand_fonts,
@@ -140,6 +142,7 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
           await generateQueue.add('generate-demo' as any, {
             jobId: genJobId,
             leadId: lead.id,
+            demo_mode: input.demo_mode ?? 'template',
           });
           log.log(`📋 Queued for demo generation (score: ${analysis.opportunity_score}/10)`);
         } else if (analysis.opportunity_score <= 4) {

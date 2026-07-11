@@ -84,7 +84,7 @@ CRITICAL JSON FORMATTING RULES:
 - Escape any quotes using \\".`;
 
   try {
-    const text = await callLLM(prompt, 1024);
+    const text = await callLLM(prompt, 1024, true);
 
     // Parse JSON — strip any markdown code fences if present
     const jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();

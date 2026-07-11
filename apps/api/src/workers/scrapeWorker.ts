@@ -25,6 +25,7 @@ const worker = new Worker<ScrapeJobData>(
       city: job.data.city,
       businessName: job.data.businessName,
       campaignId: job.data.campaignId,
+      limit: job.data.limit,
     });
 
     logger.info(`[ScrapeWorker] Job ${job.id} complete`);

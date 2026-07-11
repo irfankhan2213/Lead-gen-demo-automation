@@ -1,132 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
   <meta name="description" content="{{META_DESCRIPTION}}" />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet" />
   <style>
-    :root { --primary: {{PRIMARY_COLOR}}; --accent: {{ACCENT_COLOR}}; --dark: #0a0a0a; --mid: #1a1a1a; --text-light: #a0a0a0; --border: #2a2a2a; }
+    :root {
+      --primary: {{PRIMARY_COLOR}};
+      --accent: {{ACCENT_COLOR}};
+      --dark: #0a0a0a;
+      --dark-light: #171717;
+      --text: #ffffff;
+      --text-light: #a3a3a3;
+      --bg: #000000;
+      --card-bg: rgba(23, 23, 23, 0.7);
+      --border: #262626;
+      --glass-bg: rgba(10, 10, 10, 0.8);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--dark); color: #fff; }
-    nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 999; }
-    .logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: 0.05em; color: #fff; }
-    .logo span { color: var(--primary); }
-    .join-btn { background: var(--primary); color: #fff; padding: 0.65rem 1.5rem; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase; }
 
-    .hero { min-height: 100vh; background: var(--dark); display: flex; align-items: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
-    .hero-bg { position: absolute; right: 0; top: 0; width: 55%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--dark)); opacity: 0.15; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }
-    .hero-content { position: relative; z-index: 1; max-width: 650px; }
-    .hero-pre { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--primary); font-weight: 600; margin-bottom: 1rem; }
-    .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3.5rem, 7vw, 6.5rem); font-weight: 800; line-height: 0.95; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 1.5rem; }
-    .hero h1 span { color: var(--primary); }
-    .hero p { color: var(--text-light); font-size: 1.05rem; max-width: 480px; margin-bottom: 2.5rem; line-height: 1.7; }
-    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .btn-primary { background: var(--primary); color: #fff; padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.9rem; transition: opacity 0.2s; }
-    .btn-primary:hover { opacity: 0.85; }
-    .btn-ghost { border: 1px solid var(--border); color: #fff; padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; transition: border-color 0.2s; }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.4); }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-    .stats { background: var(--mid); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2rem; display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap; }
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    h1, h2, h3, h4, .bold-heading { font-family: 'Teko', sans-serif; text-transform: uppercase; }
+    
+    .section-tag {
+      display: inline-block;
+      font-size: 0.85rem; font-weight: 800; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 1rem; padding: 0.4rem 1.2rem;
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(var(--primary-rgb, 255,0,0), 0.2);
+    }
+    section { padding: 8rem 0; position: relative; }
+
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1.2rem 0; z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: 'Teko', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; line-height: 1; }
+    .nav-logo span { color: var(--primary); }
+    .nav-cta {
+      background: var(--primary); color: #000;
+      padding: 0.8rem 2rem; border-radius: 2px;
+      font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+      text-decoration: none; transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(var(--primary-rgb, 255,0,0), 0.4);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(var(--primary-rgb, 255,0,0), 0.6); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      position: relative; padding-top: 5rem;
+      background: url('{{HERO_IMAGE_URL}}') center/cover no-repeat;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.4) 100%);
+      z-index: 0;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; padding: 0 2rem; }
+    .hero h1 {
+      font-size: clamp(4rem, 10vw, 8rem);
+      color: #fff; line-height: 0.85;
+      margin-bottom: 1.5rem; letter-spacing: 2px;
+      text-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+    }
+    .hero h1 span { color: var(--primary); display: block; }
+    .hero p {
+      font-size: clamp(1.1rem, 2vw, 1.4rem); color: rgba(255,255,255,0.9);
+      max-width: 500px; margin-bottom: 3rem; font-weight: 300; border-left: 4px solid var(--primary); padding-left: 1.5rem;
+    }
+    .hero-actions { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--primary); color: #000;
+      padding: 1.2rem 3rem; border-radius: 2px;
+      font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(var(--primary-rgb, 255,0,0), 0.3);
+      display: inline-block;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 40px rgba(var(--primary-rgb, 255,0,0), 0.5); }
+    
+    /* Stats */
+    .stats-wrapper { background: var(--dark-light); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; z-index: 10; padding: 3rem 0; }
+    .stats-bar { display: flex; justify-content: space-around; gap: 2rem; flex-wrap: wrap; }
     .stat { text-align: center; }
-    .stat-num { font-family: 'Barlow Condensed', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--primary); line-height: 1; }
-    .stat-lbl { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
+    .stat-value { font-family: 'Teko', sans-serif; font-size: 4rem; color: #fff; font-weight: 600; line-height: 1; text-shadow: 0 0 20px var(--primary); }
+    .stat-label { font-size: 0.9rem; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-top: 0.5rem; }
 
-    section { padding: 5rem 2rem; }
-    .container { max-width: 1100px; margin: 0 auto; }
-    .tag { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--primary); font-weight: 700; }
-    h2 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; margin-top: 0.5rem; line-height: 1; }
+    /* About */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about h2 { font-size: clamp(3rem, 6vw, 5rem); color: #fff; line-height: 1; margin-bottom: 1.5rem; }
+    .about-img-wrapper { position: relative; border: 1px solid var(--border); padding: 1rem; }
+    .about-img {
+      background: url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover;
+      aspect-ratio: 4/5; filter: grayscale(100%) contrast(1.2); transition: all 0.5s ease;
+    }
+    .about-img-wrapper:hover .about-img { filter: grayscale(0%); }
+    .about-content p { color: var(--text-light); font-size: 1.1rem; margin-bottom: 1.5rem; }
+    
+    /* Services */
+    .services { background: var(--dark); position: relative; }
+    .services::before { content:''; position:absolute; top:0; left:0; width:100%; height:1px; background: linear-gradient(90deg, transparent, var(--primary), transparent); }
+    .services-header { text-align: center; margin-bottom: 4rem; }
+    .services h2 { font-size: clamp(3rem, 6vw, 5rem); color: #fff; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+    .service-card {
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 3rem 2rem; position: relative; overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .service-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: var(--primary); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+    }
+    .service-card:hover { transform: translateY(-10px); border-color: var(--primary); background: var(--dark-light); }
+    .service-card:hover::after { transform: scaleX(1); }
+    .service-num { font-family: 'Teko', sans-serif; font-size: 4rem; color: var(--border); line-height: 1; position: absolute; top: 1rem; right: 1.5rem; transition: color 0.3s; }
+    .service-card:hover .service-num { color: var(--primary); opacity: 0.3; }
+    .service-card h3 { color: #fff; font-size: 2.5rem; margin-bottom: 1rem; margin-top: 2rem; position: relative; z-index: 2; }
+    .service-card p { color: var(--text-light); font-size: 1rem; line-height: 1.6; position: relative; z-index: 2; }
 
-    .services-sec { background: var(--dark); }
-    .programs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; margin-top: 3rem; background: var(--border); border: 1px solid var(--border); }
-    .program { background: var(--dark); padding: 2.5rem; transition: background 0.2s; }
-    .program:hover { background: var(--mid); }
-    .prog-num { font-family: 'Barlow Condensed', sans-serif; font-size: 3rem; font-weight: 800; color: var(--border); line-height: 1; margin-bottom: 1rem; }
-    .program h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
-    .program p { color: var(--text-light); font-size: 0.9rem; line-height: 1.7; }
+    /* Contact */
+    .contact { background: var(--bg); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; }
+    .contact-info h2 { font-size: clamp(3rem, 6vw, 5rem); color: #fff; margin-bottom: 1.5rem; line-height: 1; }
+    .contact-item { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .contact-icon { font-size: 2rem; color: var(--primary); }
+    .contact-text h4 { font-size: 1.5rem; color: #fff; margin-bottom: 0.25rem; }
+    .contact-text p { color: var(--text-light); font-size: 1.1rem; }
+    
+    .contact-form { background: var(--dark-light); border: 1px solid var(--border); padding: 3rem; position: relative; }
+    .contact-form::before { content:''; position:absolute; top:-1px; left:-1px; width:40px; height:40px; border-top:3px solid var(--primary); border-left:3px solid var(--primary); }
+    .contact-form::after { content:''; position:absolute; bottom:-1px; right:-1px; width:40px; height:40px; border-bottom:3px solid var(--primary); border-right:3px solid var(--primary); }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 1.2rem;
+      border: 1px solid var(--border); border-radius: 0;
+      font-family: inherit; font-size: 1rem; color: #fff;
+      background: var(--bg); transition: all 0.3s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); background: #000; }
+    .form-group textarea { min-height: 140px; resize: vertical; }
+    .form-submit { width: 100%; }
 
-    .about-sec { background: var(--mid); }
-    .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-    .about-visual { background: linear-gradient(135deg, var(--primary), #000); border-radius: 8px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 6rem; }
-    .about-body p { color: var(--text-light); margin-top: 1.5rem; line-height: 1.8; }
+    /* Footer */
+    footer { background: var(--dark-light); border-top: 1px solid var(--border); padding: 4rem 2rem; text-align: center; }
+    .footer-brand { font-family: 'Teko', sans-serif; color: #fff; font-size: 3rem; margin-bottom: 1rem; line-height: 1; letter-spacing: 1px; }
+    .footer-brand span { color: var(--primary); }
+    .footer-bottom { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--text-light); font-size: 0.9rem; }
 
-    .reviews-sec { background: var(--dark); }
-    .rev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
-    .rev-card { background: var(--mid); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; }
-    .rev-stars { color: var(--primary); margin-bottom: 1rem; }
-    .rev-text { color: var(--text-light); font-style: italic; font-size: 0.95rem; line-height: 1.7; }
-    .rev-author { font-weight: 600; margin-top: 1rem; font-size: 0.875rem; }
+    /* Demo Banner */
+    .demo-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--primary); color: #000; padding: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      gap: 1.5rem; font-size: 1rem; z-index: 9999; flex-wrap: wrap; text-align: center; font-weight: 600;
+    }
+    .demo-banner a { background: #000; color: #fff; padding: 0.5rem 1.5rem; font-weight: 800; text-transform: uppercase; text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; }
 
-    .cta-strip { background: var(--primary); padding: 5rem 2rem; text-align: center; }
-    .cta-strip h2 { color: #fff; }
-    .cta-strip p { color: rgba(255,255,255,0.8); margin: 1rem 0 2rem; }
-    .cta-strip a { background: #fff; color: var(--primary); padding: 1rem 2.5rem; border-radius: 4px; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; }
-
-    .contact-sec { background: var(--mid); }
-    .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-    .c-info p { color: var(--text-light); margin-top: 1rem; }
-    .c-items { margin-top: 2rem; }
-    .c-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; color: var(--text-light); }
-    .c-icon { width: 40px; height: 40px; background: var(--primary); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .c-form { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 2.5rem; }
-    .c-form h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1.5rem; }
-    input, textarea { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; background: var(--mid); color: #fff; margin-bottom: 1rem; }
-    input::placeholder, textarea::placeholder { color: var(--text-light); }
-    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
-    textarea { min-height: 100px; resize: vertical; }
-    .submit { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    footer { background: var(--dark); border-top: 1px solid var(--border); padding: 2.5rem; text-align: center; }
-    footer .logo { display: block; margin-bottom: 0.5rem; }
-    footer p { color: var(--text-light); font-size: 0.85rem; }
-    .demo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(90deg,#7c3aed,#4f46e5); color:#fff; padding:0.8rem 1.5rem; display:flex; align-items:center; justify-content:center; gap:1rem; font-size:0.9rem; z-index:9999; flex-wrap:wrap; }
-    .demo-banner a { background:#fff; color:#7c3aed; padding:0.35rem 0.9rem; border-radius:50px; font-weight:700; text-decoration:none; font-size:0.85rem; }
-    @media (max-width: 768px) { .about-layout, .c-grid { grid-template-columns: 1fr; } .hero-bg { width: 100%; opacity: 0.1; clip-path: none; } }
+    @media (max-width: 992px) { .about-grid, .contact-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 5rem; } }
   </style>
 </head>
 <body>
   <nav>
-    <div class="logo">{{BUSINESS_NAME}}</div>
-    <a href="#contact" class="join-btn">{{CTA_PRIMARY}}</a>
+    <div class="container nav-inner">
+      <div class="nav-logo">{{BUSINESS_NAME}}</div>
+      <a href="#contact" class="nav-cta">Join Now</a>
+    </div>
   </nav>
 
-  <section class="hero">
-    <div class="hero-bg"></div>
+  <header class="hero">
     <div class="hero-content">
-      <div class="hero-pre">💪 {{CITY}}</div>
-      <h1>{{HERO_HEADLINE}}<br/><span>{{CITY}}</span></h1>
+      <div class="section-tag">📍 {{CITY}}</div>
+      <h1>{{HERO_HEADLINE}} <span>{{CITY}}</span></h1>
       <p>{{HERO_SUBLINE}}</p>
-      <div class="hero-btns">
+      <div class="hero-actions">
         <a href="#contact" class="btn-primary" id="hero-cta-primary">{{CTA_PRIMARY}}</a>
-        <a href="#services" class="btn-ghost" id="hero-cta-secondary">View Programs</a>
       </div>
     </div>
-  </section>
+  </header>
 
-  <div class="stats">
-    <div class="stat"><div class="stat-num">{{GOOGLE_RATING}}⭐</div><div class="stat-lbl">Rating</div></div>
-    <div class="stat"><div class="stat-num">{{REVIEW_COUNT}}+</div><div class="stat-lbl">Members</div></div>
-    <div class="stat"><div class="stat-num">{{SERVICE_COUNT}}+</div><div class="stat-lbl">Programs</div></div>
-    <div class="stat"><div class="stat-num">24/7</div><div class="stat-lbl">Support</div></div>
+  <div class="stats-wrapper">
+    <div class="container stats-bar">
+      <div class="stat"><div class="stat-value">{{GOOGLE_RATING}}</div><div class="stat-label">Google Rating</div></div>
+      <div class="stat"><div class="stat-value">{{REVIEW_COUNT}}+</div><div class="stat-label">Active Members</div></div>
+      <div class="stat"><div class="stat-value">{{SERVICE_COUNT}}+</div><div class="stat-label">Programs</div></div>
+    </div>
   </div>
 
-  <section class="services-sec" id="services">
-    <div class="container">
-      <div class="tag">Training Programs</div>
-      <h2>{{SERVICES_HEADING}}</h2>
-      <div class="programs-grid">
-        <div class="program"><div class="prog-num">01</div><h3>{{SERVICE_1_NAME}}</h3><p>{{SERVICE_1_DESC}}</p></div>
-        <div class="program"><div class="prog-num">02</div><h3>{{SERVICE_2_NAME}}</h3><p>{{SERVICE_2_DESC}}</p></div>
-        <div class="program"><div class="prog-num">03</div><h3>{{SERVICE_3_NAME}}</h3><p>{{SERVICE_3_DESC}}</p></div>
+  <section class="about" id="about">
+    <div class="container about-grid">
+      <div class="about-img-wrapper">
+        <div class="about-img"></div>
       </div>
-    </div>
-  </section>
-
-  <section class="about-sec" id="about">
-    <div class="container about-layout">
-      <div class="about-visual">💪</div>
-      <div class="about-body">
-        <div class="tag">Our Story</div>
+      <div class="about-content">
+        <div class="section-tag">Our Story</div>
         <h2>{{ABOUT_HEADING}}</h2>
         <p>{{ABOUT_PARA_1}}</p>
         <p>{{ABOUT_PARA_2}}</p>
@@ -134,61 +226,93 @@
     </div>
   </section>
 
-  <section class="reviews-sec" id="reviews">
-    <div class="container" style="text-align:center">
-      <div class="tag">Member Reviews</div>
-      <h2>{{TESTIMONIAL_HEADING}}</h2>
-      <div class="rev-grid">
-        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"{{TESTIMONIAL_1}}"</div><div class="rev-author">— {{TESTIMONIAL_1_AUTHOR}}</div></div>
-        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"{{TESTIMONIAL_2}}"</div><div class="rev-author">— {{TESTIMONIAL_2_AUTHOR}}</div></div>
+  <section class="services" id="services">
+    <div class="container">
+      <div class="services-header">
+        <div class="section-tag">Training</div>
+        <h2>{{SERVICES_HEADING}}</h2>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-num">01</div>
+          <h3>{{SERVICE_1_NAME}}</h3>
+          <p>{{SERVICE_1_DESC}}</p>
+        </div>
+        <div class="service-card">
+          <div class="service-num">02</div>
+          <h3>{{SERVICE_2_NAME}}</h3>
+          <p>{{SERVICE_2_DESC}}</p>
+        </div>
+        <div class="service-card">
+          <div class="service-num">03</div>
+          <h3>{{SERVICE_3_NAME}}</h3>
+          <p>{{SERVICE_3_DESC}}</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="cta-strip">
-    <h2>{{CTA_SECTION_HEADING}}</h2>
-    <p>{{CTA_SECTION_SUB}}</p>
-    <a href="#contact" id="mid-cta">{{CTA_PRIMARY}}</a>
-  </div>
-
-  <section class="contact-sec" id="contact">
-    <div class="container c-grid">
-      <div class="c-info">
-        <div class="tag">Location</div>
+  <section class="contact" id="contact">
+    <div class="container contact-grid">
+      <div class="contact-info">
+        <div class="section-tag">Location</div>
         <h2>Find Us</h2>
-        <p>Come see our facilities — tours welcome anytime during operating hours.</p>
-        <div class="c-items">
-          <div class="c-item"><div class="c-icon">📍</div><span>{{ADDRESS}}</span></div>
-          <div class="c-item"><div class="c-icon">📞</div><span>{{PHONE}}</span></div>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-text">
+            <h4>Address</h4>
+            <p>{{ADDRESS}}</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div class="contact-text">
+            <h4>Phone</h4>
+            <p>{{PHONE}}</p>
+          </div>
         </div>
       </div>
-      <div class="c-form">
-        <h3>Start Today</h3>
-        <form id="join-form">
-          <input type="text" placeholder="Full Name" required />
-          <input type="email" placeholder="Email Address" required />
-          <input type="tel" placeholder="Phone Number" />
-          <textarea placeholder="Your fitness goals or questions"></textarea>
-          <button type="submit" class="submit" id="form-submit-btn">{{CTA_PRIMARY}}</button>
+      <div class="contact-form">
+        <h3 class="bold-heading" style="font-size: 2.5rem; margin-bottom: 2rem;">Start Today</h3>
+        <form id="contact-form">
+          <div class="form-group"><input type="text" placeholder="Full Name" required /></div>
+          <div class="form-group"><input type="email" placeholder="Email Address" required /></div>
+          <div class="form-group"><textarea placeholder="Your fitness goals..." required></textarea></div>
+          <button type="submit" class="btn-primary form-submit" id="form-submit-btn">{{CTA_PRIMARY}}</button>
         </form>
       </div>
     </div>
   </section>
 
   <footer>
-    <div class="logo" style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;">{{BUSINESS_NAME}}</div>
-    <p>{{FOOTER_TAGLINE}}</p>
-    <p style="margin-top:0.75rem">© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+    <div class="container">
+      <div class="footer-brand">{{BUSINESS_NAME}}</div>
+      <p>{{FOOTER_TAGLINE}}</p>
+      <div class="footer-bottom">
+        <p>© {{YEAR}} {{BUSINESS_NAME}}. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 
   <div class="demo-banner">
-    <span>✨ <strong>Demo site</strong> by Evolve Expert Agency</span>
-    <a href="mailto:{{FROM_EMAIL}}" id="demo-banner-cta">Get Yours →</a>
+    <span>⚠️ THIS IS A FREE DEMO SITE BY EVOLVE EXPERT AGENCY</span>
+    <a href="mailto:{{FROM_EMAIL}}">Claim Site</a>
   </div>
 
   <script>
-    document.querySelectorAll('a[href^="#"]').forEach(a => { a.addEventListener('click', e => { e.preventDefault(); document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); }); });
-    document.getElementById('join-form').addEventListener('submit', function(e) { e.preventDefault(); const b = document.getElementById('form-submit-btn'); b.textContent = '✅ We\'ll be in touch!'; b.style.background = '#10b981'; setTimeout(() => { b.textContent = '{{CTA_PRIMARY}}'; b.style.background = ''; this.reset(); }, 3000); });
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('form-submit-btn');
+      btn.textContent = 'MESSAGE SENT';
+      btn.style.background = '#10b981';
+      setTimeout(() => { btn.textContent = '{{CTA_PRIMARY}}'; btn.style.background = 'var(--primary)'; this.reset(); }, 3000);
+    });
   </script>
 </body>
 </html>

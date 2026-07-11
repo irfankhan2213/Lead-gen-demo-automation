@@ -20,49 +20,65 @@ import type { Lead, GeneratedEmail } from '@acquisition-engine/shared';
  * @returns Email subject and body
  */
 export async function writeEmail(lead: Partial<Lead>, demoUrl: string): Promise<GeneratedEmail> {
-  const prompt = `You are a world-class cold email copywriter for a digital agency.
-Write a cold outreach email to a local business owner.
+const prompt = `You are an elite, high-ticket B2B cold email copywriter.
+Write a highly persuasive, curiosity-driven cold outreach email to a local business owner.
 
 STRICT RULES:
-- Subject line: under 8 words, curiosity-driven, no emojis, no "Hey" opener
-- Email body: under 120 words total
-- Line 1: reference something SPECIFIC about their business (shows you did real research)
-- Line 2: identify ONE specific pain point
-- Line 3: "I built something for you" then drop the demo URL on its own line
-- Line 4: soft CTA — not "buy now", something like "worth a quick look?"
-- Sign off: first name only + no title
-- Tone: human, direct, confident — NOT salesy, NOT formal
-- NEVER say: "I hope this email finds you well"
-- NEVER say: "I came across your business"
-- NEVER say: "I wanted to reach out"
-- DO reference their actual specific data (name, rating, city, services)
+- Subject line: under 6 words, highly personalized, no emojis. Make it look like an internal email.
+- Email body: under 100 words total. Keep it punchy and easy to read on mobile.
+- Line 1: Reference a hyper-specific detail about their business (shows you actually looked them up).
+- Line 2: Hit a hard pain point about their current online presence, reputation, or missed revenue.
+- Line 3: "I actually went ahead and built a custom high-converting site for you. You can see it here:"
+- Line 4 (on its own line): the demo URL.
+- Line 5: Soft, low-friction CTA (e.g., "Worth a 5-minute chat next week to see how this can drive more bookings?").
+- Sign off: "Best, [Your Name]"
+- Tone: confident, direct, value-driven. No fluff. NOT salesy. 
+- NEVER use generic openers like "I hope this finds you well" or "I came across your business".
+- CRITICAL: Make the pitch about revenue, bookings, and outcompeting local rivals.
 
 BUSINESS DATA:
 - Name: ${lead.business_name}
 - City: ${lead.city}
 - Niche: ${lead.niche}
 - Rating: ${lead.google_rating ? `${lead.google_rating}/5 (${lead.google_review_count} reviews on Google)` : 'No Google rating found'}
-- Website: ${lead.website_url ?? 'NO WEBSITE — they have no online presence at all'}
+- Website: ${lead.website_url ?? 'NO WEBSITE — they are missing out on significant online traffic'}
 - Services: ${(lead.services ?? []).slice(0, 4).join(', ') || 'unknown'}
 - Pain points identified: ${(lead.pain_points ?? []).join('; ')}
 - Brand DNA: ${lead.brand_dna ?? ''}
 
 DEMO URL: ${demoUrl}
 
-CRITICAL JSON FORMATTING RULES:
-- Return ONLY valid JSON, nothing else. No markdown blocks.
-- Escape all newlines in the body text using \\n. Do not use literal newlines inside the JSON string.
-- Escape any quotes using \\".
-
-{
-  "subject": "...",
-  "body": "..."
-}`;
+CRITICAL FORMATTING RULES:
+- Do NOT output JSON.
+- Output EXACTLY like this:
+SUBJECT: [your subject here]
+BODY:
+[your email body here]`;
 
   try {
     const text = await callLLM(prompt, 512);
-    const jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-    const email = JSON.parse(jsonStr) as GeneratedEmail;
+    
+    // Parse the text output manually to avoid JSON escaping issues
+    let subject = '';
+    let body = '';
+    
+    const subjectMatch = text.match(/SUBJECT:\s*(.+)/i);
+    if (subjectMatch) {
+      subject = subjectMatch[1].trim();
+    } else {
+      // Fallback if AI didn't follow formatting perfectly
+      subject = 'Quick question';
+    }
+    
+    const bodySplit = text.split(/BODY:/i);
+    if (bodySplit.length > 1) {
+      body = bodySplit[1].trim();
+    } else {
+      // Fallback
+      body = text.replace(/SUBJECT:\s*(.+)/i, '').trim();
+    }
+
+    const email: GeneratedEmail = { subject, body };
 
     logger.info(`Email written for ${lead.business_name}`, {
       subject: email.subject,
@@ -107,17 +123,26 @@ ${templates[followUpNumber]}
 
 BUSINESS: ${lead.business_name} | ${lead.city} | ${lead.niche}
 
-CRITICAL JSON FORMATTING RULES:
-- Return ONLY valid JSON, nothing else. No markdown blocks.
-- Escape all newlines in the body text using \\n. Do not use literal newlines inside the JSON string.
-- Escape any quotes using \\".
-
-{
-  "subject": "Re: [original subject or short new subject]",
-  "body": "..."
-}`;
+CRITICAL FORMATTING RULES:
+- Do NOT output JSON.
+- Output EXACTLY like this:
+SUBJECT: Re: [original subject or short new subject]
+BODY:
+[your email body here]`;
 
   const text = await callLLM(prompt, 256);
-  const jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-  return JSON.parse(jsonStr) as GeneratedEmail;
+  let subject = 'Re: Quick question';
+  let body = text;
+
+  const subjectMatch = text.match(/SUBJECT:\s*(.+)/i);
+  if (subjectMatch) subject = subjectMatch[1].trim();
+
+  const bodySplit = text.split(/BODY:/i);
+  if (bodySplit.length > 1) {
+    body = bodySplit[1].trim();
+  } else {
+    body = text.replace(/SUBJECT:\s*(.+)/i, '').trim();
+  }
+
+  return { subject, body };
 }
