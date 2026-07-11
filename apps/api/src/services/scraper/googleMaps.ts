@@ -47,7 +47,7 @@ export async function scrapeGoogleMaps(
         throw new Error(`SerpAPI error: ${response.status} ${response.statusText}`);
       }
       
-      const data = await response.json();
+      const data = await response.json() as any;
       const localResults = data.local_results || [];
       
       for (const result of localResults) {
