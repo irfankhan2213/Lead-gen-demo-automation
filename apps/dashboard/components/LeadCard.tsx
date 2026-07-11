@@ -49,13 +49,37 @@ function ScoreBar({ score }: { score?: number }) {
  * LeadCard — displays a condensed view of a single lead.
  * Used in the leads table/grid.
  */
-export default function LeadCard({ lead }: { lead: Lead }) {
+export default function LeadCard({ 
+  lead,
+  selected,
+  onSelect,
+}: { 
+  lead: Lead;
+  selected?: boolean;
+  onSelect?: (e: React.MouseEvent, id: string) => void;
+}) {
   return (
     <Link
       href={`/dashboard/leads/${lead.id}`}
-      className="card hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] transition-all duration-150 group block"
+      className={`card hover:border-[var(--border-strong)] transition-all duration-150 group block ${selected ? 'border-brand-500 bg-brand-500/5 hover:bg-brand-500/10' : 'hover:bg-[var(--bg-elevated)]'}`}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start gap-4">
+        {/* Selection Checkbox */}
+        {onSelect && (
+          <div className="pt-1" onClick={e => e.preventDefault()}>
+            <input 
+              type="checkbox"
+              className="w-4 h-4 rounded border-[var(--border-strong)] bg-transparent text-brand-500 focus:ring-brand-500/50 cursor-pointer"
+              checked={selected}
+              onChange={(e) => {
+                e.stopPropagation();
+                onSelect(e as unknown as React.MouseEvent, lead.id);
+              }}
+              onClick={e => e.stopPropagation()}
+            />
+          </div>
+        )}
+
         {/* Business info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">

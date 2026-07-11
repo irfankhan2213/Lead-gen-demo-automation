@@ -3,8 +3,8 @@ import logger from '../../lib/logger.js';
 import type { Lead } from '@acquisition-engine/shared';
 
 export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
-  const prompt = `You are an expert web developer and high-converting landing page designer.
-Your task is to write the COMPLETE, single-file HTML code for a modern, beautiful landing page for a local business.
+  const prompt = `You are a world-class Webflow developer and UI/UX designer.
+Your task is to write the COMPLETE, single-file HTML code for a modern, hyper-premium landing page for a local business.
 You must use Tailwind CSS via CDN. Do not use any external CSS files.
 
 BUSINESS DATA:
@@ -17,18 +17,19 @@ Services: ${(lead.services || []).join(', ')}
 Brand Colors: ${(lead.brand_colors || []).join(', ')}
 Phone: ${lead.phone || ''}
 Address: ${lead.address || ''}
-Hero Image URL: ${lead.hero_image_url || \`https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600\`}
+Hero Image URL: ${lead.hero_image_url || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
 
-REQUIREMENTS:
-1. Return ONLY the raw HTML string. No markdown formatting (\`\`\`html), no explanations.
-2. Include <script src="https://cdn.tailwindcss.com"></script> in the head.
-3. The page MUST have:
-   - A beautiful Hero section with a background image (use the Hero Image URL) with a dark overlay, prominent headline, and a clear Call-to-Action button.
-   - An "About Us" section.
-   - A "Services" section featuring grid cards.
-   - A Footer with contact info (Phone, Address).
-4. Use the Brand Colors provided (if available) for buttons and accents using Tailwind arbitrary values (e.g., bg-[${lead.brand_colors?.[0] || '#2563eb'}]).
-5. The design must look extremely premium, modern, and mobile-responsive.
+CRITICAL DESIGN REQUIREMENTS (LIKE A PREMIUM WEBFLOW THEME):
+1. **Hero Section:** Must use the Hero Image URL as a background with a sleek dark overlay (e.g., bg-black/60). Use a massive, bold typography style for the headline (e.g., text-6xl md:text-8xl font-extrabold tracking-tighter). Include a glassmorphism floating badge and a prominent primary CTA button with hover effects.
+2. **Typography & Colors:** Use modern Google Fonts (e.g., 'Inter' or 'Plus Jakarta Sans'). Extract and use the provided Brand Colors via Tailwind arbitrary values (e.g., bg-[${lead.brand_colors?.[0] || '#2563eb'}]).
+3. **Structure & Layout:**
+   - **Navbar:** Sticky, glassmorphism backdrop (backdrop-blur-md bg-white/80 or black/80), with logo and a 'Contact' CTA.
+   - **Trust Bar:** A section below the hero showing "Trusted by 500+ locals in ${lead.city}" with 5-star icons.
+   - **About Section:** Split layout (grid grid-cols-1 md:grid-cols-2). Text on one side, and a beautiful overlapping image composition on the other side.
+   - **Services Section:** A CSS Grid layout with beautiful cards. Use hover micro-interactions (e.g., hover:-translate-y-2 hover:shadow-2xl transition-all duration-300).
+   - **Contact/Footer:** A dark, sleek footer area with phone number, address, and a contact form mockup.
+4. **CSS Features:** Heavily utilize rounded corners (rounded-2xl or rounded-3xl), subtle borders (border border-white/10), soft box-shadows, and gradients.
+5. **Output Constraints:** Return ONLY the raw HTML string starting with "<!DOCTYPE html>". No markdown formatting, no explanations.
 
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 

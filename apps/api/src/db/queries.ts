@@ -330,6 +330,16 @@ export async function recordFollowUp(id: string): Promise<Lead> {
   return rows[0];
 }
 
+/**
+ * Deletes multiple leads by their IDs.
+ * @param ids - Array of Lead UUIDs
+ */
+export async function deleteLeads(ids: string[]): Promise<void> {
+  if (!ids.length) return;
+  // Use ANY($1) with an array parameter to delete multiple rows
+  await query('DELETE FROM leads WHERE id = ANY($1)', [ids]);
+}
+
 // ─── CAMPAIGNS ────────────────────────────────────────────────────────────────
 
 /**

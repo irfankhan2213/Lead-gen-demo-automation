@@ -13,6 +13,37 @@ export default function LeadsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [scoreFilter, setScoreFilter] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+
+  const handleSelect = (e: React.MouseEvent, id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelectedIds(newSet);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedIds.size} leads?`)) return;
+    
+    setDeleting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/leads/bulk-delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(selectedIds) })
+      });
+      if (res.ok) {
+        setSelectedIds(new Set());
+        await fetchLeads();
+      }
+    } catch (err) {
+      console.error('Failed to bulk delete leads:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -118,8 +149,32 @@ export default function LeadsPage() {
       ) : (
         <div className="grid gap-3">
           {filtered.map(lead => (
-            <LeadCard key={lead.id} lead={lead} />
+            <LeadCard 
+              key={lead.id} 
+              lead={lead} 
+              selected={selectedIds.has(lead.id)}
+              onSelect={handleSelect}
+            />
           ))}
+        </div>
+      )}
+
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 lg:ml-32 -translate-x-1/2 bg-[var(--bg-elevated)] border border-brand-500/30 rounded-full px-6 py-3 shadow-2xl shadow-black flex items-center gap-4 z-50 animate-fade-in">
+          <span className="text-sm font-semibold text-[var(--text-primary)]">
+            {selectedIds.size} leads selected
+          </span>
+          <div className="w-px h-4 bg-[var(--border-strong)]" />
+          <button onClick={() => setSelectedIds(new Set())} className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+            Cancel
+          </button>
+          <button 
+            onClick={handleBulkDelete}
+            disabled={deleting}
+            className="btn bg-red-500 hover:bg-red-600 text-white border-none py-1.5 px-4 rounded-full shadow-lg hover:shadow-red-500/25 transition-all text-sm font-semibold"
+          >
+            {deleting ? 'Deleting...' : 'Delete Selected'}
+          </button>
         </div>
       )}
     </div>
