@@ -34,9 +34,16 @@ CRITICAL DESIGN REQUIREMENTS (LIKE A PREMIUM WEBFLOW THEME):
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 
   try {
-    const text = await callLLM(prompt, 3000, false);
+    const text = await callLLM(prompt, 5000, false);
     // Strip markdown code fences if Claude includes them despite instructions
-    const html = text.replace(/```html?\n?/ig, '').replace(/```/g, '').trim();
+    let html = text.replace(/```html?\n?/ig, '').replace(/```/g, '').trim();
+    
+    // Sometimes the LLM includes preamble text before the HTML
+    const docTypeIndex = html.toLowerCase().indexOf('<!doctype html>');
+    if (docTypeIndex > 0) {
+      html = html.substring(docTypeIndex);
+    }
+    
     return html;
   } catch (err) {
     logger.error('AI from-scratch generation failed', { error: (err as Error).message });
