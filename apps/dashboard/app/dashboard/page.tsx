@@ -191,8 +191,31 @@ export default function DashboardPage() {
     leads_this_week: 0,
   });
   const [showModal, setShowModal] = useState(false);
-  const [activeCampaign, setActiveCampaign] = useState<CampaignState | null>(null);
+  
+  // Initialize from localStorage if available
+  const [activeCampaign, setActiveCampaign] = useState<CampaignState | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('activeCampaign');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return { ...parsed, startedAt: new Date(parsed.startedAt) };
+        } catch { /* ignore parse error */ }
+      }
+    }
+    return null;
+  });
+
   const [stopping, setStopping] = useState(false);
+
+  // Sync activeCampaign to localStorage
+  useEffect(() => {
+    if (activeCampaign) {
+      localStorage.setItem('activeCampaign', JSON.stringify(activeCampaign));
+    } else {
+      localStorage.removeItem('activeCampaign');
+    }
+  }, [activeCampaign]);
 
   // ─── Load stats from API ────────────────────────────────────────────────
   useEffect(() => {
