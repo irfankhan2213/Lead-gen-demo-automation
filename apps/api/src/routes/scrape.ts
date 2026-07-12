@@ -29,6 +29,7 @@ const scrapeSchema = z.object({
   businessName: z.string().max(255).trim().optional(),
   campaignName: z.string().max(255).trim().optional(),
   limit: z.union([z.number().min(1), z.literal('unlimited')]).optional().default(20),
+  demo_mode: z.enum(['template', 'ai_scratch']).optional(),
 });
 
 /**
@@ -56,6 +57,7 @@ router.post('/', scrapeRateLimit, async (req: Request, res: Response) => {
       businessName,
       campaignId: campaign.id,
       limit,
+      demo_mode: req.body.demo_mode,
     }, { jobId });
 
     logger.info(`Scrape job queued: ${jobId}`, { niche, city, campaignId: campaign.id });
