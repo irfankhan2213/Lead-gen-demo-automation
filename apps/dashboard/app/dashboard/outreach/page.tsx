@@ -23,12 +23,11 @@ export default function OutreachPage() {
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     try {
-      // Leads that have a demo but haven't been sent email yet
-      const res = await fetch(`${API_URL}/api/leads?limit=100`);
+      // Use server-side filter for deployed demos
+      const res = await fetch(`${API_URL}/api/leads?demo_status=deployed&limit=100`);
       if (res.ok) {
         const data = await res.json() as { leads: Lead[] };
-        // Show leads with deployed demos
-        setLeads(data.leads.filter(l => l.demo_status === 'deployed' || l.demo_url));
+        setLeads(data.leads);
       }
     } finally {
       setLoading(false);
@@ -39,24 +38,37 @@ export default function OutreachPage() {
 
   const generateEmailForLead = async (leadId: string) => {
     try {
-      await fetch(`${API_URL}/api/outreach/generate`, {
+      const res = await fetch(`${API_URL}/api/outreach/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ leadId }),
       });
+      if (!res.ok) {
+        const err = await res.json() as { error: string };
+        setBulkMsg(`❌ Failed: ${err.error}`);
+      }
       fetchLeads();
-    } catch { /* ignore */ }
+    } catch (e) {
+      setBulkMsg(`❌ Network error: ${(e as Error).message}`);
+    }
   };
 
   const sendToLead = async (leadId: string) => {
     try {
-      await fetch(`${API_URL}/api/outreach/send`, {
+      const res = await fetch(`${API_URL}/api/outreach/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ leadId }),
       });
-      fetchLeads();
-    } catch { /* ignore */ }
+      if (!res.ok) {
+        const err = await res.json() as { error: string };
+        setBulkMsg(`❌ Failed to send: ${err.error}`);
+      } else {
+        fetchLeads();
+      }
+    } catch (e) {
+      setBulkMsg(`❌ Network error: ${(e as Error).message}`);
+    }
   };
 
   const bulkSend = async () => {
@@ -81,9 +93,8 @@ export default function OutreachPage() {
   const generateAllEmails = async () => {
     setGeneratingAll(true);
     const readyLeads = leads.filter(l => l.demo_url && !l.email_subject && l.outreach_status === 'pending');
-    for (const lead of readyLeads) {
-      await generateEmailForLead(lead.id);
-    }
+    // Generate all emails in parallel for speed
+    await Promise.allSettled(readyLeads.map(lead => generateEmailForLead(lead.id)));
     setGeneratingAll(false);
     fetchLeads();
   };

@@ -28,6 +28,11 @@ import type {
   WebsiteScrapedData,
 } from '@acquisition-engine/shared';
 
+/** Converts first letter of each word to uppercase */
+function toTitleCase(str: string) {
+  return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+}
+
 /**
  * Orchestrates a full business profile scrape for a niche + city.
  * Emits real-time SSE events to the dashboard.
@@ -36,9 +41,6 @@ import type {
  */
 export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<void> {
   const log = createSSELogger(input.jobId);
-  function toTitleCase(str: string) {
-    return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
-  }
 
   const niche = input.niche.trim();
   const city = toTitleCase(input.city.trim());

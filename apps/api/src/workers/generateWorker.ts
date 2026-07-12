@@ -17,7 +17,7 @@ import type { GenerateJobData } from '@acquisition-engine/shared';
 const worker = new Worker<GenerateJobData>(
   'generate',
   async (job: Job<GenerateJobData>) => {
-    const { jobId, leadId } = job.data;
+    const { jobId, leadId, demo_mode } = job.data;
     const log = createSSELogger(jobId);
 
     logger.info(`[GenerateWorker] Processing job ${job.id} for lead ${leadId}`);
@@ -26,10 +26,11 @@ const worker = new Worker<GenerateJobData>(
     const lead = await getLeadById(leadId);
     if (!lead) throw new Error(`Lead not found: ${leadId}`);
 
-    log.log(`🎨 Building demo site for ${lead.business_name}...`);
-
-    // Generate HTML
-    const html = await buildDemoSite(lead);
+    // Generate HTML — prefer demo_mode from job data over DB value
+    const effectiveDemoMode = demo_mode ?? lead.demo_mode ?? 'template';
+    log.log(`🎨 Building demo site for ${lead.business_name} (mode: ${effectiveDemoMode})...`);
+    const leadWithMode = { ...lead, demo_mode: effectiveDemoMode } as typeof lead;
+    const html = await buildDemoSite(leadWithMode);
     await updateLeadDemo(leadId, html, 'ready');
     log.success(`✅ Demo HTML generated (${Math.round(html.length / 1024)}KB)`);
 
@@ -74,8 +75,15 @@ worker.on('completed', (job) => {
   logger.info(`[GenerateWorker] ✅ Job ${job.id} completed`);
 });
 
-worker.on('failed', (job, err) => {
+worker.on('failed', async (job, err) => {
   logger.error(`[GenerateWorker] ❌ Job ${job?.id} failed`, { error: err.message });
+  // Mark lead as failed so user can retry from the UI
+  if (job?.data?.leadId) {
+    try {
+      const { updateLeadDemo } = await import('../db/queries.js');
+      await updateLeadDemo(job.data.leadId, '', 'failed');
+    } catch { /* ignore secondary failure */ }
+  }
 });
 
 worker.on('error', (err) => {

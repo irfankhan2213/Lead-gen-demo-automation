@@ -19,6 +19,7 @@ import {
   logOutreachEvent,
   getCampaigns,
   createCampaign,
+  markEmailOpened,
 } from '../db/queries.js';
 import { outreachQueue } from '../lib/queue.js';
 import { writeEmail } from '../services/ai/writeEmail.js';
@@ -178,16 +179,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
 
     // Update lead status for opens
     if (eventType === 'opened') {
-      const { pool } = await import('../db/queries.js');
-      const client = await pool.connect();
-      try {
-        await client.query(
-          "UPDATE leads SET outreach_status = 'opened', email_opened_at = NOW() WHERE id = $1 AND outreach_status = 'sent'",
-          [leadId]
-        );
-      } finally {
-        client.release();
-      }
+      await markEmailOpened(leadId);
     }
 
     logger.info(`Webhook received: ${eventType} for lead ${leadId}`);

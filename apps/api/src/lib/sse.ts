@@ -40,8 +40,21 @@ export function registerSSEClient(res: Response, jobId?: string): void {
     globalClients.add(res);
   }
 
+  // 30-second heartbeat to keep connection alive and detect dead clients
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(':heartbeat\n\n');
+    } catch {
+      // Client is dead — clean up
+      clearInterval(heartbeat);
+      if (jobId) clients.get(jobId)?.delete(res);
+      else globalClients.delete(res);
+    }
+  }, 30_000);
+
   // Clean up on disconnect
   res.on('close', () => {
+    clearInterval(heartbeat);
     if (jobId) clients.get(jobId)?.delete(res);
     else globalClients.delete(res);
   });

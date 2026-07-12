@@ -8,11 +8,6 @@ import { Redis } from 'ioredis';
 import logger from './logger.js';
 import type { ScrapeJobData, GenerateJobData, OutreachJobData } from '@acquisition-engine/shared';
 
-import dotenv from 'dotenv';
-dotenv.config();
-import dns from 'dns';
-dns.setDefaultResultOrder('ipv4first');
-
 const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
 
 const getRedisOptions = () => {

@@ -38,8 +38,15 @@ export async function scrapeInstagramProfile(instagramUrl?: string): Promise<{
 
   try {
     const page = await context.newPage();
-    await page.goto(instagramUrl, { waitUntil: 'domcontentloaded', timeout: 15_000 });
-    await new Promise((r) => setTimeout(r, 2000));
+    await page.goto(instagramUrl, { waitUntil: 'domcontentloaded', timeout: 8_000 });
+    await new Promise((r) => setTimeout(r, 1500));
+
+    // Check if we hit the login wall — if so, bail early
+    const url = page.url();
+    if (url.includes('/accounts/login') || url.includes('login')) {
+      logger.info(`Instagram: login wall detected for ${instagramUrl}, skipping`);
+      return {};
+    }
 
     const html = await page.content();
     const $ = cheerio.load(html);

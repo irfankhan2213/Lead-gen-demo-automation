@@ -5,7 +5,7 @@ import type { Lead } from '@acquisition-engine/shared';
 export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
   const prompt = `You are a world-class Webflow developer and UI/UX designer.
 Your task is to write the COMPLETE, single-file HTML code for a modern, hyper-premium landing page for a local business.
-You must use Tailwind CSS via CDN. Do not use any external CSS files.
+You must use Tailwind CSS v3 via CDN (<script src="https://cdn.tailwindcss.com"></script>). Do not use any external CSS files or older Tailwind v2 CDN.
 
 BUSINESS DATA:
 Name: ${lead.business_name}

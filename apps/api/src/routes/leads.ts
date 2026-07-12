@@ -116,16 +116,26 @@ router.post('/bulk-delete', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'No IDs provided' });
     }
 
-    // Optionally: fetch leads to see if we need to delete Vercel deployments, 
-    // but this could be slow for many leads. We'll skip Vercel cleanup for bulk delete 
-    // to keep it fast, or they will be orphaned on Vercel. 
-    // (Vercel has limit on projects anyway, but for this demo, orphaned Vercel projects might be acceptable. 
-    // Or we could fetch and delete them asynchronously).
-    
-    const { deleteLeads } = await import('../db/queries.js');
+    // Fetch leads to get Vercel deployment IDs before deleting
+    const { getLeadById, deleteLeads } = await import('../db/queries.js');
+    const leadsWithDeployments = await Promise.allSettled(ids.map(id => getLeadById(id)));
+    const deploymentIds = leadsWithDeployments
+      .filter(r => r.status === 'fulfilled' && r.value?.vercel_deployment_id)
+      .map(r => (r as PromiseFulfilledResult<any>).value.vercel_deployment_id as string);
+
+    // Delete from DB immediately so user gets fast feedback
     await deleteLeads(ids);
-    
     res.json({ message: 'Leads deleted successfully', count: ids.length });
+
+    // Clean up Vercel deployments asynchronously (fire-and-forget)
+    if (deploymentIds.length > 0) {
+      Promise.allSettled(
+        deploymentIds.map(id => deleteDemoFromVercel(id))
+      ).then(results => {
+        const failed = results.filter(r => r.status === 'rejected').length;
+        if (failed > 0) logger.warn(`Vercel cleanup: ${failed}/${deploymentIds.length} deletions failed`);
+      });
+    }
   } catch (err) {
     if (err instanceof z.ZodError) {
       return res.status(400).json({ error: 'Invalid payload', details: err.errors });

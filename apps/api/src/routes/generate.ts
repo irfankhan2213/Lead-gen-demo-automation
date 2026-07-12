@@ -39,7 +39,11 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     const jobId = uuidv4();
-    await generateQueue.add('generate-demo' as any, { jobId, leadId }, { jobId: `gen-${leadId}` });
+    await generateQueue.add('generate-demo' as any, {
+      jobId,
+      leadId,
+      demo_mode: lead.demo_mode ?? 'template',
+    }, { jobId: `gen-${leadId}` });
 
     logger.info(`Demo generation queued for lead ${leadId}`, { jobId });
 
@@ -54,6 +58,34 @@ router.post('/', async (req: Request, res: Response) => {
     }
     logger.error('Failed to queue demo generation', { error: (err as Error).message });
     res.status(500).json({ error: 'Failed to queue demo generation' });
+  }
+});
+
+/**
+ * POST /api/generate-demo/retry-failed
+ * Re-queues all leads with demo_status = 'failed' for demo generation.
+ */
+router.post('/retry-failed', async (_req: Request, res: Response) => {
+  try {
+    const { getLeads } = await import('../db/queries.js');
+    const failedLeads = await getLeads({ demo_status: 'failed' as any }, 100, 0);
+
+    let queued = 0;
+    for (const lead of failedLeads) {
+      const jobId = uuidv4();
+      await generateQueue.add('generate-demo' as any, {
+        jobId,
+        leadId: lead.id,
+        demo_mode: lead.demo_mode ?? 'template',
+      }, { jobId: `gen-${lead.id}` });
+      queued++;
+    }
+
+    logger.info(`Retry failed demos: queued ${queued} jobs`);
+    res.json({ queued, message: `Re-queued ${queued} failed demo generations` });
+  } catch (err) {
+    logger.error('Failed to retry failed demos', { error: (err as Error).message });
+    res.status(500).json({ error: 'Failed to retry failed demos' });
   }
 });
 

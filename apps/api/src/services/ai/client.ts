@@ -23,7 +23,7 @@ export async function callLLM(prompt: string, maxTokens = 1024, jsonMode = false
     logger.info('Calling LLM via Gemini API...');
     try {
       const genAI = new GoogleGenerativeAI(geminiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
       const generationConfig: any = { maxOutputTokens: maxTokens, temperature: 0.2 };
       if (jsonMode) {
         generationConfig.responseMimeType = 'application/json';

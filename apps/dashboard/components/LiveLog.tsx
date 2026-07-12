@@ -61,16 +61,18 @@ export default function LiveLog({
   }, []);
 
   const openConnection = useCallback(
-    (url: string, onConnected?: () => void) => {
+    (url: string, mountedRef: React.MutableRefObject<boolean>, onConnected?: () => void) => {
       const es = new EventSource(url);
       esRefs.current.push(es);
 
       es.onopen = () => {
+        if (!mountedRef.current) return;
         setConnected(true);
         onConnected?.();
       };
 
       es.onmessage = (e) => {
+        if (!mountedRef.current) return;
         try {
           const event = JSON.parse(e.data) as SSEEvent | { type: string };
 
@@ -80,12 +82,15 @@ export default function LiveLog({
           const sseEvent = event as SSEEvent;
           addLine(sseEvent);
 
-          // Detect campaign completion via a "complete" level or message
+          // Detect campaign completion: "🎉 Campaign scrape complete!" message from scraper
           if (
             sseEvent.level === 'success' &&
             typeof sseEvent.message === 'string' &&
-            sseEvent.message.toLowerCase().includes('job') &&
-            sseEvent.message.toLowerCase().includes('complet')
+            (
+              sseEvent.message.toLowerCase().includes('campaign scrape complete') ||
+              sseEvent.message.toLowerCase().includes('campaign complete') ||
+              (sseEvent.message.toLowerCase().includes('complet') && sseEvent.message.toLowerCase().includes('saved'))
+            )
           ) {
             onComplete?.();
           }
@@ -93,12 +98,15 @@ export default function LiveLog({
       };
 
       es.onerror = () => {
+        if (!mountedRef.current) return;
         setConnected(false);
         es.close();
         // Remove from refs
         esRefs.current = esRefs.current.filter(x => x !== es);
-        // Reconnect after 3s if still mounted
-        setTimeout(() => openConnection(url), 3000);
+        // Reconnect after 3s only if still mounted
+        setTimeout(() => {
+          if (mountedRef.current) openConnection(url, mountedRef);
+        }, 3000);
       };
 
       return es;
@@ -107,19 +115,21 @@ export default function LiveLog({
   );
 
   useEffect(() => {
+    const mountedRef = { current: true };
+
     // Close all previous connections
     esRefs.current.forEach(es => es.close());
     esRefs.current = [];
 
     // 1. Always open a global connection so we get all activity
     const globalUrl = `${API_URL}/api/events`;
-    openConnection(globalUrl);
+    openConnection(globalUrl, mountedRef);
 
     // 2. If a jobId is active, also open a job-scoped connection
     //    This ensures events emitted right after job creation are captured
     if (jobId) {
       const jobUrl = `${API_URL}/api/events?jobId=${encodeURIComponent(jobId)}`;
-      openConnection(jobUrl, () => {
+      openConnection(jobUrl, mountedRef, () => {
         // Add a local marker that this job's stream started
         addLine({
           jobId,
@@ -131,6 +141,7 @@ export default function LiveLog({
     }
 
     return () => {
+      mountedRef.current = false;
       esRefs.current.forEach(es => es.close());
       esRefs.current = [];
     };

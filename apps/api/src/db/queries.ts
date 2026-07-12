@@ -16,11 +16,6 @@ import type {
   DemoStatus,
 } from '@acquisition-engine/shared';
 
-import dotenv from 'dotenv';
-dotenv.config();
-import dns from 'dns';
-dns.setDefaultResultOrder('ipv4first');
-
 let dbUrl = process.env.DATABASE_URL;
 if (dbUrl && dbUrl.includes('sslmode=')) {
   try {
@@ -102,7 +97,7 @@ export async function createLead(data: LeadData): Promise<Lead> {
       $18, $19, $20, $21,
       $22, $23, 'none', 'pending',
       $24, $25
-    ) RETURNING *`,
+    ) ON CONFLICT (business_name, city) DO NOTHING RETURNING *`,
     [
       data.campaign_id ?? null,
       data.niche,
@@ -131,7 +126,15 @@ export async function createLead(data: LeadData): Promise<Lead> {
       data.demo_mode ?? 'template',
     ]
   );
-  return rows[0];
+  
+  if (rows[0]) return rows[0];
+  
+  // ON CONFLICT returned no row — lead already exists, fetch and return it
+  const existing = await query<Lead>(
+    'SELECT * FROM leads WHERE business_name = $1 AND city = $2 LIMIT 1',
+    [data.business_name, data.city]
+  );
+  return existing[0];
 }
 
 /**
@@ -383,13 +386,35 @@ export async function incrementCampaignCounter(
   campaignId: string,
   field: 'leads_count' | 'demos_generated' | 'emails_sent' | 'replies_received'
 ): Promise<void> {
+  // Whitelist allowed fields to prevent SQL injection from type-unsafe callers
+  const ALLOWED_FIELDS: Record<string, string> = {
+    leads_count: 'leads_count',
+    demos_generated: 'demos_generated',
+    emails_sent: 'emails_sent',
+    replies_received: 'replies_received',
+  };
+  const safeField = ALLOWED_FIELDS[field];
+  if (!safeField) throw new Error(`Invalid campaign counter field: ${field}`);
+
   await query(
-    `UPDATE campaigns SET ${field} = ${field} + 1 WHERE id = $1`,
+    `UPDATE campaigns SET ${safeField} = ${safeField} + 1 WHERE id = $1`,
     [campaignId]
   );
 }
 
 // ─── OUTREACH LOG ─────────────────────────────────────────────────────────────
+
+/**
+ * Marks a lead's email as opened (called by Resend webhook).
+ * @param id - Lead UUID
+ */
+export async function markEmailOpened(id: string): Promise<void> {
+  await query(
+    `UPDATE leads SET outreach_status = 'opened', email_opened_at = NOW()
+     WHERE id = $1 AND outreach_status = 'sent'`,
+    [id]
+  );
+}
 
 /**
  * Logs an outreach event for a lead.
