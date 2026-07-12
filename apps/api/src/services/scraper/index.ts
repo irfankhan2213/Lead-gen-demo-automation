@@ -159,6 +159,7 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
       log.error(`❌ Failed to process ${business.name}: ${(err as Error).message}`);
       logger.error('Scrape orchestrator error', { business: business.name, error: (err as Error).stack });
     }
+  }
   } catch (err) {
     log.error(`❌ Scraping loop failed: ${(err as Error).message}`);
   }
