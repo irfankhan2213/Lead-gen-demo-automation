@@ -33,7 +33,7 @@ export async function* scrapeGoogleMaps(
   try {
     logger.info(`Fetching businesses from SerpAPI for query: ${niche} in ${city}`);
     
-    let nextUrl = `https://serpapi.com/search.json?engine=google_local&q=${query}&location=${encodeURIComponent(city)}&api_key=${serpapiKey}`;
+    let nextUrl = `https://serpapi.com/search.json?engine=google_local&q=${query}&api_key=${serpapiKey}`;
     let pageCount = 0;
     let yieldedCount = 0;
     
