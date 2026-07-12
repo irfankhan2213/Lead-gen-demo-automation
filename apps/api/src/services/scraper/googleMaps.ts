@@ -17,18 +17,17 @@ import type { GoogleMapsBusiness } from '@acquisition-engine/shared';
  * @param city - e.g. "Ludhiana", "Austin TX"
  * @param maxResults - Maximum businesses to return (default 20)
  */
-export async function scrapeGoogleMaps(
+export async function* scrapeGoogleMaps(
   niche: string,
   city: string,
   maxResults: number | 'unlimited' = 20
-): Promise<GoogleMapsBusiness[]> {
+): AsyncGenerator<GoogleMapsBusiness> {
   const serpapiKey = process.env.SERPAPI_KEY;
   if (!serpapiKey) {
     logger.error('SERPAPI_KEY is not defined in .env');
     throw new Error('SERPAPI_KEY is missing');
   }
 
-  const businesses: GoogleMapsBusiness[] = [];
   const query = encodeURIComponent(`${niche} in ${city}`);
   
   try {
@@ -36,11 +35,11 @@ export async function scrapeGoogleMaps(
     
     let nextUrl = `https://serpapi.com/search.json?engine=google_local&q=${query}&location=${encodeURIComponent(city)}&api_key=${serpapiKey}`;
     let pageCount = 0;
+    let yieldedCount = 0;
     
     while (nextUrl) {
-      if (maxResults !== 'unlimited' && businesses.length >= maxResults) break;
       // Safety limit to avoid infinite loops or insane API costs
-      if (pageCount >= 10 && maxResults === 'unlimited') break;
+      if (pageCount >= 10) break;
       
       const response = await fetch(nextUrl);
       if (!response.ok) {
@@ -51,11 +50,11 @@ export async function scrapeGoogleMaps(
       const localResults = data.local_results || [];
       
       for (const result of localResults) {
-        if (maxResults !== 'unlimited' && businesses.length >= maxResults) break;
+        if (maxResults !== 'unlimited' && yieldedCount >= maxResults) return;
         
         if (!result.title) continue;
 
-        businesses.push({
+        yield {
           name: result.title,
           address: result.address || city,
           phone: result.phone || '',
@@ -65,18 +64,17 @@ export async function scrapeGoogleMaps(
           google_review_count: result.reviews ? parseInt(result.reviews, 10) : undefined,
           category: result.type || niche,
           hero_image_url: result.thumbnail || undefined,
-        });
+        };
+        yieldedCount++;
       }
       
       nextUrl = data.serpapi_pagination?.next ? `${data.serpapi_pagination.next}&api_key=${serpapiKey}` : '';
       pageCount++;
     }
 
-    logger.info(`SerpAPI returned ${businesses.length} businesses for "${niche}" in "${city}"`);
+    logger.info(`SerpAPI yielded ${yieldedCount} raw businesses for "${niche}" in "${city}"`);
   } catch (err) {
     logger.error('SerpAPI search failed', { error: (err as Error).message });
   }
-
-  return businesses;
 }
 

@@ -46,20 +46,22 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
 
   log.log(`🔍 Searching Google Maps for "${niche}" in "${city}"...`);
 
-  let businesses: GoogleMapsBusiness[] = [];
+  let savedLeadsCount = 0;
+  const limit = input.limit === 'unlimited' ? 9999 : (input.limit ?? 20);
+  let processedRawCount = 0;
+
   try {
-    businesses = await scrapeGoogleMaps(niche, city, input.limit ?? 20);
-    log.success(`✅ Found ${businesses.length} businesses on Google Maps`);
-  } catch (err) {
-    log.error(`❌ Google Maps scrape failed: ${(err as Error).message}`);
-    return;
-  }
+    // Process each business sequentially to respect rate limits
+    for await (const business of scrapeGoogleMaps(niche, city, 'unlimited')) {
+      if (savedLeadsCount >= limit) {
+        log.log(`🎯 Reached target limit of ${limit} filtered leads. Stopping.`);
+        break;
+      }
+      
+      processedRawCount++;
+      log.log(`📋 Processing [${processedRawCount}]: ${business.name} (Saved: ${savedLeadsCount}/${limit})`);
 
-  // Process each business sequentially to respect rate limits
-  for (const business of businesses) {
-    log.log(`📋 Processing: ${business.name}`);
-
-    try {
+      try {
       // Run enrichment scrapers in parallel
       const [websiteResult, redditResult, yelpResult, igResult] = await Promise.allSettled([
         business.website_url
@@ -129,6 +131,9 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         await incrementCampaignCounter(campaignId, 'leads_count').catch(() => {});
       }
 
+      // Increment saved count
+      savedLeadsCount++;
+
       // Run AI analysis immediately
       log.log(`🤖 Running AI analysis for ${business.name}...`);
       try {
@@ -136,20 +141,14 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         await updateLeadAIAnalysis(lead.id, analysis);
         log.success(`✨ AI score: ${analysis.opportunity_score}/10 — ${analysis.opportunity_reason}`);
 
-        // Auto-queue demo generation for high-opportunity leads
-        if (analysis.opportunity_score >= 7) {
-          const genJobId = uuidv4();
-          await generateQueue.add('generate-demo' as any, {
-            jobId: genJobId,
-            leadId: lead.id,
-            demo_mode: input.demo_mode ?? 'template',
-          });
-          log.log(`📋 Queued for demo generation (score: ${analysis.opportunity_score}/10)`);
-        } else if (analysis.opportunity_score <= 4) {
-          log.log(`⏭️ Skipping demo (score: ${analysis.opportunity_score}/10 — already has good site)`);
-        } else {
-          log.log(`👁️ Score ${analysis.opportunity_score}/10 — added to manual review queue`);
-        }
+        // Auto-queue demo generation for EVERY saved lead
+        const genJobId = uuidv4();
+        await generateQueue.add('generate-demo' as any, {
+          jobId: genJobId,
+          leadId: lead.id,
+          demo_mode: input.demo_mode ?? 'template',
+        });
+        log.log(`📋 Queued for demo generation (score: ${analysis.opportunity_score}/10)`);
       } catch (aiErr) {
         log.warn(`⚠️ AI analysis skipped: ${(aiErr as Error).message}`);
       }
@@ -160,7 +159,9 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
       log.error(`❌ Failed to process ${business.name}: ${(err as Error).message}`);
       logger.error('Scrape orchestrator error', { business: business.name, error: (err as Error).stack });
     }
+  } catch (err) {
+    log.error(`❌ Scraping loop failed: ${(err as Error).message}`);
   }
 
-  log.success(`🎉 Campaign scrape complete! Processed ${businesses.length} businesses.`);
+  log.success(`🎉 Campaign scrape complete! Saved ${savedLeadsCount} filtered businesses (from ${processedRawCount} raw results).`);
 }
