@@ -72,9 +72,11 @@ CRITICAL JSON FORMATTING RULES:
   const jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
 
   try {
-    return JSON.parse(jsonStr) as Record<string, string>;
-  } catch {
-    logger.warn('Failed to parse AI site copy JSON, using defaults');
+    const { jsonrepair } = await import('jsonrepair');
+    const repairedJson = jsonrepair(jsonStr);
+    return JSON.parse(repairedJson) as Record<string, string>;
+  } catch (err) {
+    logger.warn('Failed to parse AI site copy JSON, using defaults: ' + (err as Error).message);
     return {
       hero_headline: lead.hero_headline ?? `Welcome to ${lead.business_name}`,
       hero_subline: lead.hero_subline ?? `Proudly serving ${lead.city}`,

@@ -11,6 +11,8 @@ import { callLLM } from './client.js';
 import logger from '../../lib/logger.js';
 import type { LeadData, AIAnalysis } from '@acquisition-engine/shared';
 
+import { jsonrepair } from 'jsonrepair';
+
 /**
  * Calls Claude to analyze a business's brand and opportunity score.
  *
@@ -89,33 +91,9 @@ CRITICAL JSON FORMATTING RULES:
     // Parse JSON — strip any markdown code fences if present
     let jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
     
-    // Fix literal newlines inside JSON strings (common LLM formatting error)
-    let inString = false;
-    let escaped = false;
-    let cleanedJson = '';
-    for (let i = 0; i < jsonStr.length; i++) {
-      const c = jsonStr[i];
-      if (c === '"' && !escaped) {
-        inString = !inString;
-        cleanedJson += c;
-      } else if (c === '\\' && !escaped) {
-        escaped = true;
-        cleanedJson += c;
-      } else {
-        if (escaped) escaped = false;
-        if (inString && c === '\n') {
-          cleanedJson += '\\n';
-        } else if (inString && c === '\r') {
-          cleanedJson += '\\r';
-        } else if (inString && c === '\t') {
-          cleanedJson += '\\t';
-        } else {
-          cleanedJson += c;
-        }
-      }
-    }
-
-    const analysis = JSON.parse(cleanedJson) as AIAnalysis;
+    // Repair broken JSON emitted by LLM (unescaped quotes, newlines, etc.)
+    const repairedJson = jsonrepair(jsonStr);
+    const analysis = JSON.parse(repairedJson) as AIAnalysis;
 
     // Validate required fields
     if (typeof analysis.opportunity_score !== 'number') {
