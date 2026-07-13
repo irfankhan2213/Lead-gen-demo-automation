@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS leads (
 
   -- Demo
   demo_mode VARCHAR(50) DEFAULT 'template',
+  design_language VARCHAR(50) DEFAULT 'corporate',
   demo_status VARCHAR(50) NOT NULL DEFAULT 'none',
   demo_html TEXT,
   demo_url VARCHAR(500),

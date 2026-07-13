@@ -89,6 +89,11 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
   // Load base HTML template
   let html = loadTemplate(template);
 
+  // Inject design language style overrides
+  const designLanguage = lead.design_language || 'corporate';
+  const overrides = getDesignLanguageStyleOverrides(designLanguage);
+  html = html.replace('</head>', `${overrides}\n</head>`);
+
   // Get color palette
   const defaultColors = DEFAULT_COLORS[template] ?? DEFAULT_COLORS.generic;
   const brandColors = Array.isArray(lead.brand_colors) ? lead.brand_colors : [];
@@ -166,4 +171,322 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
   });
 
   return html;
+}
+
+function getDesignLanguageStyleOverrides(language: string): string {
+  const overrides: Record<string, string> = {
+    luxury: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+        :root {
+          --bg: #F9F8F6;
+          --card-bg: #F9F8F6;
+          --text: #1A1A1A;
+          --text-light: #6C6863;
+          --border: rgba(26, 26, 26, 0.15);
+          --primary: #1A1A1A;
+          --accent: #D4AF37;
+        }
+        body {
+          font-family: 'Inter', sans-serif !important;
+          background-color: #F9F8F6 !important;
+          color: #1A1A1A !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Playfair Display', serif !important;
+        }
+        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+          border-radius: 0px !important;
+        }
+        img {
+          filter: grayscale(100%);
+          transition: filter 1.5s ease-out, transform 1.5s ease-out !important;
+        }
+        img:hover {
+          filter: grayscale(0%) !important;
+          transform: scale(1.03) !important;
+        }
+      </style>
+    `,
+    swiss: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        :root {
+          --bg: #FFFFFF;
+          --card-bg: #F2F2F2;
+          --text: #000000;
+          --text-light: #666666;
+          --border: #000000;
+          --primary: #000000;
+          --accent: #FF3000;
+        }
+        body {
+          font-family: 'Inter', sans-serif !important;
+          background-color: #FFFFFF !important;
+          color: #000000 !important;
+          background-image: radial-gradient(rgba(0,0,0,0.08) 1px, transparent 0);
+          background-size: 24px 24px;
+        }
+        h1, h2, h3, h4, .serif, button, .btn, .logo {
+          font-family: 'Inter', sans-serif !important;
+          font-weight: 900 !important;
+          text-transform: uppercase !important;
+        }
+        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+          border-radius: 0px !important;
+          border-width: 2px !important;
+          border-color: #000000 !important;
+          box-shadow: none !important;
+        }
+        .nav-cta, .reserve-btn, .btn-primary {
+          background-color: #FF3000 !important;
+          color: #FFFFFF !important;
+          border-color: #000000 !important;
+        }
+      </style>
+    `,
+    flat: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap');
+        :root {
+          --bg: #FFFFFF;
+          --card-bg: #F3F4F6;
+          --text: #111827;
+          --text-light: #4B5563;
+          --border: #E5E7EB;
+          --primary: #3B82F6;
+          --accent: #10B981;
+        }
+        body {
+          font-family: 'Outfit', sans-serif !important;
+          background-color: #FFFFFF !important;
+          color: #111827 !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Outfit', sans-serif !important;
+          font-weight: 800 !important;
+        }
+        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+          border-radius: 8px !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        .card {
+          background-color: #F3F4F6 !important;
+        }
+      </style>
+    `,
+    material: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        :root {
+          --bg: #FFFBFE;
+          --card-bg: #F3EDF7;
+          --text: #1C1B1F;
+          --text-light: #49454F;
+          --border: #79747E;
+          --primary: #6750A4;
+          --accent: #7D5260;
+        }
+        body {
+          font-family: 'Roboto', sans-serif !important;
+          background-color: #FFFBFE !important;
+          color: #1C1B1F !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Roboto', sans-serif !important;
+          font-weight: 500 !important;
+        }
+        button, .nav-cta, .reserve-btn, .btn {
+          border-radius: 9999px !important;
+        }
+        .card {
+          border-radius: 24px !important;
+          background-color: #F3EDF7 !important;
+        }
+        input {
+          border-radius: 12px 12px 0 0 !important;
+          border-bottom: 2px solid #79747E !important;
+        }
+      </style>
+    `,
+    claymorphism: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=DM+Sans:wght@400;500;700&display=swap');
+        :root {
+          --bg: #F4F1FA;
+          --card-bg: #FFFFFF;
+          --text: #332F3A;
+          --text-light: #635F69;
+          --border: transparent;
+          --primary: #7C3AED;
+          --accent: #DB2777;
+        }
+        body {
+          font-family: 'DM Sans', sans-serif !important;
+          background-color: #F4F1FA !important;
+          color: #332F3A !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Nunito', sans-serif !important;
+          font-weight: 900 !important;
+        }
+        button, .nav-cta, .reserve-btn, .btn {
+          border-radius: 20px !important;
+          box-shadow: 12px 12px 24px rgba(124, 58, 237, 0.2) !important;
+          background: linear-gradient(to bottom right, #A78BFA, #7C3AED) !important;
+          color: #fff !important;
+          border: none !important;
+        }
+        .card {
+          border-radius: 32px !important;
+          box-shadow: 16px 16px 32px rgba(160, 150, 180, 0.15) !important;
+          background-color: #ffffff !important;
+          border: none !important;
+        }
+        input {
+          border-radius: 20px !important;
+          box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.05) !important;
+          background-color: #EFEBF5 !important;
+          border: none !important;
+        }
+      </style>
+    `,
+    neumorphism: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;500&display=swap');
+        :root {
+          --bg: #E0E0E0;
+          --card-bg: #E0E0E0;
+          --text: #2D3748;
+          --text-light: #4A5568;
+          --border: transparent;
+          --primary: #4A5568;
+          --accent: #4A5568;
+        }
+        body {
+          font-family: 'Inter', sans-serif !important;
+          background-color: #E0E0E0 !important;
+          color: #2D3748 !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Outfit', sans-serif !important;
+        }
+        .card {
+          border-radius: 20px !important;
+          background: #E0E0E0 !important;
+          box-shadow: 9px 9px 16px #bebebe, -9px -9px 16px #ffffff !important;
+          border: none !important;
+        }
+        button, .nav-cta, .reserve-btn, .btn {
+          border-radius: 12px !important;
+          background: #E0E0E0 !important;
+          box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff !important;
+          color: #2D3748 !important;
+          border: none !important;
+        }
+        button:active, .btn:active {
+          box-shadow: inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff !important;
+        }
+      </style>
+    `,
+    industrial: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        :root {
+          --bg: #121212;
+          --card-bg: #1E1E1E;
+          --text: #FFFFFF;
+          --text-light: #AAAAAA;
+          --border: #333333;
+          --primary: #FF6600;
+          --accent: #FF6600;
+        }
+        body {
+          font-family: 'Space Mono', monospace !important;
+          background-color: #121212 !important;
+          color: #FFFFFF !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Space Mono', monospace !important;
+          font-weight: 700 !important;
+        }
+        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+          border-radius: 0px !important;
+          border: 1px solid #333333 !important;
+        }
+        .nav-cta, .reserve-btn, .btn-primary {
+          background-color: #FF6600 !important;
+          color: #000000 !important;
+          border-color: #FF6600 !important;
+        }
+      </style>
+    `,
+    corporate: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+        :root {
+          --bg: #FFFFFF;
+          --card-bg: #F7FAFC;
+          --text: #1A202C;
+          --text-light: #4A5568;
+          --border: #E2E8F0;
+          --primary: #1A365D;
+          --accent: #D69E2E;
+        }
+        body {
+          font-family: 'Inter', sans-serif !important;
+          background-color: #FFFFFF !important;
+          color: #1A202C !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Playfair Display', serif !important;
+        }
+        .card {
+          border-radius: 4px !important;
+          border: 1px solid #E2E8F0 !important;
+        }
+        button, .nav-cta, .reserve-btn, .btn {
+          border-radius: 4px !important;
+          background-color: #1A365D !important;
+          color: #FFFFFF !important;
+        }
+      </style>
+    `,
+    botanical: `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;700&display=swap');
+        :root {
+          --bg: #F2EFE9;
+          --card-bg: #E5E0D8;
+          --text: #2C3E2C;
+          --text-light: #5A6E5A;
+          --border: #D8D1C5;
+          --primary: #3F5E4D;
+          --accent: #C88A58;
+        }
+        body {
+          font-family: 'DM Sans', sans-serif !important;
+          background-color: #F2EFE9 !important;
+          color: #2C3E2C !important;
+        }
+        h1, h2, h3, h4, .serif, .logo {
+          font-family: 'Playfair Display', serif !important;
+          color: #2C3E2C !important;
+        }
+        .card {
+          border-radius: 16px !important;
+          background-color: #E5E0D8 !important;
+          border: none !important;
+        }
+        button, .nav-cta, .reserve-btn, .btn {
+          border-radius: 30px !important;
+          background-color: #3F5E4D !important;
+          color: #FFFFFF !important;
+          border: none !important;
+        }
+      </style>
+    `
+  };
+  return overrides[language] || overrides['corporate'];
 }

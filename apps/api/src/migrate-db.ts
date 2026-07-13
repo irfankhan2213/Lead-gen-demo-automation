@@ -24,6 +24,9 @@ async function migrate() {
     await client.query(`ALTER TABLE leads ADD COLUMN IF NOT EXISTS demo_mode VARCHAR(50) DEFAULT 'template';`);
     console.log('Successfully added demo_mode to leads table.');
 
+    await client.query(`ALTER TABLE leads ADD COLUMN IF NOT EXISTS design_language VARCHAR(50) DEFAULT 'corporate';`);
+    console.log('Successfully added design_language to leads table.');
+
     // Add unique constraint for ON CONFLICT (business_name, city)
     await client.query(`ALTER TABLE leads ADD CONSTRAINT leads_business_city_unique UNIQUE (business_name, city);`).catch(e => {
       if (!e.message.includes('already exists')) {
