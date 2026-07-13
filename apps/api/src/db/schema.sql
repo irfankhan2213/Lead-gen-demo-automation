@@ -119,9 +119,8 @@ CREATE INDEX IF NOT EXISTS idx_leads_opportunity_score ON leads(opportunity_scor
 CREATE INDEX IF NOT EXISTS idx_leads_niche_city ON leads(niche, city);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC);
 
--- Prevent duplicate leads for the same business in the same city
-CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_business_city_unique ON leads(business_name, city)
-  WHERE business_name IS NOT NULL;
+-- Prevent duplicate leads for the same business in the same city (Required for ON CONFLICT DO NOTHING)
+ALTER TABLE leads ADD CONSTRAINT leads_business_city_unique UNIQUE (business_name, city);
 
 -- Migration: change opportunity_score from INTEGER to DECIMAL to support AI float scores
 ALTER TABLE leads ALTER COLUMN opportunity_score TYPE DECIMAL(3,1) USING opportunity_score::DECIMAL(3,1);

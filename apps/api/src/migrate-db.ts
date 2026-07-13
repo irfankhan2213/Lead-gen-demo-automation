@@ -23,6 +23,16 @@ async function migrate() {
     // Also ensure leads has demo_mode if it was added there too
     await client.query(`ALTER TABLE leads ADD COLUMN IF NOT EXISTS demo_mode VARCHAR(50) DEFAULT 'template';`);
     console.log('Successfully added demo_mode to leads table.');
+
+    // Add unique constraint for ON CONFLICT (business_name, city)
+    await client.query(`ALTER TABLE leads ADD CONSTRAINT leads_business_city_unique UNIQUE (business_name, city);`).catch(e => {
+      if (!e.message.includes('already exists')) {
+        console.error('Failed to add unique constraint:', e.message);
+      } else {
+        console.log('Unique constraint leads_business_city_unique already exists.');
+      }
+    });
+    console.log('Successfully ensured unique constraint on leads(business_name, city).');
   } catch (err) {
     console.error('Migration failed:', err);
   } finally {
