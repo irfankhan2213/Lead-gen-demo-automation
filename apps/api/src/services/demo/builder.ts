@@ -174,6 +174,10 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
 }
 
 function getDesignLanguageStyleOverrides(language: string): string {
+  const BUTTONS = `button, input[type="submit"], input[type="button"], .btn, .btn-primary, .btn-outline, .nav-cta, .reserve-btn, .book-btn, .submit-btn, .cta-gold, .cta-ghost, .cta-btn, .action-btn`;
+  const CARDS = `.card, .service-card, .testimonial-card, .stats-bar, .about-img-wrapper, .about-img, .cta-inner, .form-card, .tcard, .menu-item, .info-block, .feature-card, .pricing-card, .service-icon, .author-avatar, .awards-inner, .photo-wrapper, .awards`;
+  const HEADINGS = `h1, h2, h3, h4, h5, h6, .serif, .logo, .nav-logo, .menu-item-name, .tcard-text, .stat-value, .hero-pre, .award-label, .bold-heading`;
+
   const overrides: Record<string, string> = {
     luxury: `
       <style>
@@ -192,10 +196,10 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #F9F8F6 !important;
           color: #1A1A1A !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Playfair Display', serif !important;
         }
-        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+        ${CARDS}, ${BUTTONS}, input {
           border-radius: 0px !important;
         }
         img {
@@ -227,18 +231,18 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-image: radial-gradient(rgba(0,0,0,0.08) 1px, transparent 0);
           background-size: 24px 24px;
         }
-        h1, h2, h3, h4, .serif, button, .btn, .logo {
+        ${HEADINGS}, ${BUTTONS} {
           font-family: 'Inter', sans-serif !important;
           font-weight: 900 !important;
           text-transform: uppercase !important;
         }
-        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+        ${CARDS}, ${BUTTONS}, input {
           border-radius: 0px !important;
           border-width: 2px !important;
           border-color: #000000 !important;
           box-shadow: none !important;
         }
-        .nav-cta, .reserve-btn, .btn-primary {
+        .nav-cta, .reserve-btn, .btn-primary, .cta-gold {
           background-color: #FF3000 !important;
           color: #FFFFFF !important;
           border-color: #000000 !important;
@@ -262,16 +266,16 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #FFFFFF !important;
           color: #111827 !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Outfit', sans-serif !important;
           font-weight: 800 !important;
         }
-        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+        ${CARDS}, ${BUTTONS}, input {
           border-radius: 8px !important;
           box-shadow: none !important;
           border: none !important;
         }
-        .card {
+        ${CARDS} {
           background-color: #F3F4F6 !important;
         }
       </style>
@@ -293,14 +297,14 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #FFFBFE !important;
           color: #1C1B1F !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Roboto', sans-serif !important;
           font-weight: 500 !important;
         }
-        button, .nav-cta, .reserve-btn, .btn {
+        ${BUTTONS} {
           border-radius: 9999px !important;
         }
-        .card {
+        ${CARDS} {
           border-radius: 24px !important;
           background-color: #F3EDF7 !important;
         }
@@ -327,18 +331,18 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #F4F1FA !important;
           color: #332F3A !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Nunito', sans-serif !important;
           font-weight: 900 !important;
         }
-        button, .nav-cta, .reserve-btn, .btn {
+        ${BUTTONS} {
           border-radius: 20px !important;
           box-shadow: 12px 12px 24px rgba(124, 58, 237, 0.2) !important;
           background: linear-gradient(to bottom right, #A78BFA, #7C3AED) !important;
           color: #fff !important;
           border: none !important;
         }
-        .card {
+        ${CARDS} {
           border-radius: 32px !important;
           box-shadow: 16px 16px 32px rgba(160, 150, 180, 0.15) !important;
           background-color: #ffffff !important;
@@ -369,23 +373,23 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #E0E0E0 !important;
           color: #2D3748 !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Outfit', sans-serif !important;
         }
-        .card {
+        ${CARDS} {
           border-radius: 20px !important;
           background: #E0E0E0 !important;
           box-shadow: 9px 9px 16px #bebebe, -9px -9px 16px #ffffff !important;
           border: none !important;
         }
-        button, .nav-cta, .reserve-btn, .btn {
+        ${BUTTONS} {
           border-radius: 12px !important;
           background: #E0E0E0 !important;
           box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff !important;
           color: #2D3748 !important;
           border: none !important;
         }
-        button:active, .btn:active {
+        ${BUTTONS}:active {
           box-shadow: inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff !important;
         }
       </style>
@@ -407,15 +411,15 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #121212 !important;
           color: #FFFFFF !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Space Mono', monospace !important;
           font-weight: 700 !important;
         }
-        *, button, input, .nav-cta, .reserve-btn, .btn, .card {
+        ${CARDS}, ${BUTTONS}, input {
           border-radius: 0px !important;
           border: 1px solid #333333 !important;
         }
-        .nav-cta, .reserve-btn, .btn-primary {
+        .nav-cta, .reserve-btn, .btn-primary, .cta-gold {
           background-color: #FF6600 !important;
           color: #000000 !important;
           border-color: #FF6600 !important;
@@ -439,14 +443,14 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #FFFFFF !important;
           color: #1A202C !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Playfair Display', serif !important;
         }
-        .card {
+        ${CARDS} {
           border-radius: 4px !important;
           border: 1px solid #E2E8F0 !important;
         }
-        button, .nav-cta, .reserve-btn, .btn {
+        ${BUTTONS} {
           border-radius: 4px !important;
           background-color: #1A365D !important;
           color: #FFFFFF !important;
@@ -470,16 +474,16 @@ function getDesignLanguageStyleOverrides(language: string): string {
           background-color: #F2EFE9 !important;
           color: #2C3E2C !important;
         }
-        h1, h2, h3, h4, .serif, .logo {
+        ${HEADINGS} {
           font-family: 'Playfair Display', serif !important;
           color: #2C3E2C !important;
         }
-        .card {
+        ${CARDS} {
           border-radius: 16px !important;
           background-color: #E5E0D8 !important;
           border: none !important;
         }
-        button, .nav-cta, .reserve-btn, .btn {
+        ${BUTTONS} {
           border-radius: 30px !important;
           background-color: #3F5E4D !important;
           color: #FFFFFF !important;
