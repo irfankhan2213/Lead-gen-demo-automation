@@ -192,7 +192,7 @@ export default function DashboardPage() {
   });
   const [showModal, setShowModal] = useState(false);
   
-  // Initialize from localStorage if available
+  // Initialize from localStorage if available (fast initial render)
   const [activeCampaign, setActiveCampaign] = useState<CampaignState | null>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('activeCampaign');
@@ -216,6 +216,33 @@ export default function DashboardPage() {
       localStorage.removeItem('activeCampaign');
     }
   }, [activeCampaign]);
+
+  // ─── Fetch Server-Side Active Campaign ──────────────────────────────────
+  useEffect(() => {
+    const checkActiveCampaign = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/campaigns/active`);
+        if (res.ok) {
+          const data = await res.json() as { campaigns: any[] };
+          if (data.campaigns && data.campaigns.length > 0) {
+            const active = data.campaigns[0];
+            setActiveCampaign({
+              jobId: active.job_id,
+              niche: active.niche,
+              city: active.city,
+              startedAt: new Date(active.created_at),
+            });
+          } else {
+            // Server says no campaigns are running, clear local state
+            setActiveCampaign(null);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to check active campaign status:', err);
+      }
+    };
+    checkActiveCampaign();
+  }, []);
 
   // ─── Load stats from API ────────────────────────────────────────────────
   useEffect(() => {

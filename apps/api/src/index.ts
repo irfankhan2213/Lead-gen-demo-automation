@@ -24,6 +24,7 @@ import scrapeRouter from './routes/scrape.js';
 import generateRouter from './routes/generate.js';
 import deployRouter from './routes/deploy.js';
 import outreachRouter from './routes/outreach.js';
+import campaignsRouter from './routes/campaigns.js';
 
 // Workers (start listening as soon as server boots)
 import './workers/scrapeWorker.js';
@@ -122,6 +123,7 @@ app.use('/api/scrape', scrapeRouter);
 app.use('/api/generate-demo', generateRouter);
 app.use('/api/deploy', deployRouter);
 app.use('/api/outreach', outreachRouter);
+app.use('/api/campaigns', campaignsRouter);
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((req, res) => {

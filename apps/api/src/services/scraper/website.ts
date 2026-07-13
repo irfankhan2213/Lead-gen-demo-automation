@@ -77,8 +77,8 @@ export async function scrapeBusinessWebsite(url?: string, sharedContext?: Browse
     });
   }
 
+  const page = await context.newPage();
   try {
-    const page = await context.newPage();
     await page.goto(normalizedUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
     const html = await page.content();
@@ -272,6 +272,7 @@ export async function scrapeBusinessWebsite(url?: string, sharedContext?: Browse
     logger.warn(`Website scrape failed for ${normalizedUrl}`, { error: (err as Error).message });
     return {};
   } finally {
+    await page.close().catch(() => {});
     if (browser) {
       await browser.close();
     }

@@ -43,10 +43,14 @@ export async function scrapeInstagramProfile(instagramUrl: string, sharedContext
     });
   }
 
+  if (!instagramUrl || !instagramUrl.trim()) {
+    return {};
+  }
+
+  const page = await context.newPage();
   try {
-    const page = await context.newPage();
-    await page.goto(instagramUrl, { waitUntil: 'domcontentloaded', timeout: 8_000 });
-    await new Promise((r) => setTimeout(r, 1500));
+    // Reduce navigation timeout to 3 seconds and wait for commit (first bytes) rather than full render
+    await page.goto(instagramUrl, { waitUntil: 'commit', timeout: 3_000 });
 
     // Check if we hit the login wall — if so, bail early
     const url = page.url();
@@ -84,6 +88,7 @@ export async function scrapeInstagramProfile(instagramUrl: string, sharedContext
     logger.warn(`Instagram scrape failed for ${instagramUrl}`, { error: (err as Error).message });
     return {};
   } finally {
+    await page.close();
     if (browser) {
       await browser.close();
     }

@@ -354,10 +354,11 @@ export async function createCampaign(data: {
   niche: string;
   city: string;
   demo_mode?: string;
+  job_id?: string;
 }): Promise<Campaign> {
   const rows = await query<Campaign>(
-    `INSERT INTO campaigns (name, niche, city, demo_mode) VALUES ($1, $2, $3, $4) RETURNING *`,
-    [data.name, data.niche, data.city, data.demo_mode ?? 'template']
+    `INSERT INTO campaigns (name, niche, city, demo_mode, job_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [data.name, data.niche, data.city, data.demo_mode ?? 'template', data.job_id]
   );
   return rows[0];
 }
@@ -367,6 +368,13 @@ export async function createCampaign(data: {
  */
 export async function getCampaigns(): Promise<Campaign[]> {
   return query<Campaign>('SELECT * FROM campaigns ORDER BY created_at DESC');
+}
+
+/**
+ * Fetches campaigns that are currently active.
+ */
+export async function getActiveCampaigns(): Promise<Campaign[]> {
+  return query<Campaign>("SELECT * FROM campaigns WHERE status = 'active' ORDER BY created_at DESC");
 }
 
 /**

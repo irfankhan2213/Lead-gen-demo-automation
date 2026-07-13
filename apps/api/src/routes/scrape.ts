@@ -47,6 +47,8 @@ router.post('/', scrapeRateLimit, async (req: Request, res: Response) => {
       name: campaignName ?? `${niche} in ${city} — ${new Date().toLocaleDateString()}`,
       niche,
       city,
+      demo_mode: req.body.demo_mode,
+      job_id: jobId,
     });
 
     // Enqueue the scrape job

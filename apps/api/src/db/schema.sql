@@ -25,11 +25,13 @@ CREATE TABLE IF NOT EXISTS campaigns (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
   -- Configuration
-  demo_mode VARCHAR(50) DEFAULT 'template'
+  demo_mode VARCHAR(50) DEFAULT 'template',
+  job_id VARCHAR(255)
 );
 
--- Migration: add demo_mode to existing campaigns
+-- Migration: add demo_mode and job_id to existing campaigns
 ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS demo_mode VARCHAR(50) DEFAULT 'template';
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS job_id VARCHAR(255);
 
 CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_campaigns_niche_city ON campaigns(niche, city);

@@ -53,15 +53,25 @@ export default function DemosPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {demos.map(demo => (
             <div key={demo.id} className="card hover:border-[var(--border-strong)] transition-all">
-              {/* Demo thumbnail placeholder */}
+              {/* Demo thumbnail */}
               <div
-                className="rounded-lg mb-3 flex items-center justify-center text-3xl border border-[var(--border)]"
-                style={{
-                  height: '140px',
-                  background: `linear-gradient(135deg, ${Array.isArray(demo.brand_colors) ? (demo.brand_colors as string[])[0] ?? '#7c3aed' : '#7c3aed'}22, #7c3aed11)`,
-                }}
+                className="rounded-lg mb-3 flex items-center justify-center text-3xl border border-[var(--border)] overflow-hidden bg-[var(--bg-elevated)]"
+                style={{ height: '140px' }}
               >
-                🌐
+                {demo.demo_url ? (
+                  <img
+                    src={`https://image.thum.io/get/width/400/crop/800/${demo.demo_url}`}
+                    alt={`${demo.business_name} preview`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      // Fallback if thum.io fails
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span>🌐</span>
+                )}
               </div>
 
               <h3 className="font-semibold text-[var(--text-primary)] truncate">{demo.business_name}</h3>

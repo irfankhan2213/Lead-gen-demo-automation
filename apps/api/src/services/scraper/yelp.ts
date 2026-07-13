@@ -42,9 +42,8 @@ export async function scrapeYelpReviews(
     });
   }
 
+  const page = await context.newPage();
   try {
-    const page = await context.newPage();
-
     // Search Yelp
     const searchUrl = `https://www.yelp.com/search?find_desc=${encodeURIComponent(businessName)}&find_loc=${encodeURIComponent(city)}`;
     await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 });
@@ -100,6 +99,7 @@ export async function scrapeYelpReviews(
     logger.warn('Yelp scrape failed', { error: (err as Error).message });
     return '';
   } finally {
+    await page.close();
     if (browser) {
       await browser.close();
     }

@@ -74,6 +74,24 @@ export default function LeadsPage() {
     lead.niche?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleRetryFailed = async () => {
+    if (!confirm('Are you sure you want to retry all failed demo generations?')) return;
+    try {
+      const res = await fetch(`${API_URL}/api/generate-demo/retry-failed`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const data = await res.json() as { queued: number };
+        alert(`Successfully queued ${data.queued} failed demo generations!`);
+        await fetchLeads();
+      } else {
+        alert('Failed to retry demos.');
+      }
+    } catch (err) {
+      console.error('Failed to retry demos:', err);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -84,10 +102,16 @@ export default function LeadsPage() {
             {filtered.length} businesses scraped and analyzed
           </p>
         </div>
-        <button onClick={fetchLeads} className="btn-secondary">
-          <RefreshCw className="w-4 h-4" />
-          Refresh
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleRetryFailed} className="btn-secondary text-amber-500 hover:text-amber-400">
+            <RefreshCw className="w-4 h-4" />
+            Retry Failed Demos
+          </button>
+          <button onClick={fetchLeads} className="btn-secondary">
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
