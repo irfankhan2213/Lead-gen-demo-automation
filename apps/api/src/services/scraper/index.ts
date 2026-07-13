@@ -14,12 +14,13 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from '../../lib/logger.js';
 import { createSSELogger } from '../../lib/sse.js';
 import { createLead, updateLeadAIAnalysis, updateLeadDemo, incrementCampaignCounter } from '../../db/queries.js';
-import { scrapeGoogleMaps } from './googleMaps.js';
+import { discoverBusinesses } from './discovery.js';
 import { scrapeBusinessWebsite } from './website.js';
 import { scrapeRedditMentions } from './reddit.js';
 import { scrapeYelpReviews } from './yelp.js';
 import { scrapeInstagramProfile } from './instagram.js';
 import { chromium, Browser, BrowserContext } from 'playwright';
+import { callLLM } from '../ai/client.js';
 import { analyzesBusiness } from '../ai/analyzesBusiness.js';
 import { generateQueue } from '../../lib/queue.js';
 import { updateCampaignStatus } from '../../db/queries.js';
@@ -33,6 +34,45 @@ import type {
 /** Converts first letter of each word to uppercase */
 function toTitleCase(str: string) {
   return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+}
+
+async function verifyLeadTarget(niche: string, websiteData: WebsiteScrapedData, rawName: string): Promise<{ is_valid: boolean; reason: string }> {
+  const contentToAnalyze = `
+Name: ${rawName}
+Tagline: ${websiteData.tagline || 'None'}
+About: ${websiteData.about_text || 'None'}
+Services: ${websiteData.services?.join(', ') || 'None'}
+  `.trim();
+
+  if (contentToAnalyze.length < 50) {
+    // Not enough data to verify, assume true to not drop good leads with bad scrapes
+    return { is_valid: true, reason: 'Insufficient scrape data to verify.' };
+  }
+
+  const prompt = `You are a strict lead verification gatekeeper.
+The user is looking for businesses matching this niche: "${niche}".
+Here is the extracted content from a potential lead's website:
+---
+${contentToAnalyze}
+---
+Does this company actually operate in or closely match the requested niche?
+Reject (is_valid: false) if this is clearly a directory (like Yelp, Clutch), a news article, a listicle, or completely irrelevant.
+
+Return ONLY valid JSON:
+{
+  "is_valid": boolean,
+  "reason": "short explanation"
+}`;
+
+  try {
+    const response = await callLLM(prompt, 300, true);
+    const jsonStr = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const result = JSON.parse(jsonStr);
+    return { is_valid: !!result.is_valid, reason: result.reason || '' };
+  } catch (err) {
+    logger.warn('AI Lead Verification failed, defaulting to valid', { error: (err as Error).message });
+    return { is_valid: true, reason: 'Verification failed' };
+  }
 }
 
 /**
@@ -77,7 +117,7 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
 
   try {
     // Process each business sequentially to respect rate limits
-    for await (const business of scrapeGoogleMaps(niche, city, 'unlimited')) {
+    for await (const business of discoverBusinesses(niche, city, 'unlimited')) {
       if (savedLeadsCount >= limit) {
         log.log(`🎯 Reached target limit of ${limit} filtered leads. Stopping.`);
         break;
@@ -106,6 +146,15 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
       const redditData = redditResult.status === 'fulfilled' ? redditResult.value : [];
       const yelpData = yelpResult.status === 'fulfilled' ? yelpResult.value : '';
       const igData = igResult.status === 'fulfilled' ? igResult.value : {};
+
+      // ─── AI Gatekeeper: Verify Lead Target ─────────────────────────────
+      log.log(`🧠 Verifying if ${business.name} matches target niche...`);
+      const verification = await verifyLeadTarget(niche, websiteData, business.name);
+      if (!verification.is_valid) {
+        log.warn(`🚫 AI Rejected ${business.name}: ${verification.reason}`);
+        continue;
+      }
+      log.success(`✅ AI Verified ${business.name}: ${verification.reason}`);
 
       // ─── Quality Gate: EMAIL OR PHONE REQUIRED ────────────────────────────
       const finalPhone = websiteData.phone || business.phone || undefined;
