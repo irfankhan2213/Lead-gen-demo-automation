@@ -9,6 +9,7 @@
 
 import { chromium, BrowserContext } from 'playwright';
 import * as cheerio from 'cheerio';
+import * as dns from 'dns/promises';
 import logger from '../../lib/logger.js';
 import type { WebsiteScrapedData, SocialLinks } from '@acquisition-engine/shared';
 
@@ -49,6 +50,46 @@ function extractPhone(text: string): string | undefined {
 }
 
 /**
+ * Validates a URL to prevent Server-Side Request Forgery (SSRF) against internal networks.
+ */
+async function isSafeUrl(targetUrl: string): Promise<boolean> {
+  try {
+    const urlObj = new URL(targetUrl);
+    const hostname = urlObj.hostname;
+    // Skip if it's explicitly an IP that's local
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') return false;
+    
+    const { address } = await dns.lookup(hostname);
+    
+    // IPv4 private/loopback/link-local
+    if (address.startsWith('127.') || 
+        address.startsWith('10.') || 
+        address.startsWith('192.168.') || 
+        address.startsWith('169.254.')) {
+      return false;
+    }
+    
+    // IPv4 172.16.0.0/12
+    if (address.startsWith('172.')) {
+      const secondOctet = parseInt(address.split('.')[1], 10);
+      if (secondOctet >= 16 && secondOctet <= 31) {
+        return false;
+      }
+    }
+    
+    // IPv6 loopback/unique-local/link-local
+    const ipv6 = address.toLowerCase();
+    if (ipv6 === '::1' || ipv6.startsWith('fd') || ipv6.startsWith('fe8')) {
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    return false; // DNS resolution failed or invalid URL
+  }
+}
+
+/**
  * Scrapes a business website for brand intelligence including contact info.
  * @param url - Full URL to scrape (e.g. "https://example.com")
  * @param sharedContext - Optional Playwright BrowserContext for pooling to reduce memory/startup overhead
@@ -60,6 +101,12 @@ export async function scrapeBusinessWebsite(url?: string, sharedContext?: Browse
   // Normalize URL
   let normalizedUrl = url;
   if (!url.startsWith('http')) normalizedUrl = `https://${url}`;
+
+  // SSRF Protection check
+  if (!(await isSafeUrl(normalizedUrl))) {
+    logger.warn(`SSRF attempt blocked for URL: ${normalizedUrl}`);
+    return {};
+  }
 
   let browser;
   let context = sharedContext;

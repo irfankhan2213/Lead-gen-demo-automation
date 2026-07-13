@@ -1,0 +1,2613 @@
+/**
+ * @file Design System prompts extracted from prompta.
+ * Dynamically injected into the LLM generation step.
+ */
+
+export const designLanguages: Record<string, string> = {
+  luxury: `
+# Design Style: Luxury / Editorial
+
+## Design Philosophy
+
+**Core Principles**: Elegance through restraint, precision, and depth. This style emulates high-end fashion magazines (Vogue, Harper's Bazaar, Kinfolk) and luxury brand websites (Chanel, Hermès, Aesop). Success depends on **exquisite typography hierarchy**, **generous negative space**, **slow cinematic motion**, **intentional asymmetry**, and **layered depth through subtle shadows**. The design creates visual tension through grid-breaking layouts while maintaining perfect architectural balance.
+
+**Vibe**: Sophisticated, Timeless, Expensive, Serene, Curated, Deliberate, Editorial, Tactile.
+
+**The Secret**: Luxury isn't about adding decoration—it's about removing everything unnecessary and perfecting what remains. Every element must feel intentional and considered. Slow down all motion to cinematic speeds (1500-2000ms for images). Add more space than feels comfortable. Use asymmetry to create visual interest. Layer depth through subtle shadows (never harsh drops) and inner borders. The design should feel like expensive paper that you want to touch.
+
+## Design Token System (The DNA)
+
+### Colors (Sophisticated Monochrome)
+
+**Primary Palette:**
+- **Background**: \`#F9F8F6\` (Warm Alabaster) — Not pure white (#FFFFFF). This off-white feels like expensive paper or linen. The warm undertone is critical.
+- **Foreground**: \`#1A1A1A\` (Rich Charcoal) — Not pure black (#000000). Softer, more sophisticated. Used for primary text and sharp borders.
+- **Muted Background**: \`#EBE5DE\` (Pale Taupe) — For subtle surface elevation, disabled states, or alternate backgrounds.
+- **Muted Foreground**: \`#6C6863\` (Warm Grey) — For secondary text, captions, metadata. Maintains warmth of the palette.
+- **Accent**: \`#D4AF37\` (Metallic Gold) — Use sparingly. For hover states, underlines, focus indicators, small decorative elements. Never use gold for large areas.
+- **Accent Foreground**: \`#FFFFFF\` (Pure White) — Only used on top of dark backgrounds or gold elements.
+
+**Layering Strategy:**
+- Use opacity for borders and dividers: \`#1A1A1A\` at 10-20% opacity creates subtle separation
+- Dark sections use inverted palette: \`#1A1A1A\` background with \`#F9F8F6\` text and \`#EBE5DE\` muted text at 60-80% opacity
+- Never use pure black or pure white for text—always use the charcoal and alabaster values
+
+### Typography (The Most Critical Element)
+
+**Font Pairing:**
+- **Heading Font**: "Playfair Display" (High-contrast serif) — Elegant, editorial, with distinctive high-contrast strokes. Use for headlines, large quotes, and emphasis.
+- **Body Font**: "Inter" (Humanist sans-serif) — Clean, modern, highly legible. Use for body text, labels, UI elements.
+
+**Type Scale & Hierarchy:**
+- **Hero Headlines**: \`text-6xl\` to \`text-9xl\` (4rem to 8rem+) — Massive, dramatic. Use \`leading-[0.9]\` for tight, compressed vertical rhythm.
+- **Section Headlines**: \`text-5xl\` to \`text-7xl\` (3rem to 4.5rem) — Still large, commanding attention.
+- **Subsection Titles**: \`text-3xl\` to \`text-4xl\` (1.875rem to 2.25rem) — For card titles, feature headings.
+- **Body Text**: \`text-base\` to \`text-lg\` (1rem to 1.125rem) — Comfortable reading size with \`leading-relaxed\` (1.625).
+- **Overlines/Labels**: \`text-xs\` (0.75rem) — Always uppercase with wide tracking.
+- **Micro-text**: \`text-[10px]\` — For metadata, copyright, tiny labels.
+
+**Font Weight Distribution:**
+- Playfair: Regular (400) for most headlines, Light (300) for specific contrast, Italic (400) for emphasis within headlines
+- Inter: Medium (500) for buttons/links, Regular (400) for body, Light (300) sparingly
+
+**Letter Spacing (Critical for Luxury Feel):**
+- **Uppercase Labels**: \`tracking-[0.25em]\` to \`tracking-[0.3em]\` — Wide tracking creates elegance and readability
+- **Buttons**: \`tracking-[0.2em]\` — Slightly less than labels but still generous
+- **Headlines**: \`tracking-tight\` or default — Large serif headlines need tighter tracking
+- **Body Text**: Default tracking — Never adjust body text spacing
+
+**Line Height Strategy:**
+- **Headlines**: \`leading-[0.9]\` to \`leading-tight\` (0.9 to 1.25) — Tight creates drama
+- **Body Text**: \`leading-relaxed\` (1.625) — Generous for readability
+- **Small Text**: \`leading-relaxed\` to default — Maintains breathing room
+
+### Radius & Borders (Architectural Precision)
+
+**Border Radius:**
+- **Everything**: \`0px\` — Strictly rectangular. No rounded corners anywhere. This creates architectural precision and editorial sharpness.
+
+**Border Treatment:**
+- **Width**: Always \`1px\` — Thin, precise, deliberate
+- **Color**: \`#1A1A1A\` at full opacity for strong borders, 10-20% opacity for subtle dividers
+- **Style**: Single borders (top, bottom, left, right) rather than full boxes. Common pattern: \`border-t\` only
+- **Dividers**: Use horizontal lines (\`h-px\`) or vertical lines (\`w-px\`) as decorative elements with background color
+
+### Shadows & Effects (Subtle Layered Depth)
+
+**Shadows:**
+- **Philosophy**: Use extremely subtle, soft shadows to create depth and elevation—never harsh or prominent
+- **Hero Image**: \`shadow-[0_8px_32px_rgba(0,0,0,0.12)]\` — Medium shadow for primary focal point
+- **Feature Images**: \`shadow-[0_4px_24px_rgba(0,0,0,0.08)]\` — Light shadow with subtle inner border
+- **Blog Images**: \`shadow-[0_4px_20px_rgba(0,0,0,0.06)]\` deepens to \`shadow-[0_8px_32px_rgba(0,0,0,0.12)]\` on hover
+- **Cards**: \`shadow-[0_2px_8px_rgba(0,0,0,0.02)]\` deepens to \`shadow-[0_8px_24px_rgba(0,0,0,0.06)]\` on hover
+- **Primary Buttons**: \`shadow-[0_4px_16px_rgba(0,0,0,0.15)]\` deepens to \`shadow-[0_8px_24px_rgba(0,0,0,0.25)]\` on hover
+- **Inner Borders**: Use \`shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04-0.08)]\` for subtle framing on images
+
+**Texture & Grain:**
+- **Paper Noise**: Subtle SVG noise texture overlay across entire page at 2% opacity to mimic expensive paper grain
+- **Implementation**: Fixed position overlay with SVG fractal noise filter, pointer-events disabled, z-index 50
+- **Purpose**: Adds tactile quality without being visible at first glance—creates "expensive paper" feel
+
+**Image Treatment:**
+- **Default State**: Grayscale filter (\`grayscale\`) — Creates monochromatic editorial look
+- **Hover State**: Full color (\`grayscale-0\`) — Slow transition reveals color as reward
+- **Transition**: \`duration-[1500ms]\` to \`duration-[2000ms]\` — Ultra-slow, cinematic reveal
+- **Transform**: Subtle scale on hover (\`group-hover:scale-105\`) combined with color transition
+- **Shadow Evolution**: Images gain deeper shadows on hover to enhance lift effect
+- **Group Context**: Use \`group\` utility on parent for coordinated hover effects
+
+### Grid & Vertical Lines (Structural Framework)
+
+**Visible Grid System:**
+- **4 Vertical Gridlines**: Fixed position lines spanning full viewport height, positioned at column boundaries
+- **Implementation**: \`w-px\` divs with \`bg-[#1A1A1A]/20\`, fixed position, pointer-events disabled
+- **Purpose**: Creates visible editorial grid structure, adds architectural quality
+- **Spacing**: Aligned with 12-column layout breakpoints, typically at container edges and middle thirds
+
+**Layout Grid:**
+- **Columns**: 12-column grid system
+- **Max Width**: 1600px for content container
+- **Padding**: \`px-8\` mobile, \`px-16\` desktop — Generous horizontal breathing room
+- **Asymmetry**: Use offset column starts (\`col-start-2\`, \`col-start-6\`) to create visual interest
+
+## Component Styling Principles
+
+### Buttons (Minimalist with Luxury Details)
+
+**Visual Structure:**
+- **Shape**: Rectangular, 0px border-radius, precise edges
+- **Height**: \`h-12\` default (48px), \`h-14\` large (56px), \`h-10\` small (40px)
+- **Padding**: Generous horizontal (\`px-8\` to \`px-10\`)
+- **Typography**: Uppercase, \`text-xs\`, \`tracking-[0.2em]\`, medium weight
+
+**Primary Button:**
+- **Default**: Dark background (\`bg-[#1A1A1A]\`), white text
+- **Hover Animation**: Gold layer (\`bg-[#D4AF37]\`) slides in from left using transform
+  - Initial state: \`translate-x-[-100%]\` (off-screen left)
+  - Hover state: \`translate-x-0\` (covers button)
+  - Duration: \`duration-500\` with custom easing \`cubic-bezier(0.25, 0.46, 0.45, 0.94)\`
+  - Text stays white and appears above gold layer using z-index
+- **Structure**: Requires internal \`<span>\` for gold overlay and another for content (z-10)
+
+**Secondary Button:**
+- **Default**: Transparent background, thin border (\`border border-[#1A1A1A]\`), dark text
+- **Hover**: Background fills to dark (\`bg-[#1A1A1A]\`), text inverts to white
+- **Transition**: Smooth \`duration-500\` for elegant fill
+
+**Link Button:**
+- **Style**: Text with underline on hover, no background or border
+- **Color**: Dark text, gold on hover optional
+
+### Cards & Containers (Defined by Lines)
+
+**Visual Approach:**
+- **Background**: Transparent or subtle (\`bg-transparent\`)
+- **Definition**: Single top border (\`border-t\`) rather than full box
+- **Border**: \`border-[#1A1A1A]\` at 1px width
+- **Padding**: Generous \`p-8\` mobile, \`p-12\` desktop
+- **Hover**: Subtle background color shift (\`hover:bg-[#F9F8F6]/50\`) — barely visible
+
+**Featured Cards:**
+- Use thicker top border (\`border-t-4\`) with gold color (\`border-t-[#D4AF37]\`) to indicate importance
+- Pricing tier highlighting, special features
+
+**Image Cards:**
+- Image in grayscale with slow color reveal on hover
+- Use specific aspect ratios: \`aspect-[3/4]\` for features, \`aspect-[4/5]\` for blog posts
+- Combine image scale with parent card hover state using \`group\` utility
+
+### Inputs (Underline Only)
+
+**Visual Style:**
+- **Border**: Bottom border only (\`border-b\`), no other borders
+- **Background**: Transparent (\`bg-transparent\`)
+- **Border Color**: \`#1A1A1A\` default, \`#D4AF37\` on focus
+- **Height**: \`h-12\` for consistency with buttons
+- **Padding**: Minimal horizontal (\`px-0\`), vertical (\`py-2\`)
+
+**Typography:**
+- **Input Text**: Inter font, \`text-sm\`, dark color
+- **Placeholder**: Playfair Display font, italic, warm grey color (\`text-[#6C6863]\`)
+- **Reasoning**: Italic serif placeholder creates elegant, editorial feel
+
+**Focus State:**
+- Border changes to gold (\`focus-visible:border-[#D4AF37]\`)
+- No ring or glow effects — keep it minimal
+
+### Interactive States (Slow & Deliberate)
+
+**Hover Effects:**
+- **Duration**: \`duration-500\` to \`duration-700\` for most interactions (text, backgrounds, borders)
+- **Duration (Images)**: \`duration-[1500ms]\` to \`duration-[2000ms]\` for image transitions
+- **Easing**: \`ease-out\` or custom \`cubic-bezier(0.25, 0.46, 0.45, 0.94)\` for smooth luxury feel
+- **Color**: Gold accent (\`#D4AF37\`) appears subtly on hover (text, borders, underlines)
+- **Transform**: Subtle scale (\`scale-105\`) or translate — never abrupt
+- **Shadow Evolution**: Shadows deepen on hover for lift effect
+- **Testimonials**: Left border changes to gold, padding increases, avatar gains color
+- **FAQ**: Question text turns gold, icon square rotates 90° and border turns gold
+
+**Focus States:**
+- Minimal focus rings: \`focus-visible:ring-1 focus-visible:ring-[#1A1A1A]\`
+- Prefer border color change over visible rings
+- Gold accent for focused inputs (\`focus-visible:border-[#D4AF37]\`)
+
+**Disabled States:**
+- Reduced opacity (\`opacity-50\`)
+- Pointer events disabled
+- No special color changes — muted appearance
+
+**Micro-interactions:**
+- **FAQ Accordion**: Icon rotates 90°, border turns gold on open, content fades in with translateY animation
+- **Testimonial Stars**: Scale up slightly on card hover (\`group-hover:scale-110\`)
+- **Blog Cards**: Shadow deepens, image scales and gains color
+- **Navigation Links**: Gold color on hover with 500ms transition
+- **Button Animations**: Gold overlay slides from left on primary buttons, shadow deepens
+
+## Layout Principles (Breaking Symmetry)
+
+**Asymmetric Composition:**
+- **Avoid 50/50 splits**: Use 7/5, 4/4/4, or 4 offset by 2 column starts instead
+- **Bottom-left alignment**: Position primary content at bottom of container, aligned left
+- **Offset grids**: Start content at column 2 or 6 instead of 1, leaving deliberate empty space
+
+**Vertical Spacing (Generous Air):**
+- **Section Padding**: \`py-24\` to \`py-32\` (6rem to 8rem) — Massive vertical space between sections
+- **Component Padding**: \`p-8\` to \`p-12\` for cards and containers
+- **Element Spacing**: Use \`gap-12\` or \`gap-16\` for component groups, not tight spacing
+- **Breathing Room**: If it feels like too much space, it's probably correct for luxury design
+
+**Section Alternation:**
+- Alternate light (\`bg-[#F9F8F6]\`) and dark (\`bg-[#1A1A1A]\`) sections for rhythm
+- Use top borders (\`border-t\`) to separate sections without color changes
+- Dark sections use inverted color palette with muted text at 60-80% opacity
+
+**Content Width:**
+- Maximum container: \`max-w-[1600px]\`
+- Centered with \`mx-auto\`
+- Text columns: \`max-w-md\` to \`max-w-xl\` for comfortable reading
+
+## The "Bold Factor" (Non-Genericness)
+
+These signature elements make Luxury/Editorial instantly recognizable and must be present:
+
+1. **Vertical Text Labels**: Use CSS \`writing-mode: vertical-rl\` for decorative side labels (e.g., "Editorial / Vol. 01"). Position absolutely on images, typically on left or right edges. Uppercase with wide tracking. Hidden on mobile, visible on desktop.
+
+2. **Drop Caps**: Large initial letter for introductory paragraphs using \`float-left\`, Playfair Display font, 7xl size, tight line-height (0.8), with right margin (mr-3). Applied to first paragraph of Product Detail and Features intro. Creates classic editorial feel.
+
+3. **Mixed Italic Headlines**: Within large headlines, alternate between regular and italic styling for specific words to create "spoken" cadence. Use gold color on italic words. Examples: "Curated *Excellence*", "The *Details*", "The *Process*". Headline splits across lines with specific words emphasized.
+
+4. **Grayscale Image Transitions**: All images default to grayscale filter with ultra-slow (1500-2000ms) transition to full color on hover. Combines with subtle scale transform (\`group-hover:scale-105\`) and shadow deepening. Applied consistently to hero, features, blog, and testimonial avatars.
+
+5. **Visible Grid Lines**: Fixed vertical lines spanning viewport height, aligned with 12-column grid boundaries, at low opacity (20%). Four lines total (edges and middle thirds). Creates architectural editorial magazine feel. Pointer-events disabled.
+
+6. **Gold Sliding Animation**: Primary button hover reveals gold background (\`#D4AF37\`) sliding from left using \`translate-x\` transform. Requires layered span structure with z-index. Combined with shadow deepening from \`shadow-[0_4px_16px]\` to \`shadow-[0_8px_24px]\`.
+
+7. **Decorative Horizontal Lines**: Short horizontal lines (\`h-px w-8 md:w-12\`) used as decorative elements before labels (hero) or between metadata (blog dates). Deliberate, architectural spacing elements.
+
+8. **Extreme Type Scale**: Massive headlines (\`text-5xl\` mobile to \`text-9xl\` desktop) combined with tiny uppercase labels (\`text-[10px]\` to \`text-xs\`) creates dramatic hierarchy essential to luxury feel. Responsive scaling maintains proportions.
+
+9. **Layered Shadows**: Subtle shadows create depth without being obvious. Images have box shadows that deepen on hover. Inner borders (\`inset\` shadows) frame images. Cards lift with shadow evolution. Never harsh—always soft and refined.
+
+10. **Testimonial Interactions**: Left border animation (changes to gold and increases padding on hover), grayscale avatar transitions to color, author name turns gold, stars scale up. Multi-layered coordinated effect.
+
+## Anti-Patterns (What to Avoid)
+
+These mistakes will break the luxury aesthetic:
+
+1. **DO NOT use rounded corners** — Everything must be perfectly rectangular with 0px border-radius
+2. **DO NOT use harsh shadows** — Only use extremely subtle shadows with low opacity rgba values. Depth comes from layering, not prominent drops.
+3. **DO NOT use pure black (#000000) or pure white (#FFFFFF)** — Use charcoal (#1A1A1A) and alabaster (#F9F8F6)
+4. **DO NOT use fast animations** — Minimum 500ms for interactions, 1500-2000ms for images. Luxury is deliberate and slow.
+5. **DO NOT use vibrant colors** — Stick to monochromatic palette with gold (#D4AF37) as only accent
+6. **DO NOT center everything** — Use asymmetry, offset columns, bottom-left alignment. Break the grid intentionally.
+7. **DO NOT overcrowd spacing** — More space is better. If it feels too airy, you're on the right track. Mobile: py-20, Desktop: py-32.
+8. **DO NOT use decorative fonts** — Only Playfair Display (serif) and Inter (sans-serif). No script or display fonts.
+9. **DO NOT use icons prominently** — If needed, use lucide-react with thin strokes (1-2px), sparingly. Icons are functional, not decorative.
+10. **DO NOT make gold dominant** — Gold is an accent for hover/focus states and specific emphasis, not a primary color
+11. **DO NOT use small images** — Images should be large and prominent, portrait aspect ratios (3:4, 4:5) with shadows and inner borders
+12. **DO NOT use tight tracking on body text** — Only uppercase labels get wide tracking (0.2-0.3em). Body text uses default tracking.
+13. **DO NOT skip the grayscale filter** — All images must default to grayscale. Color is the reward on hover.
+14. **DO NOT use generic mobile layouts** — Maintain the core aesthetic on mobile with proper scaling, not generic stacking
+
+## Animation & Motion (Cinematic Timing)
+
+**Philosophy:** All motion should feel deliberate, slow, and expensive. Nothing snaps or jumps. Think of camera movements in luxury fashion videos—smooth, gradual, cinematic.
+
+**Timing:**
+- **Button Interactions**: \`duration-500\` (500ms)
+- **Color Transitions**: \`duration-700\` (700ms)
+- **Image Effects**: \`duration-[1500ms]\` to \`duration-[2000ms]\` (1500-2000ms)
+- **Background Transitions**: \`duration-700\` (700ms)
+
+**Easing Functions:**
+- **Default**: \`ease-out\` for most interactions
+- **Custom**: \`cubic-bezier(0.25, 0.46, 0.45, 0.94)\` for smooth luxury feel (use in Tailwind with arbitrary values)
+- **Never**: \`ease-in-out\` or \`ease-in\` — These feel too mechanical
+
+**Transition Properties:**
+- Combine multiple properties: \`transition-all\` or specific \`transition-[colors,transform]\`
+- Image transforms: Combine \`scale\` (1 to 1.05) with \`grayscale\` (1 to 0) in same transition
+- Button fills: Use transform on absolute positioned overlay rather than background color change
+
+**Hover Effects:**
+- Delay feels intentional — user must pause on element for effect to complete
+- Multiple effects layer together (scale + color + grayscale) for richness
+- Text color changes are instant or faster (300ms) while backgrounds are slower
+
+## Accessibility Considerations
+
+**Contrast:**
+- Charcoal (#1A1A1A) on Alabaster (#F9F8F6): 12.6:1 — Excellent (AAA)
+- Warm Grey (#6C6863) on Alabaster: 4.8:1 — Good for secondary text (AA)
+- Gold (#D4AF37) on Charcoal: 5.2:1 — Sufficient for accents (AA)
+- White on Charcoal: 14.5:1 — Excellent (AAA)
+
+**Focus Indicators:**
+- Use \`focus-visible:ring-1\` or \`focus-visible:border-[color]\` for keyboard navigation
+- Gold accent on focus makes interactive elements clear
+- Never remove focus indicators — just make them elegant
+
+**Motion Preferences:**
+- Respect \`prefers-reduced-motion\` for users with vestibular disorders
+- Reduce animation durations to 0ms or use simpler transitions
+- Keep color changes but remove transforms and scales
+
+**Typography:**
+- Large body text size (16-18px base) ensures readability
+- High contrast ratio for primary text
+- Generous line-height (1.625) improves readability
+- Avoid justified text — use left alignment
+
+**Interactive Areas:**
+- Buttons have minimum 48px height (h-12) for touch targets
+- Adequate padding creates larger clickable areas
+- Spacing between interactive elements prevents mis-taps
+
+## Implementation Notes
+
+**Tech Stack:**
+- Tailwind CSS v4 for all styling with custom color values
+- Google Fonts for "Playfair Display" and "Inter"
+- Lucide React for icons (if needed, use sparingly with thin stroke-width)
+- Custom CSS for noise texture (SVG data URI) and vertical writing mode
+
+**Responsive Strategy:**
+- **Mobile (< 768px)**:
+  - Stack all columns vertically
+  - Reduce padding: \`px-8\`, \`py-20\` (instead of px-16, py-32)
+  - Scale down typography: \`text-4xl\` headlines (instead of text-6xl), \`text-xl\` quotes (instead of text-3xl)
+  - Reduce gaps: \`gap-8\`, \`gap-12\` (instead of gap-12, gap-24)
+  - Stats: 2 columns, smaller text (text-3xl instead of text-5xl)
+  - Hero: Smaller type scale \`text-5xl\` (instead of text-9xl), smaller line and decorative elements
+  - Testimonials: Smaller left padding \`pl-6\` (instead of pl-8)
+  - Footer CTA: Stack email input and button vertically with \`flex-col\` on small screens
+  - Maintain core aesthetic: grayscale images, gold accents, slow animations
+
+- **Tablet (768px - 1024px)**:
+  - Begin introducing grid layouts (2-3 columns)
+  - Medium padding: \`px-8 md:px-16\`, \`py-20 md:py-32\`
+  - Typography scales up: \`text-5xl md:text-6xl\`
+  - Complex layouts still stack (testimonials, FAQ)
+
+- **Desktop (> 1024px)**:
+  - Full 12-column asymmetric grid with offset columns
+  - Maximum padding and spacing
+  - Visible vertical gridlines (4 lines at column boundaries)
+  - Vertical writing mode text visible
+  - Full typographic scale (text-9xl for hero)
+
+**Performance:**
+- Use CSS transforms (translate, scale) for animations — GPU accelerated
+- Grayscale filter is performant in modern browsers
+- Fixed gridlines and noise overlay use minimal resources
+- Shadows use rgba with low opacity for minimal render cost
+
+**Code Organization:**
+- Extract color values to config/constants for consistency
+- Create button component with variant system (primary/secondary/ghost/link) and shadow on primary
+- Create card component with border-top pattern and shadow evolution built in
+- Create input component with underline-only styling and italic placeholder
+- Add fadeIn keyframe animation for FAQ accordion content
+
+
+
+Swiss
+
+A rigorous implementation of the International Typographic Style (1950s). Characterized by objective typography, sans-serif fonts (Inter), mathematical grids with subtle texture patterns, and a strict black/white/red palette. Prioritizes readability, precision, asymmetrical organization, and visual depth through layered patterns.
+`,
+
+  swiss: `
+# Design Style: Swiss International (International Typographic Style)
+
+## Design Philosophy
+
+**The International Typographic Style (Swiss Style)** is not merely a visual trend; it is a philosophy of objective communication born in 1950s Switzerland. It rejects personal expression and subjectivity in favor of universal clarity, mathematical precision, and logical structure.
+
+**Core Tenets:**
+
+1.  **Objectivity over Subjectivity**: The design must recede to let the content speak. Every visual decision must be justifiable by the content's needs. Personal ornamentation is eliminated in favor of functional communication. The designer is not an artist expressing themselves, but a conduit for information.
+
+2.  **The Grid as Law**: The grid is the absolute authority. It is not a guideline; it is the visible skeleton of the information. We generally avoid static center-alignment in favor of **asymmetrical organization** to create dynamic visual rhythm and tension. Grid patterns are made visible through subtle background textures.
+
+3.  **Typography is the Interface**: Type is not just for reading; it is the primary structural and graphical element. We use grotesque sans-serif typefaces (Inter, Helvetica) because they are neutral vessels for meaning. Scale, weight, and position are the only tools needed to create hierarchy.
+
+4.  **Active Negative Space**: White space is not "empty"; it is an active structural element. It defines boundaries, gives weight to the massive typography, and creates breathing room for the intellect.
+
+5.  **Layered Texture & Depth**: While maintaining flatness (no shadows or 3D effects), we achieve visual depth through **subtle pattern overlays**: grid lines (24px), dot matrices (16px), diagonal stripes, and noise textures. These patterns add tactile richness without compromising the objective aesthetic.
+
+6.  **Universal Intelligibility**: The design should be understood instantly. It is clean, legible, and undeniably modern.
+
+**The Vibe**:
+*   **Intellectual & Architectural**: The page should feel like a well-engineered building, a museum exhibition, or a transit map—functional, safe, and efficient.
+*   **Structured yet Organic**: While brutally honest in its geometry, subtle texture patterns provide warmth and visual interest—like fine paper grain or screen printing texture.
+*   **Brutally Precise**: No gradients to hide bad layout. Depth comes from pattern, not shadow. The design is flat yet rich, stark yet nuanced.
+*   **Timeless**: By avoiding ephemeral trends (glassmorphism, neumorphism, soft rounded corners), the design aims for permanence.
+
+**Visual Signatures**:
+*   **Flush-Left, Ragged-Right Text**: Text blocks are strictly left-aligned to the grid.
+*   **Grotesque Sans-Serif**: Neutral, objective fonts with high x-heights (Inter, weight 400-900).
+*   **Mathematical Scales**: Font sizes that relate to each other through clear ratios (responsive scaling from mobile to desktop).
+*   **The "Swiss Red" (#FF3000)**: Used not as decoration, but as a functional signal—a stop sign, a warning, a highlight—piercing the monochrome calm.
+*   **Pattern-Based Texture**: Subtle CSS-generated patterns (grid, dots, diagonals, noise) applied to background surfaces for visual depth without breaking flatness.
+*   **Geometric Abstraction**: Basic shapes (circles, squares, rectangles, lines) arranged in Bauhaus-inspired compositions.
+
+## Design Token System (The DNA)
+
+### Colors (Strict Palette)
+*   **Background**: \`#FFFFFF\` (Pure White) - The canvas must be neutral.
+*   **Foreground**: \`#000000\` (Pure Black) - Text is absolute.
+*   **Muted**: \`#F2F2F2\` (Light Gray) - Used for secondary backgrounds to create rhythm.
+*   **Accent**: \`#FF3000\` (Swiss Red) - The **only** signal color. Used sparingly for CTAs and critical emphasis.
+*   **Border**: \`#000000\` (Pure Black) - Structure is visible.
+
+### Typography
+*   **Font Family**: \`Inter\` (Google Font). Ideally closest to Helvetica/Akzidenz-Grotesk.
+*   **Weights**: Heavy use of **Black (900)** and **Bold (700)** for headings. **Regular (400)** or **Medium (500)** for body.
+*   **Style**: **UPPERCASE** for almost all headings and labels.
+*   **Tracking**: \`tracking-tighter\` for large headlines, \`tracking-widest\` for small labels.
+*   **Scale**: Extreme contrast. Headlines should be massive (\`text-7xl\` to \`text-9xl\`+). Body text is legible and objective.
+
+### Radius & Border
+*   **Radius**: \`0px\` (Strictly Rectangular). No rounded corners.
+*   **Borders**: Thick, visible borders (\`border-2\` or \`border-4\`). Used to define the grid.
+
+### Shadows & Effects
+*   **Shadows**: No drop shadows. The design maintains flatness. Only use subtle ring shadows for compositional geometry (e.g., \`shadow-[0_0_0_8px_rgba(255,48,0,0.1)]\` for accent circles).
+*   **Effects**: Interactive elements use simple color inversion (Black → White, White → Red), scale transforms (1.0 → 1.05), rotation (0deg → 90deg for plus icons), and vertical translation (-1px lift on hover).
+
+### Textures & Patterns (Critical for Depth)
+These CSS-based patterns add visual richness while maintaining the flat, objective aesthetic:
+
+*   **Grid Pattern** (\`.swiss-grid-pattern\`):
+    - Subtle 24×24px grid lines at 3% opacity
+    - Applied to hero composition area, blog sidebar, muted backgrounds
+    - Creates visible structure without overwhelming content
+
+*   **Dot Matrix** (\`.swiss-dots\`):
+    - Radial gradient dots, 16×16px spacing, 4% opacity
+    - Applied to section headers, feature sidebars
+    - Evokes traditional print techniques
+
+*   **Diagonal Lines** (\`.swiss-diagonal\`):
+    - 45-degree repeating lines, 10px spacing, 2% opacity
+    - Applied to benefits sidebar, accent backgrounds
+    - Adds directional energy to static layouts
+
+*   **Noise Texture** (\`.swiss-noise\`):
+    - Fractal noise overlay via SVG filter, 1.5% opacity
+    - Applied globally to body background
+    - Simulates paper texture, adds warmth to stark white backgrounds
+
+**Application Strategy**: Use patterns on muted gray backgrounds (\`#F2F2F2\`) and occasionally on white surfaces. Never apply patterns to pure black backgrounds or red accent areas. Patterns should enhance, not dominate.
+
+## Component Stylings
+
+### Buttons
+*   **Shape**: Strictly rectangular (\`rounded-none\`).
+*   **Style**: Solid Black background with White text (Primary). White background with Black border (Secondary).
+*   **Hover**: Invert colors or switch to Swiss Red (\`#FF3000\`).
+*   **Typography**: Uppercase, bold, tracking-wide.
+
+### Cards / Containers
+*   **Structure**: Defined by their borders (\`border-black\`).
+*   **Background**: White or Muted Gray (\`#F2F2F2\`).
+*   **Padding**: Generous and uniform (\`p-8\`, \`p-12\`).
+*   **Hover**: Entire card background changes color (e.g., to Swiss Red or Black) with text color inversion.
+
+### Inputs
+*   **Style**: Underlined (\`border-b\`) or solid rectangular box with thick border.
+*   **Focus**: Sharp change in border color to Swiss Red. No glow rings.
+
+## Layout Strategy
+
+*   **The Grid**: The grid is God. It should often be **visible** (using borders on elements).
+*   **Asymmetry**: Embrace asymmetrical balance. A large photo on the left balanced by negative space and small text on the right.
+*   **Alignment**: Strict left alignment for text.
+*   **Separators**: Use horizontal and vertical lines to divide sections.
+
+## Non-Genericness (The "Bold" Factor)
+
+This implementation goes beyond "generic Swiss style" by incorporating:
+
+*   **Massive Responsive Typography**: Headlines scale from \`text-6xl\` (mobile) to \`text-[10rem]\` (desktop). Let words be images.
+*   **Visible Structure**: The layout grid is made tangible through:
+    - Thick 4px black borders defining sections
+    - Visible grid patterns (24px) on backgrounds
+    - Asymmetric column ratios (8:4, 7:5, 5:7) creating dynamic tension
+*   **Numbered Section Labels**: Every major section has a prefix (01. System, 02. Method, 03. Advantages, 04. Journal) in red accent with uppercase tracking
+*   **Layered Geometric Compositions**:
+    - Hero features abstract Bauhaus-style composition with overlapping shapes
+    - Product detail uses 2×2 grid of geometric elements with different texture patterns
+    - Each composition combines circles, rectangles, lines in purposeful arrangement
+*   **Pattern-Based Texture**: Four distinct CSS patterns (grid, dots, diagonal, noise) applied strategically to create depth without shadows
+*   **Bold Interaction States**:
+    - Full color inversions (not just opacity fades)
+    - Rotating icons (plus signs spin 90°)
+    - Scale transforms on hover
+    - Vertical slide animations in navigation
+*   **Active Negative Space**: Generous padding (p-12, p-24) and asymmetric layouts create breathing room and visual tension
+*   **Functional Color System**: Red is used only for:
+    - Primary CTAs and accents
+    - Hover states as visual feedback
+    - Section number prefixes
+    - Never as decorative fill
+
+## Spacing & Iconography
+
+*   **Spacing**: High density in information clusters (tables), but high spaciousness in narrative sections.
+*   **Iconography**: Use \`lucide-react\` icons, but treat them as functional symbols. Stroke width should match typography. Often enclosed in geometric shapes (squares/circles).
+
+## Animation
+
+*   **Feel**: Instant, mechanical, snappy, precise. Movement is purposeful and geometric.
+*   **Transitions**: \`duration-200 ease-out\` or \`duration-150 ease-linear\` for rapid feedback. No elastic or spring animations.
+*   **Micro-interactions**:
+    - **Navigation Links**: Vertical slide animation with color change (text slides up, red replacement slides in from below)
+    - **Stats Cards**: Scale transform on numbers (1.0 → 1.05), rotating plus icons (0° → 90°), background color snap (black → red)
+    - **Feature Cards**: Color inversion on hover (white → accent red), arrow rotation (-45° → 0°)
+    - **Testimonials**: Subtle upward lift (-1px translateY), border color change (black → red), quote text color change
+    - **FAQ Cards**: Rotating plus icons, full background color inversion (white → red)
+    - **Buttons**: Instant background color changes, no scale transforms
+*   **Hover States**: Always indicate interactivity through color, scale, or position changes—never subtle fades. Swiss style is bold and immediate.
+
+## Responsive Strategy
+
+The Swiss style must maintain its bold character across all screen sizes:
+
+**Mobile (< 768px)**:
+*   Typography scales down but remains bold: \`text-6xl\` for hero headlines
+*   Single column layouts with vertical stacking
+*   Borders remain 4px thick (never thin out)
+*   CTAs become full-width buttons with consistent height (\`h-16\`)
+*   Grid patterns and textures maintain same opacity/scale
+*   Stats become 2×2 grid instead of 1×4
+*   Navigation collapses (visible only on desktop)
+
+**Tablet (768px - 1024px)**:
+*   Two-column layouts for testimonials, FAQ, features
+*   Typography scales to \`text-8xl\` for headlines
+*   Asymmetric grids start to appear
+*   Touch targets remain minimum 44×44px
+
+**Desktop (1024px+)**:
+*   Full asymmetric grid layouts (8:4, 7:5, 5:7 ratios)
+*   Maximum typography scale (\`text-9xl\`, \`text-[10rem]\`)
+*   Multi-column layouts (3-4 columns for blog, footer)
+*   Sticky positioning for section headers
+*   All hover states and micro-interactions active
+
+**Key Principles**:
+- Never compromise on border thickness or contrast
+- Maintain uppercase typography and tight tracking
+- Patterns remain visible at all breakpoints
+- Red accent color used consistently across devices
+- Spacing remains generous (reduce from p-24 to p-12 on mobile, but never less)
+
+## Accessibility
+
+*   **Contrast**: The Black/White/Red scheme naturally offers ultra-high contrast (21:1 for black/white). Ensure red text on white meets AA standards.
+*   **Focus**: High-contrast 2px ring in red (\`focus-visible:ring-2 focus-visible:ring-swiss-accent focus-visible:ring-offset-2\`)
+*   **Touch Targets**: All interactive elements minimum 44×44px on mobile
+*   **Motion**: All animations are CSS-based and respect \`prefers-reduced-motion\`
+*   **Semantics**: Proper heading hierarchy, semantic HTML5 elements, ARIA labels where needed
+`,
+
+  flat: `
+Flat Design
+
+A design philosophy centered on removing depth cues (shadows, bevels, gradients) in favor of pure color, typography, and layout. Crisp, two-dimensional, and geometric with bold color blocking.
+
+
+
+# Design Philosophy
+**Flat Design** removes all artifice. It rejects the illusion of three-dimensionality—no drop shadows, no bevels, no realistic gradients, no textures. It relies entirely on **hierarchy through size, color, and typography**. This is not minimalism for the sake of being minimal; it's **confident reduction** that creates visual interest through pure form.
+
+The aesthetic is **digital-native but print-inspired**: crisp edges, solid blocks of color, and a strict reliance on the grid. It communicates clarity, efficiency, and modernity. It is not "boring" or "plain"; it is **boldly reductive and graphic**. Every element exists because it is necessary. Visual interest comes from the strategic interplay of solid shapes, vibrant (but controlled) color palettes, and dynamic scale.
+
+**Core Principles:**
+1.  **Zero Artificial Depth**: The Z-axis does not exist. Everything is on the same plane. However, visual hierarchy is created through scale, color contrast, and strategic layering of flat shapes.
+2.  **Color as Structure**: Bold background colors define sections and grouping, not lines or shadows. Color transitions are sharp, never blurred or gradual.
+3.  **Typography as Interface**: Text size and weight bear the load of hierarchy. Typography is geometric, bold, and demands attention.
+4.  **Geometric Purity**: Rectangles, circles, and squares dominate. Rounded corners are consistent and moderate. No organic blobs or complex shapes.
+5.  **Interactive Feedback**: Hover states are pronounced through color shifts, scale transformations, and instant transitions—never through shadow depth.
+6.  **Strategic Decoration**: Large, subtle geometric shapes in background create visual interest without breaking the flat aesthetic—think poster design.
+
+# Design Token System
+
+## Colors (Single Palette: Light Mode)
+A vibrant, confident palette that avoids muddy tones. High contrast is essential.
+
+-   **Background**: \`#FFFFFF\` (Pure White) - The canvas.
+-   **Foreground**: \`#111827\` (Gray 900) - Sharp, high-contrast text.
+-   **Primary**: \`#3B82F6\` (Blue 500) - The "Action" color. Bright, standard digital blue.
+-   **Secondary**: \`#10B981\` (Emerald 500) - Supporting accent.
+-   **Accent**: \`#F59E0B\` (Amber 500) - For highlights/badges.
+-   **Muted**: \`#F3F4F6\` (Gray 100) - Used for secondary backgrounds/blocks.
+-   **Border**: \`#E5E7EB\` (Gray 200) - Used sparingly.
+
+## Typography
+**Font Family**: **'Outfit', sans-serif**.
+A geometric sans-serif that mirrors the shapes of the UI.
+-   **Headings**: Bold (700) or Extra Bold (800). Tight letter-spacing (\`-0.02em\`).
+-   **Body**: Regular (400). Readable, standard spacing.
+-   **Labels/Buttons**: Medium (500) or SemiBold (600). Uppercase often used for labels (\`tracking-wider\`).
+
+## Radius & Shapes
+-   **Radius**: \`rounded-md\` (6px) or \`rounded-lg\` (8px). Consistent throughout. Not fully rounded (pill) unless it's a tag.
+-   **Borders**: generally \`0px\`. We use background colors to define edges. If a border is needed (e.g., inputs), \`border-2\` solid color.
+
+## Shadows & Effects
+-   **Shadows**: \`shadow-none\`. **ABSOLUTELY NO BOX SHADOWS ON ELEMENTS.**
+-   **Gradients**: Only subtle directional gradients for background decoration (e.g., \`from-[#F3F4F6] to-transparent\`). Never on buttons or cards. Never colorful or vibrant gradients.
+-   **Blur**: None on elements. No backdrop-blur effects.
+-   **Background Decoration**: Large geometric shapes with low opacity (\`bg-white/5\`) positioned absolutely for visual interest.
+
+# Component Stylings
+
+## Buttons
+-   **Primary**: Solid Primary color background. White text. \`rounded-md\`. Height \`h-14\` to \`h-16\` for good touch targets. \`transition-all duration-200 hover:scale-105\` (scale transformation for feedback). Color shift on hover (e.g., \`hover:bg-blue-600\`). No shadow.
+-   **Secondary**: Solid Muted background (Gray 100). Dark text. \`hover:bg-gray-200\` with scale effect.
+-   **Outline**: \`border-4\` solid color (not border-2 for more boldness). Text matches border color. Transparent bg. \`hover:bg-[color] hover:text-white\` (fill effect on hover).
+
+## Cards
+-   **Style**: "Color Block".
+-   **Appearance**: Solid background color (White on Gray page, or soft color tints like \`bg-blue-50\`, \`bg-green-50\` for features). No shadow. No border. Padding is generous (\`p-6\` or \`p-8\`). Rounded corners \`rounded-lg\`.
+-   **Interaction**: \`group cursor-pointer transition-all duration-200 hover:scale-[1.02]\` (subtle scale). For colored backgrounds, add \`hover:bg-[color]-100\` for intensification. Icons within cards can have \`group-hover:scale-110\`.
+
+## Inputs
+-   **Normal**: Gray 100 background (\`bg-gray-100\`). No border. Text Gray 900. \`rounded-md\`.
+-   **Focus**: White background. \`border-2\` solid Primary. No focus ring glow, just the hard border.
+
+## Section Stylings
+-   **Alternating Backgrounds**: Use White vs. Gray 100 (\`#F3F4F6\`) vs. Bold accent colors (Primary Blue, Emerald, Amber) to distinguish page sections. Sharp color transitions between sections.
+-   **Dividers**: No thin line dividers between sections. Use whitespace or color blocks. Exception: FAQ uses thick \`border-2\` between items for structure.
+-   **Background Decoration**: Use \`absolute\` positioned geometric shapes with low opacity or subtle gradients for visual interest. Examples: large circles (\`rounded-full\`), rotated squares, gradient overlays (\`from-[color] to-transparent\`).
+
+# Iconography
+-   **Library**: \`lucide-react\`.
+-   **Style**: Standard to bold stroke (2px to 2.5px for emphasis).
+-   **Treatment**: Often placed inside a solid colored circle (white circle with colored icon like \`bg-white text-blue-600\`). Circle size \`h-14 w-14\` or \`h-16 w-16\`.
+-   **Animation**: \`transition-transform duration-200 group-hover:scale-110\` for icons within cards. Simple color intensity shifts on hover.
+
+# Layout & Spacing
+-   **Container**: \`max-w-7xl\`.
+-   **Grid**: Rigid. 12-column base. Elements align perfectly.
+-   **Spacing**: Comfortable but structured. Multiples of 4 (Tailwind default).
+-   **Density**: Medium. Not too airy, not too dense. "Functional".
+
+# Motion
+-   **Vibe**: "Digital", "Snappy", "Direct".
+-   **Transitions**: \`transition-all duration-200\` for most interactions. \`duration-300\` for larger transformations.
+-   **Hover**: Immediate visual feedback through:
+     - Scale transformations (\`hover:scale-105\` for buttons, \`hover:scale-[1.02]\` for cards)
+     - Color shifts (darkening or lightening)
+     - Color fills (outline buttons filling with color)
+     - Icon scaling within cards (\`group-hover:scale-110\`)
+
+# Accessibility
+-   **Focus Rings**: Since we have no shadows, focus states must use high-contrast \`ring-2 ring-offset-2 ring-blue-500\` or similar solid outlines.
+-   **Contrast**: Text on colored backgrounds must pass WCAG AA (e.g., White text on Blue 500 is okay, but check carefully with lighter accents).
+
+# Non-Genericness / "The Bold Factor"
+-   **Avoid**: "Material Design" floating cards, generic Bootstrap layouts, subtle pastels everywhere.
+-   **Emphasize**: The "Poster" look. Treat every section like a flat graphic poster with bold color blocking.
+-   **Bold Choices Implemented**:
+     - **Large decorative geometric shapes** in hero background (circles, rotated squares with low opacity)
+     - **Vibrant full-section color blocks** (Blue hero, Emerald benefits, Amber CTA, Dark gray How It Works & Footer)
+     - **Dramatic scale effects** on pricing cards (popular tier starts larger and scales more)
+     - **Multi-color stat numbers** (each stat uses a different accent color)
+     - **Abstract geometric compositions** (overlapping shapes in hero illustration and benefits section)
+     - **Pronounced hover states** (scale, color intensification, fills)
+     - **Bold typography** with tight leading and strong weight contrast
+     - **Thick borders** (border-4 on outline buttons, border-2 on FAQ items)
+-   **Visual Interest Without Depth**: Achieved through color contrast, geometric layering, and scale—never shadows or gradients.
+
+
+Material
+
+Playful, dynamic color extraction, pill-shaped buttons, and distinct elevation states. Based on Google's Material Design 3 with enhanced depth and micro-interactions.
+`,
+
+  material: `
+# Design Style: Material You (Material Design 3)
+
+## Design Philosophy
+
+**Core Principles**: Personal, adaptive, and spirited. Material You (MD3) represents a shift from Material Design 2's rigid "paper and ink" metaphor to a more organic, expressive system. The design extracts color palettes from seed colors (simulating the wallpaper-based personalization), emphasizes tonal surfaces over stark whites, and uses organic shapes with soft curves.
+
+**Vibe**: Friendly, soft, rounded, colorful, and personal. The aesthetic feels modern yet approachable, with generous use of color through tonal surfaces rather than just accent highlights. Movement is smooth and confident, never jarring. Every interaction feels tactile and responsive, with micro-animations that provide satisfying feedback.
+
+**Enhanced Implementation Details**:
+This implementation goes beyond the baseline Material Design 3 specifications by incorporating:
+- **Layered depth**: Multiple blur shapes, radial gradients, and shadow combinations create atmospheric backgrounds
+- **Rich micro-interactions**: Hover states include scale transforms, shadow elevations, glow effects, and smooth color transitions
+- **Asymmetric elevation**: Featured cards (like pricing tiers) use vertical translation to create visual hierarchy
+- **Progressive disclosure**: Elements reveal depth on interaction through shadow transitions and background opacity changes
+- **Tactile feedback**: All interactive elements include active:scale-95 for press feedback, enhancing the physical feel
+
+**Key Differentiators from MD2**:
+- Tonal surface system replaces pure white backgrounds
+- Pill-shaped buttons replace rounded rectangles
+- Organic shapes and blur effects replace flat geometric patterns
+- State layers (opacity overlays) replace solid color changes
+- Multi-layered atmospheric effects create rich visual depth
+- Micro-interactions on every interactive element enhance perceived quality
+
+## Design Token System (The DNA)
+
+### Colors (Light Mode)
+
+Material You uses a sophisticated tonal palette derived from a seed color. For this implementation, use a **Purple/Violet seed** (#6750A4).
+
+**Core Palette Structure**:
+- **Background (Surface)**: \`#FFFBFE\` - Slightly warm off-white, not pure white
+- **Foreground (On Surface)**: \`#1C1B1F\` - Near-black with slight warmth
+- **Primary**: \`#6750A4\` - Rich purple (seed color)
+- **On Primary**: \`#FFFFFF\` - Pure white for text on primary
+- **Secondary Container**: \`#E8DEF8\` - Light lavender tint
+- **On Secondary Container**: \`#1D192B\` - Dark text for secondary surfaces
+- **Tertiary**: \`#7D5260\` - Complementary mauve/dusty rose
+- **Surface Container**: \`#F3EDF7\` - Subtle tinted surface, one step darker than background
+- **Surface Container Low (Muted)**: \`#E7E0EC\` - For inputs and recessed surfaces
+- **Outline (Border)**: \`#79747E\` - Medium gray for borders
+- **On Surface Variant**: \`#49454F\` - For secondary text and icons
+
+**Color Relationship Rules**:
+- Use surface tones to create depth hierarchy: Background → Surface Container → Surface Container Low
+- Primary color should appear in CTAs, focus states, and key interactive elements
+- Secondary Container is for pills, chips, and less prominent containers
+- Tertiary is for accent elements and FABs (Floating Action Buttons)
+- Never use pure white (#FFFFFF) for backgrounds - always use the tinted Surface color
+- On colored backgrounds (primary/tertiary), use transparent white/black overlays for states
+
+**Opacity Patterns for State Layers**:
+- Hover on solid colors: 90% of base color (\`bg-md-primary/90\`)
+- Active/pressed on solid colors: 80% of base color (\`bg-md-primary/80\`)
+- Hover on transparent surfaces: 10% of primary (\`bg-md-primary/10\`)
+- Focus on transparent surfaces: 5% of primary (\`bg-md-primary/5\`)
+- Subtle overlay effects: 20% opacity with backdrop-blur
+
+### Typography
+
+**Font Family**: **Roboto** (Google Fonts) - The canonical Material Design typeface
+- Load weights: 400 (Regular), 500 (Medium), 700 (Bold)
+- Use Medium (500) as default for headings to maintain the friendly, approachable feel
+- Body text uses Regular (400)
+
+**Type Scale** (Material Design 3 scale):
+- **Display Large**: 3.5rem / 56px (Hero headlines)
+- **Headline Large**: 3rem / 48px (Section titles)
+- **Headline Medium**: 2rem / 32px (Subsection titles)
+- **Title Large**: 1.5rem / 24px (Card titles)
+- **Body Large**: 1.25rem / 20px (Lead paragraphs)
+- **Body Medium**: 1rem / 16px (Standard body text)
+- **Label Medium**: 0.875rem / 14px (Button text)
+- **Label Small**: 0.75rem / 12px (Captions, metadata)
+
+**Letter Spacing**:
+- Headings: Normal to tight (0 to -0.01em)
+- Body text: Normal (0)
+- Labels/buttons: Slightly wide (0.01em) for Medium weight at small sizes
+
+**Line Height**:
+- Display/Headlines: 1.2 to 1.3 (tight for impact)
+- Body text: 1.5 to 1.6 (relaxed for readability)
+- Compact UI elements: 1.4
+
+### Radius & Borders
+
+Material You uses **organic, generous rounding** to create a friendly aesthetic.
+
+**Radius Values**:
+- **Extra Small**: \`8px\` - Minimal UI elements, chips
+- **Small**: \`12px\` - Small cards, compact elements
+- **Medium**: \`16px\` - Default card radius
+- **Large**: \`24px\` - Prominent cards, containers
+- **Extra Large**: \`28px\` - Dialogs, sheets, large surfaces
+- **Extra Extra Large**: \`32px\` to \`48px\` - Hero sections, major containers
+- **Full (Pills)**: \`9999px\` or \`rounded-full\` - All buttons, chips, badges, FABs
+
+**When to Use Each**:
+- Buttons, chips, badges: Always \`full\` (pill-shaped)
+- Standard cards: \`24px\` (Large)
+- Feature cards, FAQ items: \`24px\` (Large)
+- Hero containers, major sections: \`48px\` (Extra Extra Large)
+- Nested content cards: \`32px\`
+- Input fields: Top corners \`12px\`, bottom corners \`0px\` (Material 3 filled text field style)
+
+**Borders**:
+- Use sparingly - tonal surfaces are preferred over borders
+- When needed, use \`#79747E\` (Outline) color
+- Thickness: 1px standard, 2px for focus states (bottom border on inputs)
+- On colored backgrounds, use \`white/10\` or \`white/20\` for subtle borders
+
+### Shadows & Effects
+
+Material You uses **elevation** through subtle shadows combined with tonal surfaces, not dramatic drop shadows. This implementation enhances the baseline with progressive shadow transitions.
+
+**Shadow Philosophy**:
+- **Elevation 0** (Default): No shadow or \`shadow-sm\` - use tonal surface difference for depth
+- **Elevation 1**: \`shadow-sm\` - Subtle lift for cards at rest (default state for most cards)
+- **Elevation 2**: \`shadow-md\` - Hover state for interactive cards, default for important containers
+- **Elevation 3**: \`shadow-lg\` to \`shadow-xl\` - FABs, major sections, raised buttons on hover
+- **Elevation 4+**: Reserved for modals, dialogs (not common in base design)
+
+**Enhanced Shadow Patterns**:
+- All interactive cards transition from \`shadow-sm\` to \`shadow-md\` on hover
+- Important sections (Benefits, Final CTA) start at \`shadow-lg\`
+- Combined with scale transforms (\`hover:scale-[1.02]\`) for depth enhancement
+- Shadow transitions use 300ms duration for smooth, confident movement
+
+**Shadow Composition**:
+- Soft, diffuse shadows (large blur, minimal spread)
+- Shadow colors should be near-black with low opacity (5-15%)
+- Combine with tonal surface colors for best effect
+- Layer shadows with background blur shapes for atmospheric richness
+
+**Blur Effects** (Signature Technique):
+- Large organic shapes: \`blur-3xl\` (64px+)
+- Background decorative elements: Colored circles/shapes at 10-30% opacity with heavy blur
+- Atmospheric effect: Multiple overlapping blurred shapes with radial gradients
+- Glass-morphism cards: \`backdrop-blur-sm\` with \`bg-white/10\` to \`bg-white/15\` and borders at \`border-white/10\` to \`border-white/20\`
+- Hero sections: Multiple blur shapes positioned off-canvas with transforms
+
+**Glow/Aura Effects**:
+- Use radial gradients with transparency for ambient light
+- Color: Primary, secondary, or tertiary at 10-30% opacity
+- Position: Behind hero content, in major sections (Benefits, Final CTA), or on hover states
+- Animated glow: \`opacity-0 group-hover:opacity-30\` for progressive disclosure
+- Example: Numbered badges in How It Works section have hidden blur that reveals on hover
+
+### Textures & Patterns
+
+**Organic Decorative Shapes**:
+- Large rounded rectangles (\`rounded-[100px]\`) with one corner less rounded (\`rounded-tr-[20px]\`)
+- Perfect circles (\`rounded-full\`)
+- Layered with \`mix-blend-multiply\` for color richness
+- Use primary, secondary, and tertiary colors at 80-90% opacity
+- Apply \`blur-3xl\` for soft, atmospheric quality
+- Position partially off-canvas (using negative translate values)
+
+**Background Treatment**:
+- Never use solid white - always use Surface color (#FFFBFE)
+- Radial gradients for subtle color washes: \`bg-[radial-gradient(circle_at_top_right,_var(--color-md-secondary)_0%,_transparent_40%)]\`
+- Opacity: 10-20% for background patterns
+
+**Layering Strategy**:
+1. Base surface (tinted off-white)
+2. Decorative organic shapes (blurred, multiply blend)
+3. Surface container (content backgrounds)
+4. Content
+5. Interactive elements with state layers
+
+## Component Styling Principles
+
+### Buttons
+
+Material You buttons are **pill-shaped** and use a state layer system.
+
+**Variants**:
+1. **Filled (Primary)**:
+   - Background: Primary color
+   - Text: White
+   - Shape: \`rounded-full\` (pill)
+   - Shadow: None at rest, \`shadow-md\` on hover
+   - State layer: \`bg-md-primary/90\` on hover, \`/80\` on active
+   - Scale: \`active:scale-95\` for tactile feedback
+
+2. **Tonal (Secondary)**:
+   - Background: Secondary Container color
+   - Text: On Secondary Container color
+   - Shape: \`rounded-full\`
+   - State layer: Similar to filled
+   - Use for less prominent actions
+
+3. **Outlined**:
+   - Background: Transparent
+   - Border: 1px Outline color
+   - Text: Primary color
+   - Shape: \`rounded-full\`
+   - State layer: \`bg-md-primary/5\` on hover
+
+4. **Text/Ghost**:
+   - Background: Transparent
+   - Text: Primary color
+   - State layer: \`bg-md-primary/10\` on hover
+   - Shape: \`rounded-full\`
+
+5. **FAB (Floating Action Button)**:
+   - Background: Tertiary color
+   - Text: White
+   - Shape: \`rounded-2xl\` (28px) for square FABs, \`rounded-full\` for circular
+   - Shadow: \`shadow-md\` at rest, \`shadow-xl\` on hover
+   - Size: 56x56px (h-14 w-14)
+
+**Animation**:
+- Transition: 300ms duration
+- Easing: \`cubic-bezier(0.2, 0, 0, 1)\` - Material You's signature easing
+- Scale on active: \`scale-95\` for press feedback
+- Shadow should animate smoothly with same timing
+
+**Sizing**:
+- Small: \`h-9\` (36px)
+- Default: \`h-10\` (40px)
+- Large: \`h-12\` (48px)
+- Horizontal padding: Generous (\`px-6\` to \`px-8\`)
+
+### Cards/Containers
+
+**Visual Treatment**:
+- Background: Surface Container (\`#F3EDF7\`), never pure white
+- Border radius: \`24px\` (Large) for standard cards
+- Border: None by default - use tonal background for separation
+- Shadow: \`shadow-sm\` at rest, \`shadow-md\` on hover
+- Padding: Generous (\`p-6\` to \`p-8\`)
+
+**State Transitions**:
+- Hover: \`hover:bg-md-surface-variant/20\` or \`hover:shadow-md\`, combined with transforms
+- Duration: 300ms with standard easing (\`transition-all duration-300\`)
+- Scale: \`hover:scale-[1.02]\` for feature cards and interactive elements
+- Shadow elevation: \`shadow-sm\` to \`shadow-md\` on hover for all interactive cards
+- Group pattern: Use \`group\` class and \`group-hover:\` modifiers for coordinated animations
+
+**Nested Cards**:
+- Use even lighter backgrounds or transparent with borders
+- Example: On colored container, use \`bg-white/10\` with \`border-white/10\`
+
+**Special Containers**:
+- Hero sections: Extra large radius (\`rounded-[48px]\`), surface container background
+- Section backgrounds: Tonal fills with decorative blur shapes
+- Glass-morphism effects: \`bg-white/10 backdrop-blur-sm border border-white/10\`
+
+### Inputs (Material 3 Filled Text Field)
+
+**Distinctive Style**:
+- Top corners rounded (\`rounded-t-lg\` / 12px)
+- Bottom corners square
+- Bottom border: 2px solid Outline color
+- Background: Muted (Surface Container Low) color
+- Height: Tall (\`h-14\` / 56px)
+- Focus state: Bottom border changes to Primary color
+
+**Structure**:
+\`\`\`
+┌─────────────┐  ← Rounded top
+│   Input     │  ← Muted background fill
+└─────────────┘  ← Square bottom with 2px border
+      ↑
+  Focus: Primary color
+\`\`\`
+
+**State Handling**:
+- Rest: \`border-md-border\` (bottom)
+- Focus: \`border-md-primary\` (bottom)
+- Transition: 200ms color transition
+- Label: Placeholder uses \`text-md-on-background/50\`
+
+### Interactive States
+
+**State Layer System** (Key Material You Concept):
+Instead of changing the base color, overlay a semi-transparent layer:
+
+1. **Solid Color Elements** (buttons with bg):
+   - Hover: Base color at 90% (\`bg-md-primary/90\`)
+   - Active: Base color at 80% (\`bg-md-primary/80\`)
+
+2. **Transparent Elements** (ghost buttons, text buttons):
+   - Hover: Primary at 10% (\`bg-md-primary/10\`)
+   - Active: Primary at 5% (\`bg-md-primary/5\`)
+
+3. **Focus States**:
+   - Ring: 2px Primary color with 2px offset
+   - Additional: Can combine with hover state
+
+4. **Disabled States**:
+   - Opacity: 50% on entire element
+   - Cursor: \`cursor-not-allowed\`
+   - Pointer events: None
+
+**Transition Timing**:
+- Standard: \`transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]\`
+- Fast interactions (clicks): \`duration-200\`
+- Color transitions only: \`transition-colors duration-200\`
+
+## Layout Principles
+
+**Grid Usage**:
+- Use CSS Grid for card layouts: \`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3\`
+- Gap: Consistent spacing, typically \`gap-6\` (24px) or \`gap-8\` (32px)
+- Container: Use \`.container\` with \`mx-auto\` for centered max-width layouts
+
+**Spacing Rhythm**:
+- Base unit: 4px (Tailwind default)
+- Component internal padding: \`p-6\` (24px) to \`p-8\` (32px)
+- Section padding: \`py-12\` (48px) to \`py-24\` (96px)
+- Between sections: \`mb-12\` or \`mb-24\`
+- Generous whitespace is encouraged - don't cram content
+
+**Section Flow**:
+- Alternate between tonal backgrounds and default background
+- Hero in large rounded container with surface-container background
+- Some sections on default background, others on surface-container
+- Use full-width colored containers (primary/tertiary) sparingly for emphasis
+
+**Responsive Behavior**:
+- Border radius scales down on mobile (48px → 24px)
+- Padding reduces proportionally
+- Grid collapses gracefully to single column
+- Text sizes scale down one step on mobile
+
+## The "Bold Factor" (Non-Genericness)
+
+These signature elements MUST be present to achieve authentic Material You aesthetic with enhanced visual richness:
+
+1. **Organic Blur Shapes with Layering**:
+   - Large circular or pill-shaped divs with heavy blur (\`blur-3xl\`)
+   - Use primary, secondary, tertiary colors at 10-30% opacity
+   - Layer multiple shapes in major sections (Hero, Benefits, Final CTA)
+   - Combine with radial gradients for atmospheric depth
+   - Position partially off-canvas with transforms (\`-translate-x-1/4\`, \`translate-y-1/3\`)
+   - Creates atmospheric, dynamic backgrounds that feel alive
+
+2. **Tonal Surface System with Shadow Progression**:
+   - NEVER use pure white backgrounds
+   - Layer surfaces: Background → Surface Container → Surface Container Low
+   - Color difference is subtle but creates depth without heavy shadows
+   - All cards use surface-container color by default
+   - Progressive shadows: \`shadow-sm\` at rest, \`shadow-md\` on hover, \`shadow-lg\` for important sections
+
+3. **Pill-Shaped Buttons with Active Feedback**:
+   - ALL buttons must be \`rounded-full\` (except FABs which are rounded-2xl)
+   - No rectangular or lightly rounded buttons
+   - Active state: \`active:scale-95\` for tactile press feedback
+   - This is the most instantly recognizable Material You characteristic
+
+4. **Large Organic Border Radii**:
+   - Hero sections and major containers use 32px to 48px radius
+   - Regular cards use 24px radius
+   - This isn't just "rounded corners" - it's architectural, shaping the entire layout
+   - Creates a friendly, approachable feel vs. the rigid rectangles of MD2
+
+5. **State Layer Interaction Model with Micro-Animations**:
+   - Hover/press states use opacity overlays, not color shifts
+   - Visible as \`bg-color/90\` or \`bg-color/10\` patterns
+   - Smooth cubic-bezier easing: \`cubic-bezier(0.2, 0, 0, 1)\`
+   - Enhanced with scale transforms, shadow elevations, and glow effects
+   - Group interactions: Use \`group\` and \`group-hover:\` for coordinated animations
+
+6. **Asymmetric Elevation** (Enhancement):
+   - Featured pricing tier: \`md:-translate-y-4\` to lift above siblings
+   - Creates visual hierarchy through vertical positioning
+   - Combined with ring highlight (\`ring-2 ring-md-primary\`) for emphasis
+
+7. **Rich Micro-Interactions** (Enhancement):
+   - Blog cards: Image zoom on hover (\`group-hover:scale-105\`)
+   - Feature cards: Hover scale on entire card (\`hover:scale-[1.02]\`)
+   - How It Works badges: Glow effect reveals on hover
+   - Pricing features: Translate-x on hover for list items
+   - Every interactive element has smooth, satisfying feedback
+
+## Anti-Patterns (What to Avoid)
+
+**Don't:**
+- ❌ Use pure white (#FFFFFF) for backgrounds - breaks the tonal system
+- ❌ Use rectangular or slightly rounded buttons - must be pill-shaped
+- ❌ Use heavy drop shadows - MD3 prefers subtle elevation with tonal surfaces
+- ❌ Change button colors on hover - use state layers (opacity overlays) instead
+- ❌ Use sharp corners on major containers - generosity with border radius is key
+- ❌ Ignore the organic blur shapes - they're signature to the style
+- ❌ Use pure black text - use the On Surface color (#1C1B1F) with warmth
+- ❌ Flatten inputs - use the distinctive filled text field style with bottom border
+- ❌ Create harsh geometric patterns - shapes should feel organic, soft, flowing
+- ❌ Rely on borders for container separation - use tonal backgrounds instead
+
+**Common Mistakes**:
+- Making border radius too small (16px is minimum for cards, 24px+ is better)
+- Forgetting to round top corners but square bottom corners on inputs
+- Using hover color changes instead of state layers
+- Over-using shadows when tonal surfaces would work better
+- Not layering enough organic shapes in backgrounds
+- Making the color palette too muted - MD3 is expressive and colorful
+- Missing micro-interactions - every interactive element should have smooth feedback
+- Forgetting the \`group\` pattern for coordinated hover effects
+- Not using \`active:scale-95\` on clickable elements for tactile feedback
+- Static cards without hover states - breaks the interactive, responsive feel
+
+## Animation & Motion
+
+**Easing Function**:
+- Standard: \`cubic-bezier(0.2, 0, 0, 1)\` - Material You's signature easing
+- This creates smooth, confident movement that feels neither robotic nor bouncy
+- Also known as "Emphasized Decelerate" in Material specs
+
+**Duration**:
+- Micro-interactions (button hover): 200ms
+- Standard transitions (cards, surfaces): 300ms
+- Large surfaces (modals, sheets): 400-500ms
+- Never exceed 500ms for UI transitions
+
+**Transform Patterns**:
+- Scale on press: \`active:scale-95\` for tactile feedback
+- Hover lift: Can use subtle \`translate-y\` (1-2px) combined with shadow increase
+- Entrance animations: Fade + slight scale or slide
+- Exit animations: Faster than entrance (200ms vs 300ms)
+
+**What Animates**:
+- Background color (state layers)
+- Shadow elevation
+- Scale (on press)
+- Opacity (for overlays, toasts)
+- Transform (for FABs, special interactions)
+
+**What Doesn't Animate**:
+- Border radius (stays constant)
+- Layout shifts (use fixed dimensions or smooth height transitions)
+- Color hue shifts (only opacity changes for state layers)
+
+## Accessibility Considerations
+
+**Contrast Requirements**:
+- Text on Surface background: 4.5:1 minimum (On Surface color: #1C1B1F)
+- Text on Primary: AAA level (pure white #FFFFFF)
+- Outline color for borders: 3:1 against surfaces
+- Ensure tonal surface differences are visible (not just decorative)
+
+**Focus States**:
+- All interactive elements must have visible focus ring
+- Use \`focus-visible:ring-2 focus-visible:ring-md-primary focus-visible:ring-offset-2\`
+- Ring color: Primary
+- Ring offset: 2px for separation from element
+
+**Touch Targets**:
+- Minimum: 44x44px (follows WCAG guidelines)
+- Default button height: 40-48px (meets minimum)
+- FABs: 56x56px (generous touch target)
+- Add padding around small interactive elements if needed
+
+**Motion Preferences**:
+- Respect \`prefers-reduced-motion\` for users with vestibular disorders
+- Reduce or remove scale transforms, translate animations
+- Keep color transitions but remove movement
+- Example: \`@media (prefers-reduced-motion: reduce) { * { animation: none; transition-duration: 0.01ms; } }\`
+
+**Screen Reader Considerations**:
+- Decorative organic shapes should have \`aria-hidden="true"\`
+- Ensure color isn't the only indicator of state
+- Icon-only buttons must have accessible labels
+- Form inputs need associated labels (visible or aria-label)
+
+---
+
+## Implementation Checklist
+
+To ensure full Material You compliance with enhanced depth and interactivity:
+
+**Core Material You Elements**:
+- [ ] Using Roboto font (400, 500, 700 weights)
+- [ ] All buttons are \`rounded-full\` (pill-shaped)
+- [ ] Background is #FFFBFE (not pure white)
+- [ ] Cards use Surface Container (#F3EDF7) backgrounds
+- [ ] Organic blur shapes present in hero/key sections
+- [ ] State layers (opacity overlays) for hover/active states
+- [ ] Cubic-bezier(0.2, 0, 0, 1) easing on transitions
+- [ ] Large border radii on major containers (32-48px)
+- [ ] Inputs use filled text field style (rounded top, border bottom)
+- [ ] Focus rings on all interactive elements
+- [ ] Generous spacing and padding throughout
+
+**Enhanced Implementation**:
+- [ ] Progressive shadow system: \`shadow-sm\` → \`shadow-md\` on hover
+- [ ] Multiple blur shapes with radial gradients in major sections
+- [ ] \`active:scale-95\` on all clickable elements for tactile feedback
+- [ ] \`group\` pattern with coordinated hover animations
+- [ ] Hover scale (\`hover:scale-[1.02]\`) on feature cards
+- [ ] Image zoom on blog card hover (\`group-hover:scale-105\`)
+- [ ] Asymmetric elevation on featured pricing tier (\`md:-translate-y-4\`)
+- [ ] Glow effects that reveal on hover (How It Works badges)
+- [ ] Glass-morphism cards in Benefits section with backdrop-blur
+- [ ] Shadow-inner on Product Detail visualization container
+- [ ] Header with border-bottom and backdrop-blur
+- [ ] All transitions use 300ms duration minimum
+- [ ] Hover states on FAQ items with color transitions
+- [ ] Input focus states include ring for enhanced visibility
+`,
+
+  claymorphism: `
+Clay
+
+A hyper-realistic 3D aesthetic simulating soft, inflatable clay objects with multi-layered shadow stacks, vibrant candy-store colors, tactile micro-interactions, and organic floating ambient elements that create a premium, playful digital toy experience.
+
+
+
+# High-Fidelity Claymorphism Design System
+
+## Design Philosophy
+
+**Core Concept: Digital Clay**
+This design system is not merely a "soft UI"—it is a high-fidelity simulation of a tangible, physical world constructed from **premium digital clay**. Every element on the screen should evoke the sensation of holding a high-end, matte-finish vinyl toy or a soft, air-filled silicone object. It rejects the flatness of modern minimalism in favor of volume, weight, and tactility.
+
+**The "High-Fidelity" Difference**:
+Unlike early 2020s "Neumorphism" (which felt like extruded plastic) or basic "Claymorphism" (which often feels like flat vector art), **High-Fidelity Claymorphism** relies on complex, multi-layered lighting simulation using 4-layer shadow stacks. It renders objects that feel dense, substantial, and interactive—not hollow decorations.
+
+*   **Materiality**: Think of soft-touch matte silicone, marshmallow-like foam, or high-quality injection-molded plastic with a premium finish. Surfaces absorb light rather than reflecting it sharply, creating a warm, inviting aesthetic.
+*   **Lighting**: The "world" is lit by a soft, diffused overhead light source positioned top-left, creating deep ambient occlusion shadows below objects and gentle specular highlights on their upper ridges. This creates the illusion of physical depth.
+*   **Shadow Architecture**: Every element uses carefully crafted multi-layer shadows:
+    - **Outer shadows**: Soft, colored drop shadows that define distance from the surface
+    - **Highlight shadows**: Top-left highlights that simulate light reflection
+    - **Inner shadows**: Subtle colored reflections and rim lights that add dimensionality
+    - **Active states**: Pressed elements use inset shadows to simulate physical depression
+
+**The Sensory Vibe**:
+*   **Playful & Optimistic**: The interface radiates joy through "candy store" colors (vivid violets, hot pinks, sky blues, emerald greens, amber oranges) and bouncy, organic motion. It feels safe, welcoming, and unpretentious—like a premium toy store display.
+*   **Tactile & Responsive**: Elements don't just change color when interacted with—they physically react with exaggerated realism. Buttons actively "squish" (scale-[0.92] + shadow-clayPressed) and compress under the cursor. Cards lift and float towards the user (-translate-y-2 with enhanced shadows). Every interaction provides satisfying visual feedback.
+*   **Friendly & Safe**: There are **zero sharp corners** in this universe. Every edge is aggressively rounded (\`rounded-[20px]\` minimum, up to \`rounded-[60px]\` for large containers), subconsciously signaling safety and approachability to the user. The design language speaks "friendly" and "accessible" without words.
+*   **Premium Craft**: Despite the playfulness, this aesthetic maintains a sense of quality through careful attention to detail: consistent border radii, precise shadow layering, harmonious color relationships, and smooth micro-interactions.
+
+**The "Clay" Physics Engine**:
+1.  **Convexity (The Bulge)**: Primary interactive elements (Buttons, Stat orbs, Feature cards) bulge OUT towards the user with \`shadow-clayButton\` or \`shadow-clayCard\`. They capture light on their top-left edge and cast soft colored shadows below, creating the illusion of floating above the surface.
+2.  **Concavity (The Press)**: Secondary surfaces (Input fields, Active button states, FAQ panels when open) are pressed INTO the clay surface with \`shadow-clayPressed\`. They cast internal shadows on their top edge and catch light on their bottom lip, making them feel recessed.
+3.  **Buoyancy (The Float)**: The interface exists in a zero-gravity environment with high air resistance. Background blobs drift slowly (8-12s animations with translateY and rotate). Cards hover effortlessly with hover states that amplify the float effect. Nothing feels statically "stuck" to the grid—everything breathes and moves subtly.
+4.  **Micro-Physics**: Hover states consistently lift elements upward (\`hover:-translate-y-1\` to \`-translate-y-2\`) while enhancing their shadows, simulating the element floating closer to the viewer. Active/pressed states do the opposite—compressing downward with reduced shadows.
+
+---
+
+## Design Token System
+
+### Colors (The "Candy Shop" Palette)
+
+**Background**:
+*   **Canvas**: \`#F4F1FA\` (Very pale, cool lavender-white). This provides a cleaner, more modern base than warm beige. Never use pure white—the slight tint creates warmth.
+
+**Foreground**:
+*   **Text (Primary)**: \`#332F3A\` (Soft Charcoal). High contrast (passing WCAG AA) but softer than black for a friendlier feel.
+*   **Muted (Secondary)**: \`#635F69\` (Dark Lavender-Gray). Crucial for readability against light backgrounds. Use for body text, labels, and secondary information. Never go lighter than this value.
+
+**Accents (Vibrant & Saturated)**:
+*   **Primary Accent**: \`#7C3AED\` (Vivid Violet). The hero color used for primary CTAs, links, and brand emphasis.
+*   **Secondary Accent**: \`#DB2777\` (Hot Pink). Used in gradients and for secondary emphasis.
+*   **Tertiary**: \`#0EA5E9\` (Sky Blue). For informational elements and background blobs.
+*   **Success/Benefits**: \`#10B981\` (Emerald Green). For checkmarks and positive indicators.
+*   **Warning**: \`#F59E0B\` (Amber). For alerts and star ratings.
+
+**Gradient Strategy**:
+*   **Primary Buttons**: \`bg-gradient-to-br from-[#A78BFA] to-[#7C3AED]\` (lighter violet to primary violet). This creates depth and prevents overly dark buttons.
+*   **Icon Orbs**: \`bg-gradient-to-br\` from light pastel (400) to saturated hue (600) with varied colors for visual interest (e.g., \`from-blue-400 to-blue-600\`, \`from-purple-400 to-purple-600\`, \`from-pink-400 to-pink-600\`).
+*   **Text Highlights**: Use multi-stop gradients for hero text (\`clay-text-gradient\`): \`from-clay-foreground 20%, to-clay-accent 60%, to-clay-accent-alt\`. Keep gradient text large (text-5xl+) for readability.
+*   **Background Blobs**: Semi-transparent accent colors with 10% opacity and blur-3xl for soft ambient lighting.
+
+### Typography
+
+**Font Selection**:
+*   **Headings**: **Nunito** (Google Fonts, Weights: 700/800/900). The rounded terminals perfectly complement the soft clay aesthetic. Apply via inline styles: \`style={{ fontFamily: "Nunito, sans-serif" }}\` for all headings, stat numbers, and emphasis text.
+*   **Body**: **DM Sans** (Google Fonts, Weights: 400/500/700). Geometric, clean, and highly readable. Applied globally via body font-family.
+
+**Hierarchy (Mobile-First with Progressive Enhancement)**:
+*   **Hero Headline**: \`text-5xl sm:text-6xl md:text-7xl lg:text-8xl\`, Black weight (font-black), tight tracking (tracking-tight), line-height 1.1. Always use Nunito.
+*   **Section Titles**: \`text-3xl sm:text-4xl md:text-5xl\`, Extrabold (font-extrabold) or Black. Always use Nunito.
+*   **Card Titles**: \`text-xl\` to \`text-2xl\` (larger for hero cards: \`text-3xl\`), Bold (font-bold) to Extrabold. Use Nunito.
+*   **Body Text**: \`text-base\` to \`text-lg\`, Medium weight (font-medium), relaxed leading (leading-relaxed). Use DM Sans.
+*   **Small Text**: \`text-sm\` to \`text-xs\`, Medium to Bold weight. Use for labels, metadata, uppercase tracking-wide treatments.
+
+**Typography Best Practices**:
+*   Always pair Nunito headings with DM Sans body for optimal hierarchy.
+*   Use \`font-black\` (900 weight) for maximum impact on large headings and numbers.
+*   Ensure line-height is generous: \`leading-relaxed\` (1.625) for body, \`leading-[1.1]\` for tight display headings.
+*   Limit line length to 60-75 characters with max-w-2xl to max-w-3xl containers for optimal readability.
+*   Use \`tracking-tight\` on large headings to maintain visual density, \`tracking-wide\` or \`tracking-widest\` on small caps/labels.
+
+### Shapes & Radii
+
+**The "Super-Rounded" Rule** (Absolute Values Only):
+*   **Large Containers/Hero Sections**: \`rounded-[48px]\` to \`rounded-[60px]\`
+*   **Standard Cards**: \`rounded-[32px]\` (the default for most cards)
+*   **Medium Elements** (Benefits pills, Blog cards): \`rounded-[24px]\`
+*   **Buttons & Inputs**: \`rounded-[20px]\` or \`rounded-2xl\`
+*   **Icon Containers**: \`rounded-2xl\` (16px) for square icons, \`rounded-full\` for circular
+*   **Small Badges**: \`rounded-lg\` (8px) minimum, \`rounded-full\` preferred
+*   **Stat Orbs**: \`rounded-full\` (perfect circles)
+
+**Critical Rules**:
+*   Never use \`rounded-md\` (4px) or \`rounded-sm\`. They appear too sharp and generic for this aesthetic.
+*   Maintain consistency: if a card uses \`rounded-[32px]\`, its nested image should use \`rounded-[24px]\` (8px less) to create visual hierarchy.
+*   On mobile, you may reduce radii slightly (e.g., \`rounded-[32px] sm:rounded-[40px]\`) to maximize screen real estate while maintaining the soft aesthetic.
+
+### Shadows (The Engine of Clay)
+
+This system uses a **High-Fidelity Shadow Stack** to simulate complex lighting.
+
+**1. Deep Clay (Surface)**:
+For the main background elements or large containers.
+\`\`\`css
+box-shadow: 
+  30px 30px 60px #cdc6d9,           /* Deep, soft ambient occlusion */
+  -30px -30px 60px #ffffff,         /* Top-left ambient light */
+  inset 10px 10px 20px rgba(139, 92, 246, 0.05), /* Subtle color reflection */
+  inset -10px -10px 20px rgba(255, 255, 255, 0.8); /* Surface specularity */
+\`\`\`
+
+**2. Clay Card (Floating)**:
+For standard content cards.
+\`\`\`css
+box-shadow: 
+  16px 16px 32px rgba(160, 150, 180, 0.2), /* Soft purple-gray drop shadow */
+  -10px -10px 24px rgba(255, 255, 255, 0.9), /* Strong top-left highlight */
+  inset 6px 6px 12px rgba(139, 92, 246, 0.03), /* Inner colored bounce light */
+  inset -6px -6px 12px rgba(255, 255, 255, 1); /* Inner rim light */
+\`\`\`
+
+**3. Clay Button (High Convexity)**:
+For clickable elements.
+\`\`\`css
+box-shadow: 
+  12px 12px 24px rgba(139, 92, 246, 0.3), /* Strong colored drop shadow */
+  -8px -8px 16px rgba(255, 255, 255, 0.4), /* Top-left highlight */
+  inset 4px 4px 8px rgba(255, 255, 255, 0.4), /* Inner rim */
+  inset -4px -4px 8px rgba(0, 0, 0, 0.1); /* Bottom-right shading */
+\`\`\`
+
+**4. Clay Pressed (Recessed)**:
+For inputs and active states.
+\`\`\`css
+box-shadow: 
+  inset 10px 10px 20px #d9d4e3, /* Deep inner shadow top-left */
+  inset -10px -10px 20px #ffffff; /* Inner highlight bottom-right */
+\`\`\`
+
+---
+
+## Component Architecture
+
+### 1. The Universal Card (\`Card\`)
+*   **Base Styles**: \`relative overflow-hidden rounded-[32px] bg-clay-cardBg p-8 text-clay-foreground shadow-clayCard backdrop-blur-xl\`
+*   **Interactive States**:
+    *   Default: \`shadow-clayCard\` (4-layer shadow with soft depth)
+    *   Hover: \`hover:-translate-y-2 hover:shadow-[enhanced]\` (lifted with stronger shadow)
+    *   Transition: \`transition-all duration-500\` (smooth, premium feel)
+*   **Structure**:
+    *   Outer wrapper handles positioning, overflow, shadows
+    *   **Inner Content Wrapper**: \`<div className="relative z-10 flex h-full flex-col">{children}</div>\` to support absolute positioned decorative elements
+*   **Decorations**: Use absolute positioned panels with negative margins (\`-bottom-8 -left-8 -right-8\`) to create "peeking" UI elements that emerge from card bottoms
+*   **Variants**:
+    *   Glass effect: \`bg-white/60\` to \`bg-white/80\`
+    *   Solid: \`bg-white\`
+    *   Feature hero card: \`md:col-span-2 md:row-span-2\` with larger internal padding
+
+### 2. The Clay Button (\`Button\`)
+*   **Base Shape**: \`rounded-[20px]\` with chunky height (\`h-14\` default, \`h-16\` for lg)
+*   **Base Styles**: \`inline-flex items-center justify-center font-bold tracking-wide transition-all duration-200\`
+*   **Variants**:
+    *   **Primary/Default**: \`bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] text-white shadow-clayButton hover:shadow-clayButtonHover\`
+    *   **Secondary**: \`bg-white text-clay-foreground shadow-clayButton\`
+    *   **Outline**: \`border-2 border-clay-accent/20 bg-transparent text-clay-accent hover:border-clay-accent hover:bg-clay-accent/5\`
+    *   **Ghost**: \`text-clay-foreground hover:bg-clay-accent/10 hover:text-clay-accent\`
+*   **Interactive States**:
+    *   Hover: \`hover:-translate-y-1\` (lift up 4px) + Enhanced shadow
+    *   Active: \`active:scale-[0.92] active:shadow-clayPressed\` (pronounced squish effect)
+    *   Focus: \`focus-visible:ring-4 focus-visible:ring-clay-accent/30 focus-visible:ring-offset-2\`
+*   **Sizing**: Use \`size\` prop: \`sm\` (h-11), \`default\` (h-14), \`lg\` (h-16)
+
+### 3. The Recessed Input (\`Input\`)
+*   **Base Shape**: \`rounded-2xl\` with generous height \`h-16\`
+*   **Base Styles**: \`flex w-full border-0 bg-[#EFEBF5] px-6 py-4 text-clay-foreground text-lg shadow-clayPressed\`
+*   **States**:
+    *   Default: Recessed with \`shadow-clayPressed\` (inset shadows)
+    *   Focus: \`focus:bg-white focus:ring-4 focus:ring-clay-accent/20\` (transforms to raised white surface)
+    *   Placeholder: \`placeholder:text-clay-muted\`
+*   **Accessibility**: \`transition-all duration-200\` for smooth state changes
+
+### 4. Floating 3D Blobs (Background)
+**Never use a flat background.** Always include 3-4 large, animated blobs.
+*   **Container**: \`<div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">\`
+*   **Individual Blobs**:
+    *   Classes: \`absolute h-[60vh] w-[60vh] rounded-full blur-3xl\`
+    *   Colors: Accent colors with \`/10\` opacity (e.g., \`bg-[#8B5CF6]/10\`, \`bg-[#EC4899]/10\`, \`bg-[#0EA5E9]/10\`)
+    *   Positioning: Negative margins to bleed off edges (\`-top-[10%] -left-[10%]\`, \`-right-[10%] top-[20%]\`)
+    *   Animation: \`clay-blob\` or \`clay-blob-alt\` with staggered \`animation-delay-2000\` or \`animation-delay-4000\`
+*   **Purpose**: Creates ambient colored lighting that shows through glass-morphic cards
+
+---
+
+## Animation System
+
+**1. Clay Float (\`clay-float\`)**:
+Simulates zero-gravity drift for background blobs. 8 second duration.
+\`\`\`css
+@keyframes clay-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+}
+\`\`\`
+
+**2. Clay Float Delayed (\`clay-float-delayed\`)**:
+Alternative animation with opposite rotation. 10 second duration.
+\`\`\`css
+@keyframes clay-float-delayed {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(-2deg); }
+}
+\`\`\`
+
+**3. Clay Float Slow (\`clay-float-slow\`)**:
+For hero decorative elements that orbit the headline. 12 second duration with more pronounced movement.
+\`\`\`css
+@keyframes clay-float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(5deg); }
+}
+\`\`\`
+
+**4. Clay Breathe (\`clay-breathe\`)**:
+Simulates an object inflating/deflating slightly. 6 second duration. Used on stat orbs.
+\`\`\`css
+@keyframes clay-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+\`\`\`
+
+**5. Hover Lift**:
+Standard interactive elements should lift upward on hover:
+*   Cards: \`hover:-translate-y-2\` (8px) with enhanced shadow
+*   Benefits pills: \`hover:-translate-y-1\` (4px)
+*   Testimonials: \`hover:-translate-y-2\` (8px)
+*   Blog posts: \`hover:-translate-y-3\` (12px) for dramatic effect
+*   Buttons: \`hover:-translate-y-1\` (4px) with shadow enhancement
+
+**6. Active Press**:
+Buttons use \`active:scale-[0.92]\` combined with \`active:shadow-clayPressed\` to simulate a physical squish when clicked. Duration should be fast (200ms) for immediate feedback.
+
+**7. Scale Transforms**:
+*   Stat orbs: \`hover:scale-110\` (10% growth)
+*   How It Works circles: \`group-hover:scale-110\` with 300ms duration
+*   Pricing cards (non-highlighted): \`hover:scale-105\` (5% subtle growth)
+*   Featured card in Bento grid: \`hover:scale-[1.02]\` (minimal growth due to large size)
+
+**8. Animation Delays**:
+Use staggered animations for visual rhythm:
+*   \`.animation-delay-2000\` (2s delay)
+*   \`.animation-delay-4000\` (4s delay)
+
+**9. Reduced Motion**:
+Always include \`@media (prefers-reduced-motion: reduce)\` to disable all animations for accessibility.
+
+---
+
+## Layout Patterns
+
+**1. Masonry / Bento Grid**:
+*   Don't use uniform grids. Mix \`col-span-1\` with \`col-span-2\` or \`row-span-2\` cards.
+*   Use \`hover:scale-[1.02]\` on large grid items for a tactile feel.
+
+**2. Split Layouts**:
+*   Use 50/50 splits for "Product" or "Benefits" sections.
+*   One side text, one side **Abstract 3D Composition** (nested clay shapes, not just an image).
+
+**3. Overlapping Elements**:
+*   Allow elements to break their containers (e.g., a "Popular" badge floating *above* a pricing card).
+*   Use negative margins to pull decorative elements to the edges.
+
+---
+
+## Responsive Strategy
+
+**Mobile-First Approach with Progressive Enhancement**
+
+The Clay design system maintains its playful, tactile personality across all screen sizes while adapting layouts and sizing for optimal mobile experience.
+
+**Typography Scaling**:
+*   Hero headlines: \`text-5xl → sm:text-6xl → md:text-7xl → lg:text-8xl\`
+*   Section titles: \`text-3xl → sm:text-4xl → md:text-5xl\`
+*   Body text: \`text-base → sm:text-lg → md:text-xl\` where appropriate
+*   Always maintain \`leading-relaxed\` and proper line length constraints
+
+**Layout Transformations**:
+*   **Navigation**: Compact on mobile (\`h-16 rounded-[32px] px-4\`) → Larger on desktop (\`sm:h-20 sm:rounded-[40px] sm:px-8\`). Hide non-essential nav items on mobile.
+*   **Hero**: Stack CTAs vertically (\`flex-col gap-6\`) → Horizontal on desktop (\`sm:flex-row\`)
+*   **Stats**: 2-column grid on mobile (\`grid-cols-2 gap-6\`) → 4 columns on desktop (\`md:grid-cols-4 gap-8\`)
+*   **Features**: Single column → Bento layout with spans on desktop (\`md:grid-cols-2 lg:grid-cols-3\` with hero card \`md:col-span-2 md:row-span-2\`)
+*   **Benefits/Product Detail**: Stack vertically on mobile → Side-by-side split on desktop (\`lg:grid-cols-2\`)
+*   **Pricing**: Stack cards on mobile → 3 columns on desktop (\`md:grid-cols-3\`). Scale effect for highlighted card only applies on desktop (\`md:scale-110\`)
+
+**Component Adjustments**:
+*   **Cards**: Reduce padding on mobile (\`p-6 sm:p-8\`)
+*   **Border Radii**: Maintain generous radii even on mobile (never less than \`rounded-[20px]\`)
+*   **Buttons**: Full width on mobile (\`w-full sm:w-auto\`) for primary CTAs
+*   **Decorative Elements**: Hide some floating shapes on mobile (\`hidden lg:block\`)
+*   **Shadows**: Keep full shadow stacks—they're essential to the aesthetic
+
+**Touch Targets**:
+*   All interactive elements meet 44px minimum tap target (buttons are \`h-14+\`)
+*   Increase spacing in mobile navigation for easier tapping
+*   Ensure accordion FAQ items have adequate vertical spacing
+
+**Performance**:
+*   Animations still run on mobile but respect \`prefers-reduced-motion\`
+*   Blur effects (\`backdrop-blur-xl\`) remain—they're critical to the glass-clay aesthetic
+*   Background blobs scale with viewport units (\`vh\`) so they adapt naturally
+
+**What NOT to Change on Mobile**:
+*   Don't flatten the design—keep the shadows and depth
+*   Don't reduce border radii to generic values
+*   Don't remove the candy-store colors or make them muted
+*   Don't disable all animations (only simplify if performance issues arise)
+
+---
+
+## Dos and Don'ts
+
+*   **DO** use pronounced "Squish" animations on click (\`active:scale-[0.92]\` combined with \`shadow-clayPressed\`).
+*   **DO** use varying border radii within components (e.g., \`rounded-[48px]\` for outer container, \`rounded-[32px]\` for card, \`rounded-[24px]\` for inner image).
+*   **DO** use "Glass-Clay" hybrid (semi-transparent white \`bg-white/60\` to \`/80\` + \`backdrop-blur-xl\`) for cards to reveal background blobs.
+*   **DO** use multi-layer shadow stacks (4 shadows minimum) to achieve high-fidelity depth.
+*   **DO** apply Nunito font family explicitly to all headings, numbers, and labels via inline styles.
+*   **DO** use vibrant gradient backgrounds for icon containers with varied colors (blue, purple, pink, green, cyan, amber).
+*   **DON'T** use gray text lighter than \`#635F69\`. This is the minimum for accessibility against light backgrounds.
+*   **DON'T** use sharp corners anywhere. Minimum radius is \`rounded-[20px]\`, never \`rounded-md\` or \`rounded-lg\`.
+*   **DON'T** use flat colors for backgrounds. Always include animated blobs or subtle gradients.
+*   **DON'T** use gradient text for font sizes smaller than \`text-5xl\` (readability risk).
+*   **DON'T** make buttons too small. Minimum height is \`h-11\` (44px) for accessibility.
+*   **DON'T** skip the hover lift effect on interactive elements—it's core to the tactile feel.
+
+---
+
+## Implementation Checklist
+- [ ] **Background**: Canvas \`#F4F1FA\` + Animated Blobs.
+- [ ] **Shadows**: 4-layer box-shadows defined in CSS.
+- [ ] **Typography**: Nunito Black (Headings) + DM Sans (Body).
+- [ ] **Buttons**: Gradient, rounded-2xl, click-squish.
+- [ ] **Cards**: White/60%, backdrop-blur, rounded-3xl.
+- [ ] **Text**: High contrast charcoal/slate, no light grays.
+
+
+Neumorphism
+
+Extruded and inset elements via dual shadows on monochromatic backgrounds. Soft, tactile, and physically grounded with excellent accessibility.
+`,
+
+  neumorphism: `
+# Neumorphism (Soft UI) Design System
+
+## Design Philosophy
+
+**Core Principles**: Neumorphism creates the illusion of physical depth through carefully balanced dual shadows—one light source from the top-left, one dark shadow falling bottom-right—on monochromatic backgrounds. Elements appear to either extrude from the surface (convex/raised) or be pressed into it (concave/inset). The effect mimics soft, pillowed physical objects with realistic lighting, creating a "molded from the same material" aesthetic. Every element feels like it's part of the same continuous surface, either raised or pressed, never flat.
+
+**Vibe**: Tactile, calm, modern, and physically grounded. This is UI that feels like cooler matte plastic or soft ceramic. It is satisfying and tangible. The aesthetic is deliberately restrained, utilizing a cooler grey palette to feel fresh and distinct from "warm" legacy neumorphism. The design prioritizes accessibility with WCAG AA compliant contrast ratios while maintaining the soft aesthetic.
+
+**Unique Visual Signatures**:
+- **Dual opposing RGB shadows** (top-left light, bottom-right dark) using alpha transparency for smoother, more realistic blending than solid hex shadows.
+- **Monochromatic "Cool Grey" discipline** (\`#E0E5EC\`) where shadows and highlights do all the visual heavy lifting. No flat backgrounds.
+- **Same-surface illusion**: Elements appear to be part of the same material as the background—molded, not placed.
+- **Deep Inset States**: Wells for icons and inputs that feel significantly deeper (\`insetDeep\`) than standard pressed states, creating true 3D depth.
+- **Soft, Hyper-Rounded Corners**: \`32px\` for containers and \`16px\` for smaller elements, reinforcing the pillowed, organic aesthetic.
+- **Complex Nested Depth**: Visuals formed by nesting elements (Extruded → Inset → Extruded) to showcase the physics of the system.
+- **Smooth Micro-interactions**: 300ms transitions with scale, rotation, and shadow depth changes. Floating animations for ambient motion.
+- **Mobile-First Responsive**: Fully responsive with touch-friendly targets (44px minimum), hamburger menu, and maintained neumorphic aesthetic on all screen sizes.
+
+---
+
+## Design Token System (The DNA)
+
+### Colors (Light Mode - Cool Monochromatic)
+
+The entire palette is built around a single base cool grey. **All visual interest comes from shadow play, not color variety.**
+
+- **Background**: \`#E0E5EC\` — The base "cool clay" surface. Everything is molded from this.
+- **Foreground**: \`#3D4852\` — Dark blue-grey for primary text. Excellent contrast (7.5:1 ratio) for optimal readability.
+- **Muted**: \`#6B7280\` — Cool grey for secondary text with WCAG AA compliant contrast (4.6:1 ratio on the background).
+- **Accent**: \`#6C63FF\` — Soft violet for interactive highlights. Used sparingly for CTAs and focus states.
+- **Accent Light**: \`#8B84FF\` — Lighter violet for gradients and hover states.
+- **Accent Secondary**: \`#38B2AC\` — Teal for success states, checkmarks, and positive indicators.
+- **Border**: \`transparent\` — Neumorphism **never** uses borders; shadows define all edges.
+
+**Shadow Colors** (CRITICAL - RGBA for Smoothness):
+- **Shadow Light**: \`rgba(255, 255, 255, 0.5-0.6)\` — Pure white with transparency for the light-source shadow (top-left).
+- **Shadow Dark**: \`rgb(163, 177, 198, 0.6-0.7)\` — A specific cool blue-grey shadow color that matches the background tone perfectly (bottom-right).
+
+### Typography
+
+- **Display Font**: **"Plus Jakarta Sans"** (500, 600, 700, 800) — Modern geometric sans for headlines. Applied via \`.font-display\` class.
+- **Body Font**: **"DM Sans"** (400, 500, 700) — Clean, highly legible sans-serif for all body text and UI elements.
+- **Weights**:
+  - Display Headings: \`font-extrabold\` (800) with \`tracking-tight\`
+  - Headings: \`font-bold\` (700) with \`tracking-tight\`
+  - Body: \`font-normal\` (400) to \`font-medium\` (500)
+- **Colors**:
+  - Primary: \`#3D4852\` (excellent contrast)
+  - Secondary/Muted: \`#6B7280\` (WCAG AA compliant)
+- **Scale**: Responsive scale from \`text-sm\` (14px) to \`text-7xl\` (72px) for hero headlines
+
+### Radius
+
+- **Container / Card**: \`32px\` (\`rounded-[32px]\`) — Very soft, friendly corners.
+- **Base / Button**: \`16px\` (\`rounded-2xl\`).
+- **Inner Elements**: \`12px\` (\`rounded-xl\`) or \`9999px\` (\`rounded-full\`).
+
+### Shadows & Effects (The Physics)
+
+Shadows are defined using \`rgba\` for a premium, smooth finish.
+
+**Extruded (Standard)** — The default resting state:
+\`\`\`css
+box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255,0.5);
+\`\`\`
+- **Tailwind**: \`shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]\`
+
+**Extruded Hover (Lifted)** — For hover states:
+\`\`\`css
+box-shadow: 12px 12px 20px rgb(163,177,198,0.7), -12px -12px 20px rgba(255,255,255,0.6);
+\`\`\`
+- **Tailwind**: \`shadow-[12px_12px_20px_rgb(163,177,198,0.7),-12px_-12px_20px_rgba(255,255,255,0.6)]\`
+
+**Extruded Small** — For smaller elements:
+\`\`\`css
+box-shadow: 5px 5px 10px rgb(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5);
+\`\`\`
+
+**Inset (Pressed)** — For standard pressed states or shallow wells:
+\`\`\`css
+box-shadow: inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255,0.5);
+\`\`\`
+
+**Inset Deep** — For inputs, active wells, and deep "carved" elements:
+\`\`\`css
+box-shadow: inset 10px 10px 20px rgb(163,177,198,0.7), inset -10px -10px 20px rgba(255,255,255,0.6);
+\`\`\`
+- **Tailwind**: \`shadow-[inset_10px_10px_20px_rgb(163,177,198,0.7),inset_-10px_-10px_20px_rgba(255,255,255,0.6)]\`
+
+**Inset Small** — For subtle tracks or pills:
+\`\`\`css
+box-shadow: inset 3px 3px 6px rgb(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5);
+\`\`\`
+
+---
+
+## Component Styling
+
+### Buttons
+- **Shape**: \`rounded-2xl\`
+- **Transition**: \`duration-300 ease-out\`
+- **Default State**: Extruded shadow.
+- **Hover State**: \`translate-y-[-1px]\` (slight lift) + \`Extruded Hover\` shadow.
+- **Active/Pressed State**: \`translate-y-[0.5px]\` (physical press) + \`Inset Small\` shadow (or standard inset depending on size).
+- **Primary**: Accent background \`#6C63FF\`. Active state uses specific rgba inset shadows to work on color.
+- **Secondary**: Background \`#E0E5EC\` (match page).
+
+### Cards
+- **Shape**: \`rounded-[32px]\` (Significant rounding).
+- **Background**: \`#E0E5EC\`.
+- **Padding**: \`p-8\` to \`p-20\` depending on prominence.
+- **Hover**: \`translate-y-[-2px]\` + \`Extruded Hover\` shadow.
+- **Feature**: Use nested depth. Card is Extruded -> Icon well inside is Inset Deep -> Icon inside is distinct.
+
+### Inputs
+- **Shape**: \`rounded-2xl\`.
+- **Background**: \`#E0E5EC\`.
+- **Default**: \`Inset\` shadow.
+- **Focus**: \`Inset Deep\` shadow + Accent color Ring (offset by 2px with background color).
+- **Placeholder**: \`#A0AEC0\`.
+
+### Visual Decorations
+- **Icon Wells**: Always use \`Inset Deep\` or \`Inset\` shadows for icon containers. This makes them look "drilled" into the card.
+- **Decorations**: Use concentric circles of alternating Extruded and Inset shadows to create abstract, tactile background art.
+
+---
+
+## Layout Principles
+
+- **Spacing**: Open and airy. Use \`py-32\` for hero sections to let the shadows breathe. \`gap-12\` for grids.
+- **Container**: \`max-w-7xl\` for a wide, modern feel.
+- **Background**: The page background must be \`#E0E5EC\` globally. No gradients on the root background.
+
+## Animation & Micro-interactions
+- **Duration**: \`300ms\` for UI elements, \`500ms\` for nested depth circles (weightier, physics-based feel).
+- **Easing**: \`ease-out\` for natural deceleration.
+- **Properties**: \`transform\` (scale, translateY, rotate), \`box-shadow\` (depth changes).
+- **Hover Effects**:
+  - Cards: \`-translate-y-1\` (1px lift) + enhanced shadow depth
+  - Buttons: \`-translate-y-1\` on hover, \`translate-y-0.5\` on active (press down)
+  - Nested circles: \`scale-105\` (5% scale up) + \`rotate-180\` on inner element
+- **Floating Animation**: Custom \`@keyframes float\` with 3s ease-in-out infinite loop for ambient motion on decorative elements.
+- **Smooth Scrolling**: \`scroll-behavior: smooth\` for anchor navigation.
+
+## Accessibility
+- **Contrast**:
+  - Primary text \`#3D4852\` on \`#E0E5EC\`: 7.5:1 (WCAG AAA)
+  - Muted text \`#6B7280\` on \`#E0E5EC\`: 4.6:1 (WCAG AA)
+- **Focus States**: Visible 2px accent rings (\`ring-2 ring-[#6C63FF]\`) with 2px offset on \`#E0E5EC\` background. Mandatory on all interactive elements.
+- **Touch Targets**: Minimum 44x44px for mobile (buttons use \`h-12 w-12\` = 48px minimum).
+- **Mobile Navigation**: Hamburger menu with clear open/close states (Menu/X icons).
+- **Keyboard Navigation**: Full keyboard support with visible focus indicators on all links and buttons.
+
+## Responsive Design
+
+- **Mobile First**: Design starts with mobile view and enhances upward.
+- **Breakpoints**: \`md:\` (768px) for tablet, \`lg:\` (1024px) for desktop.
+- **Mobile Adaptations**:
+  - Hero visual shows on all screens with \`max-w-md\` constraint on mobile
+  - Hamburger menu replaces desktop navigation below \`md:\` breakpoint
+  - Grid layouts collapse: 3-column → 1-column, 2-column → 1-column
+  - Font sizes scale down: \`text-7xl\` → \`text-5xl\` on mobile
+  - Padding reduces: \`p-16\` → \`p-8\` on cards
+- **Navigation**: Sticky header with backdrop blur. Mobile menu slides down from header with extruded shadow.
+
+---
+
+## Anti-Patterns (Do Not Do)
+- **Hard Hex Shadows**: Do not use opaque hex codes for shadows (e.g., \`#A3B1C6\`). Use \`rgb(... 0.6)\` for transparency and blending.
+- **White Backgrounds**: Never use \`bg-white\` for cards. They must match the body background \`#E0E5EC\`.
+- **Flat Buttons**: Buttons must have depth (shadows). No flat designs.
+- **Sharp Corners**: \`rounded-lg\` is too sharp. Use \`rounded-2xl\` (16px) or \`rounded-3xl\` (24px) minimum.
+- **Poor Contrast**: Never use \`#8B95A5\` or \`#A0AEC0\` for body text. Use \`#6B7280\` or darker for WCAG compliance.
+- **Missing Focus States**: All interactive elements must have visible focus indicators.
+- **Block Display for Fonts**: Use \`display=swap\` in Google Fonts URL, not \`display=block\`.
+
+
+
+Industrial
+
+A high-fidelity industrial skeuomorphism aesthetic inspired by Dieter Rams and Teenage Engineering. Features tactile neumorphic elements, matte plastic surfaces, and safety-orange accents. Every component mimics physical hardware with realistic lighting, mechanical interactions, and manufacturing details like screws, vents, and LED indicators.
+`,
+
+  industrial: `
+# Design Style: Industrial Skeuomorphism
+
+## 1. Design Philosophy
+
+This style transcends simple skeuomorphism into **Industrial Realism**—a celebration of **tactile precision, mechanical reliability, and the soul of physical objects**. In an era of ephemeral flat digital experiences, this aesthetic offers something solid, grounded, and permanent. It doesn't just *look* like a machine; it *feels* like one.
+
+### The Core DNA
+
+**Physicality Through Light**: Every element exists in three-dimensional space defined by consistent top-left lighting. Shadows aren't decorative—they're structural. Highlights reveal form. The interplay of light and shadow creates the illusion of mass, depth, and material.
+
+**Mechanical Authenticity**: Interactions mimic real-world physics. Buttons depress with translation and shadow inversion. Cards elevate on hover. Icons rotate subtly. Every animation reinforces the metaphor of physical manipulation—springs, clicks, and tactile feedback encoded in motion curves.
+
+**Manufacturing Details Matter**: The difference between generic and exceptional lies in the details. Corner screws (rendered as radial gradients), ventilation slots, LED status indicators, scanlines on screens, push-pin shadows, hanging holes on price tags—these are not optional flourishes. They are the **signature elements** that make this style instantly recognizable.
+
+**Material Honesty**: The palette and textures evoke specific materials—matte ABS plastic chassis, brushed aluminum panels, powder-coated steel, and safety-orange injection-molded controls. A subtle noise texture across the background simulates the microscopic imperfections of real plastic surfaces. External texture patterns (carbon fiber, diagmonds) add authenticity to specific components.
+
+### The Vibe
+
+Picture the control panel of a spacecraft, a 1980s Braun synthesizer, or a Teenage Engineering OP-1. It's **functional, organized, precise, and effortlessly cool**.
+
+**Dieter Rams Heritage**: Maximum clarity with minimum ornamentation. Typography is legible and hierarchical. Color is used sparingly—only where necessary for function (the safety-orange accent for interactive triggers and alerts).
+
+**Teenage Engineering Playfulness**: Modular construction. Professional-grade precision with a sense of joy. Components feel like they could be swapped, rearranged, or upgraded.
+
+**Timeless Futurism**: Not retro or nostalgic in a kitschy sense. This is the industrial design aesthetic that transcends trends—equally at home in 1985 or 2035.
+
+### The Physics Engine
+
+The interface obeys immutable physical laws:
+
+1. **Consistent Light Source**: All lighting originates from the **top-left at 45 degrees**. This determines every highlight (top/left edges) and every shadow (bottom/right edges). Deviation breaks the illusion.
+
+2. **Material Conservation**: Elements don't magically appear. They slide from behind panels, lights turn on, drawers open. Animations respect causality.
+
+3. **Elevation Hierarchy**:
+   - **Level -1 (Recessed)**: Inputs, screens, slots, grooves. Inner shadows create depth below the surface.
+   - **Level 0 (Chassis)**: The base layer—the matte plastic background that everything is mounted to.
+   - **Level +1 (Panels)**: Cards, modules, sections. Dual shadows (dark below, light above) create lift.
+   - **Level +2 (Floating Controls)**: Buttons, knobs, badges. Enhanced shadows with optional glow for active states.
+
+4. **Interaction Physics**: Active states reverse shadow direction (pressed elements get inner shadows). Hover states increase elevation. Transitions use mechanical easing with subtle bounce—mimicking spring-loaded switches.
+
+## 2. Design Token System (The DNA)
+
+### Colors (Industrial Palette)
+
+The palette is **strictly light mode** and mimics physical materials under diffuse workshop lighting:
+
+-   **Background (Chassis)**: \`#e0e5ec\` - Cool mid-tone industrial grey. The base "plastic" material everything is mounted to. This is Level 0.
+-   **Foreground (Panel)**: \`#f0f2f5\` - Slightly lighter raised panel surface. Used sparingly for contrast.
+-   **Muted (Recessed)**: \`#d1d9e6\` - Darker grey for sunken areas (input fields, screen bezels, grooves). Creates the "below surface" appearance.
+-   **Text (Primary)**: \`#2d3436\` - Dark charcoal ink. High contrast but softer than pure black for reduced eye strain.
+-   **Text Muted (Labels)**: \`#4a5568\` - Darker slate grey (improved from \`#636e72\` for WCAG AA compliance). Used for secondary text, labels, and metadata.
+-   **Accent (Safety Orange)**: \`#ff4757\` - High-visibility "Braun Red" / "Safety Orange". Reserved exclusively for:
+  - Interactive elements (primary buttons, links, toggles)
+  - Status indicators (active LEDs, online badges)
+  - Critical alerts or highlights
+  This color should appear sparingly—it's the "emergency stop button" of the palette.
+-   **Accent Foreground**: \`#ffffff\` - White text on accent backgrounds for maximum legibility.
+-   **Border (Shadow)**: \`#babecc\` - The shadow color in neumorphic pairs. Represents the darker half of the lighting equation.
+-   **Border Light (Highlight)**: \`#ffffff\` - The highlight color. The brighter half that creates dimensionality.
+-   **Border Dark (Deep Shadow)**: \`#a3b1c6\` - Used for prominent borders and dividers where extra contrast is needed.
+
+**Dark Accent Surfaces**: For dark technical panels (stats strip, benefits section), use:
+- Background: \`#2d3436\` or \`#2c3e50\` (charcoal to slate)
+- Text: \`#ffffff\`, \`#e0e5ec\`, or \`#a8b2d1\` (graded whites)
+- Accent: Same \`#ff4757\` maintains brand consistency
+
+### Typography
+
+**Font Pairing**:
+-   **Primary (Sans-serif)**: **Inter** (weights 400/500/600/700/800) - Humanist sans-serif with excellent legibility. Objective, neutral, and highly functional. Perfect for body text, headings, and UI labels.
+-   **Technical (Monospace)**: **JetBrains Mono** or **Roboto Mono** (weights 400/500) - Engineered typeface optimized for code and data. Use exclusively for:
+  - All numeric displays (stats, pricing, dates)
+  - Technical labels and badges
+  - Small uppercase metadata ("SYSTEM OPERATIONAL", "LOG #123")
+  - Input fields (simulates terminal/data entry aesthetic)
+
+**Hierarchy & Application**:
+-   **Hero Headings**: 5xl–7xl (3rem–4.5rem on desktop), font-weight 800, tight tracking (-0.03em), with white text-shadow for embossed effect: \`drop-shadow-[0_1px_1px_#ffffff]\`
+-   **Section Headings**: 3xl–4xl (2rem–2.5rem), font-weight 700, tight tracking
+-   **Body Text**: Base to lg (1rem–1.125rem), font-weight 400–500, normal tracking, optimal line-height 1.6–1.75, **max line length 60-65 characters** for readability
+-   **Labels & Metadata**: xs–sm (0.75rem–0.875rem), font-weight 700, uppercase, wide tracking (0.05em–0.08em), monospace. Creates a "stamped" or "printed label" appearance
+-   **Buttons**: Uppercase, wide tracking (0.05em), font-weight 700, xs–base depending on button size
+
+**Text Shadows for Depth**:
+- Light text on dark backgrounds: \`drop-shadow-md\` or \`drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]\`
+- Dark text on light backgrounds: \`drop-shadow-[0_1px_0_#ffffff]\` (subtle embossed highlight below text)
+
+### Radius & Depth
+
+**Border Radius Scale**:
+-   **sm**: \`4px\` - Tight mechanical edges (small buttons, badges)
+-   **md**: \`8px\` - Standard controls (inputs, small cards)
+-   **lg**: \`16px\` - Large panels (cards, modals)
+-   **xl**: \`24px\` - Hero components (device bezels, major sections)
+-   **2xl**: \`30px+\` - Oversized containers (benefit panels, final CTA)
+-   **full**: \`9999px\` - Perfect circles (icon housings, LEDs, step indicators)
+
+Curves are soft and organic—mimicking injection-molded plastic, not sharp machined metal.
+
+**Neumorphic Shadow System** (The Core Visual Signature):
+
+These dual-shadow combinations create depth through light simulation:
+
+-   **Card (Base Lift)**: \`8px 8px 16px #babecc, -8px -8px 16px #ffffff\`
+  - Standard elevation for panels and cards. Dark shadow bottom-right, light highlight top-left.
+
+-   **Floating (High Elevation)**: \`12px 12px 24px #babecc, -12px -12px 24px #ffffff, inset 1px 1px 0 rgba(255,255,255,0.5)\`
+  - Enhanced lift for interactive elements (buttons, elevated cards). Optional inner highlight rim for extra polish.
+
+-   **Pressed (Active State)**: \`inset 6px 6px 12px #babecc, inset -6px -6px 12px #ffffff\`
+  - Shadow direction reverses—element appears pushed INTO the surface. Critical for button interactions.
+
+-   **Recessed (Inputs/Screens)**: \`inset 4px 4px 8px #babecc, inset -4px -4px 8px #ffffff\`
+  - Subtle inward depth for input fields, grooves, and display panels.
+
+-   **Sharp (Mechanical Edge)**: \`4px 4px 8px rgba(0,0,0,0.15), -1px -1px 1px rgba(255,255,255,0.8)\`
+  - Harder-edged shadow for specific components (metal tags, borders).
+
+-   **Glow (LED/Status Indicator)**: \`0 0 10px 2px rgba(255, 71, 87, 0.6)\`
+  - Colored bloom for active LEDs, focus states, and alerts. Can adjust color to green (\`rgba(34,197,94,1)\`) for "online" states.
+
+**Layered Shadows**: On hover, add additional shadows or increase spread to simulate elevation change. Example:
+\`\`\`css
+transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+hover:shadow-[var(--shadow-floating)]
+\`\`\`
+
+### Textures & Patterns
+
+Textures differentiate this style from flat competitors. Apply strategically:
+
+-   **Noise Overlay (Background)**: SVG-based fractal noise at 20-30% opacity with \`mix-blend-overlay\`. Simulates the micro-texture of matte plastic. Applied to entire page background via StyleWrapper.
+
+-   **Carbon Fiber Pattern**: External texture URL (\`transparenttextures.com/patterns/carbon-fibre.png\`) at 10-20% opacity on tech-heavy sections (device bezels, dark panels). Use \`mix-blend-overlay\` or \`mix-blend-multiply\`.
+
+-   **Scanlines (CRT Screens)**: Linear gradients simulating old monitor scanlines:
+  \`\`\`css
+  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%);
+  background-size: 100% 4px;
+  \`\`\`
+  Overlay on digital displays or "screen" elements.
+
+-   **Grid Patterns (Blueprint/Schematic Backgrounds)**:
+  \`\`\`css
+  background-image: linear-gradient(#636e72 1px, transparent 1px),
+                    linear-gradient(90deg, #636e72 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.1;
+  \`\`\`
+  Use for technical documentation sections (product detail).
+
+-   **Radial Gradients (Lighting Hotspots)**: Subtle \`radial-gradient\` from white/transparent to add dimensionality to flat backgrounds. Place top-left to reinforce lighting direction.
+
+## 3. Component Stylings
+
+### Buttons ("Physical Keys")
+
+Buttons are **tactile 3D objects**, not flat rectangles. They must convey pressability.
+
+**Visual Structure**:
+-   **Primary (Accent)**: Background \`#ff4757\`, white text, uppercase, wide tracking. Border with \`rgba(255,255,255,0.2)\` for subtle rim. Shadow: \`4px 4px 8px rgba(166,50,60,0.4), -4px -4px 8px rgba(255,100,110,0.4)\` (neumorphic red-tinted shadows).
+-   **Secondary (Chassis)**: Background matches chassis (\`#e0e5ec\`), dark text, base lift shadow. Hover darkens text to accent color.
+-   **Ghost (Flat Label)**: No background initially. Text muted. Hover applies muted background and recessed shadow.
+
+**Interaction Physics (CRITICAL)**:
+-   **Hover**: Slight brightness increase (\`brightness-110\`) or text color change. Shadow remains.
+-   **Active (Pressed)**:
+  - \`translate-y-[2px]\` - Button moves down 2px
+  - Shadow inverts to \`inset 6px 6px 12px #babecc, inset -6px -6px 12px #ffffff\`
+  - Border may vanish or thin
+  - Transition is fast (\`150ms\`) for immediate tactile feedback
+-   **Focus**: Accent-colored ring with offset: \`ring-2 ring-[var(--ring)] ring-offset-2\`
+
+**Sizing**:
+- All buttons have minimum 48px height on mobile (touch-friendly)
+- Padding is generous for premium feel
+- Border radius: \`md\` for small, \`lg\` for default, \`xl\` for large
+
+### Cards ("Bolted Modules")
+
+Cards are **physical panels bolted onto the chassis background**.
+
+**Construction**:
+-   Base shadow: \`shadow-[var(--shadow-card)]\` (neumorphic dual shadow)
+-   Border radius: \`lg\` (16px)
+-   Background: Chassis color (\`#e0e5ec\`)
+-   Optional: \`elevated\` prop increases shadow to \`--shadow-floating\`
+
+**Manufacturing Details**:
+-   **Corner Screws**: CSS radial gradients simulate screw indentations:
+  \`\`\`css
+  background: radial-gradient(circle at 12px 12px, rgba(0,0,0,0.15) 2px, transparent 3px),
+              radial-gradient(circle at calc(100%-12px) 12px, rgba(0,0,0,0.15) 2px, transparent 3px),
+              /* repeat for bottom corners */
+  \`\`\`
+  Positioned at exactly 12px from edges.
+
+-   **Vent Slots**: Vertical pill-shaped divs (1px width, 24px height) in top-right corner with \`inset\` shadows to appear recessed:
+  \`\`\`tsx
+  <div className="h-6 w-1 rounded-full bg-[var(--muted)] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.1)]" />
+  \`\`\`
+  Place 3 in a row with \`gap-1\`.
+
+**Hover Interaction**:
+- Cards lift on hover: \`hover:-translate-y-1\` with shadow transition to \`--shadow-floating\`
+- Duration 300ms with ease-out
+- Group child elements (icons) can rotate or scale on card hover using Tailwind group utilities
+
+### Inputs ("Data Slots")
+
+Inputs are **recessed wells** machined into the chassis surface.
+
+**Visual Treatment**:
+-   Deeply inset shadow: \`shadow-[var(--shadow-recessed)]\`
+-   No visible border (border-none) - depth is communicated through shadow alone
+-   Background: Chassis color (matches surface level for subtle integration)
+-   Border radius: \`md\` (8px)
+-   Monospace font for technical data entry feel
+-   Placeholder: Muted text at 50% opacity
+
+**States**:
+-   **Focus**: Accent-colored glow appears: \`focus-visible:shadow-[var(--shadow-recessed),0_0_0_2px_var(--accent)]\`
+  - Simulates LED backlight activating behind input
+-   **Disabled**: Reduced opacity (50%), cursor-not-allowed
+
+**Sizing**: Minimum 56px height (14 in Tailwind) for comfortable typing. Generous padding (24px horizontal).
+
+## 4. Layout Strategy
+
+**Container System**:
+-   Max width: \`72rem\` (1152px) for primary content
+-   Horizontal padding: \`px-6\` (24px) mobile, \`px-12\` (48px) desktop
+-   Vertical spacing between sections: \`space-y-24\` (96px)
+
+**Grid Discipline**:
+- Use precise Tailwind grid classes: \`grid-cols-2\`, \`grid-cols-3\`, \`md:grid-cols-4\`
+- Gap consistency: \`gap-6\` (24px) for tight layouts, \`gap-8\` (32px) for breathing room
+- Alignment is critical—elements should feel "mounted" to an invisible grid structure
+
+**Asymmetry & Balance**:
+- Hero is asymmetric (60/40 split on desktop, stacked on mobile)
+- Alternate left/right image placement in multi-column sections
+- Testimonial cards have intentional slight rotation (±1deg) for realism
+- Use \`order-1/order-2\` with responsive modifiers to control stacking order
+
+## 5. Non-Genericness (Signature Elements)
+
+These details separate this style from generic neumorphic templates:
+
+**The Hero "Device" Visualization**:
+- Not a simple image—construct a **3D device mockup** entirely in CSS
+- Components:
+  - Outer bezel: Dark border (4px), rounded corners, carbon fiber texture overlay
+  - Inner screen: Black background with \`inset\` shadow, CRT scanline overlay
+  - Hardware details: Physical buttons on side edges, power LED in corner
+  - Screen content: Abstract dashboard with glowing elements, spinning loaders, status bars
+  - Hover effect: Slight scale increase for interactivity
+
+**LED Status Indicators**:
+- Small circular divs (8-12px) with:
+  - Solid color fill (green for online, red for alert, yellow for warning)
+  - \`animate-pulse\` for breathing effect
+  - Glow shadow: \`shadow-[0_0_10px_rgba(color,1)]\`
+- Place on: Navbar, hero badge, footer, device visualization
+- Always pair with monospace label ("SYSTEM OPERATIONAL", "PWR", "ONLINE")
+
+**Physical Connectors & Pipes**:
+- "How It Works" uses horizontal cylindrical pipe connecting step nodes
+- CSS: \`h-3 w-full rounded-full bg-[#d1d9e6] shadow-[inset_0_1px_3px_rgba(0,0,0,0.2)]\`
+- Hidden on mobile (\`hidden md:block\`)
+
+**Masking Tape & Stickers**:
+- For metadata overlays (blog dates, testimonial labels)
+- Skewed yellow/white rectangles with \`backdrop-blur-sm\`
+- Example: \`<div className="skew-x-12 bg-[rgba(255,230,0,0.3)] backdrop-blur-sm" />\`
+
+**Push Pins & Hanging Holes**:
+- Testimonials: Red circular push-pin at top center with highlight shine
+- Pricing cards: Circular hole at top with inner shadow to simulate punched metal
+
+**Screw Heads & Vent Slots** (detailed in Cards section):
+- Never omit these—they're the DNA of the style
+- Place consistently in same positions across all cards
+
+**Grayscale-to-Color Image Treatment**:
+- Blog and testimonial images start grayscale: \`grayscale\`
+- Transition to color on hover: \`group-hover:grayscale-0 transition-all duration-500\`
+- Adds subtle interactivity while maintaining industrial monotone baseline
+
+## 6. Effects & Animation
+
+**Motion Philosophy**: Mechanical spring physics with subtle bounce—mimicking real physical switches and buttons.
+
+**Easing Curve**:
+- Primary: \`cubic-bezier(0.175, 0.885, 0.32, 1.275)\` - Slight overshoot/bounce
+- Fast interactions: \`duration-150\` to \`duration-200\`
+- Smooth transitions: \`duration-300\`
+- Image/scale effects: \`duration-500\`
+
+**Framer Motion Integration**:
+- Hero section uses staggered entrance animations
+- Mechanical easing constant: \`[0.175, 0.885, 0.32, 1.275]\`
+- Variants: \`slideUp\` (opacity + y-translate), \`stagger\` (staggerChildren)
+
+**Key Micro-interactions**:
+- **Button Press**: \`active:translate-y-[2px]\` + shadow inversion (150ms)
+- **Card Hover**: \`-translate-y-1\` elevation with shadow upgrade (300ms)
+- **Icon Hover**: \`group-hover:scale-110\` + \`group-hover:rotate-12\` (200ms)
+- **Image Hover**: Grayscale to color (500ms)
+- **LED Pulse**: \`animate-pulse\` (Tailwind default, ~2s cycle)
+- **Loading Spinner**: \`animate-spin\` on border technique (1s linear)
+
+**Advanced Animations**:
+- Radar sweep in benefits: \`animate-spin\` with \`conic-gradient\` and long duration (4s)
+- Device screen scanlines: Static background pattern (no animation needed)
+- Mobile menu: Slide down with opacity fade (200ms ease-out)
+
+## 7. Iconography & Icon Integration
+
+**Icon Library**: \`lucide-react\` exclusively
+
+**Styling Rules**:
+-   **Stroke Width**: 1.5px standard, 1px for thin/delicate icons, 2-4px for bold/emphasis
+-   **Size**: 20-24px for UI elements, 28-32px for feature icons, 16-18px for inline text icons
+-   **Color**: Match text color or use accent color for interactive/highlighted icons
+
+**Integration Patterns** (never leave icons floating):
+
+1. **Recessed Icon Housing** (Feature cards):
+   \`\`\`tsx
+   <div className="flex h-14 w-14 items-center justify-center rounded-full
+                   bg-[var(--background)] shadow-[var(--shadow-floating)]">
+     <Icon className="text-[var(--accent)]" size={28} />
+   </div>
+   \`\`\`
+
+2. **Inline with Text** (Metadata, labels):
+   \`\`\`tsx
+   <Zap className="inline h-4 w-4 text-[var(--accent)]" />
+   \`\`\`
+
+3. **Navigation Icons** (Social links):
+   \`\`\`tsx
+   <Twitter className="h-5 w-5 transition-all hover:text-[var(--accent)]" />
+   \`\`\`
+
+4. **LED-style Indicators**:
+   - Solid fill instead of stroke
+   - Pair with glow shadow
+   - Small size (12-16px)
+
+## 8. Responsive Strategy
+
+The physical metaphor **must persist** across all breakpoints—no sudden shifts to "generic mobile design."
+
+**Breakpoint System**:
+-   **Mobile-first**: Base styles assume narrow viewports
+-   **Tablet**: \`md:\` prefix (768px+)
+-   **Desktop**: \`lg:\` and \`xl:\` (1024px+, 1280px+)
+
+**Adaptations**:
+
+**Navigation**:
+- Desktop: Horizontal menu with ghost buttons
+- Mobile: Hamburger menu button (neumorphic) reveals vertical drawer
+
+**Hero**:
+- Desktop: Side-by-side (lg:grid-cols-2)
+- Mobile: Stacked (text first, device second). Device aspect ratio shifts to reduce height.
+
+**Grids**:
+- Features: 3 cols desktop → 1 col mobile
+- Stats: 4 cols desktop → 2 cols mobile
+- Pricing: 3 cols → 1 col stack
+- Testimonials: 3 cols → 1 col
+
+**Images & Devices**:
+- Device graphic scales proportionally but may adjust aspect-ratio (aspect-square on mobile, aspect-video on desktop)
+- Blog/testimonial images maintain aspect ratios
+
+**Touch Targets**:
+- **Minimum 48px height** for all interactive elements on mobile
+- Buttons expand to full width on mobile: \`w-full sm:w-auto\`
+- Increased padding on mobile CTAs for easier tapping
+
+**Typography**:
+- Hero heading reduces from 7xl → 5xl on mobile
+- Body text remains lg for readability (don't shrink below 16px)
+
+**Spacing**:
+- Section gaps reduce from 96px → 64px on mobile
+- Card padding reduces from 32px → 24px
+
+**Hidden Elements**:
+- Physical connector pipes between steps: \`hidden md:block\`
+- Desktop-only navigation labels
+- Some decorative screws/vents can hide on small screens if needed
+
+**Performance**:
+- External texture images are small and cached
+- Animations use \`transform\` and \`opacity\` for GPU acceleration
+- Neumorphic shadows are CSS-only (no JS calculations)
+
+
+Corporate Trust
+
+Modern SaaS aesthetic balancing professionalism with approachability. Vibrant indigo/violet gradients, soft colored shadows, isometric depth, and clean geometric sans-serif typography.
+Light Mode
+`,
+
+  corporate: `
+# Design Style: Corporate Trust
+
+## 1. Design Philosophy
+This style embodies the **modern enterprise SaaS aesthetic** — professional yet approachable, sophisticated yet friendly. It draws inspiration from tech unicorns and high-growth startups that have successfully humanized the corporate experience. The design rejects the cold, sterile formality of traditional corporate websites in favor of a warm, confident, and inviting presence.
+
+**Core Principles:**
+- **Trustworthy Yet Vibrant**: Establishes credibility through clean structure and professional typography while maintaining visual energy through vibrant gradients and colorful accents
+- **Dimensional Depth**: Uses isometric perspectives, soft colored shadows, and subtle 3D transforms to create visual interest and break free from flat design
+- **Refined Elegance**: Every element is polished with attention to micro-interactions, smooth transitions, and sophisticated hover states
+- **Purposeful Gradients**: Indigo-to-violet gradients serve as the visual signature, used strategically in headlines, buttons, and decorative elements
+- **Professional Polish**: Generous white space, consistent spacing rhythms, and crisp typography create a premium, enterprise-ready feel
+
+**Keywords**: Trustworthy, Vibrant, Polished, Dimensional, Modern, Approachable, Enterprise-Ready, Elegant
+
+**Visual DNA**: The unmistakable signature of this style comes from:
+1. **Colored Shadows**: Soft shadows with blue/purple tints instead of neutral grays
+2. **Isometric Elements**: Subtle 3D transforms (rotate-x, rotate-y) on decorative cards and visualizations
+3. **Gradient Text**: Strategic use of gradient text for emphasis in headlines
+4. **Soft Blobs**: Large, blurred gradient orbs in the background for atmospheric depth
+5. **Elevated Cards**: White cards that lift on hover with enhanced shadows
+6. **Dual-Tone Palette**: Indigo (primary) + Violet (secondary) creating a cohesive gradient spectrum
+
+## 2. Design Token System
+
+### Colors (Light Mode)
+*   **Background**: \`#F8FAFC\` (Slate 50) - A very subtle cool grey/white base.
+*   **Foreground (Surface)**: \`#FFFFFF\` (White) - For cards and raised elements.
+*   **Primary**: \`#4F46E5\` (Indigo 600) - The core brand color. Vibrant blue-purple.
+*   **Secondary**: \`#7C3AED\` (Violet 600) - For gradients and accents.
+*   **Text Main**: \`#0F172A\` (Slate 900) - High contrast, sharp.
+*   **Text Muted**: \`#64748B\` (Slate 500) - For supporting text.
+*   **Accent/Success**: \`#10B981\` (Emerald 500) - For positive indicators.
+*   **Border**: \`#E2E8F0\` (Slate 200) - Subtle separation.
+
+### Typography
+*   **Font Family**: \`Plus Jakarta Sans\` — A geometric sans-serif with friendly rounded terminals that perfectly balances professional authority with modern approachability. Its clean letterforms ensure excellent readability while maintaining visual warmth.
+*   **Scaling**: Major Third (1.250) scale provides substantial hierarchy without overwhelming the layout
+*   **Font Weights**:
+    *   **Display/Headings**: ExtraBold (800) for hero headlines, Bold (700) for section headings
+    *   **Subheadings**: SemiBold (600) for card titles and emphasis
+    *   **Body Text**: Regular (400) for paragraphs, Medium (500) for navigation and labels
+*   **Line Heights**:
+    *   Headlines: 1.1 (tight tracking for impact)
+    *   Body Text: 1.6-1.7 (relaxed for readability)
+*   **Letter Spacing**: Tight tracking (-0.02em) on large headlines for modern polish
+*   **Responsive Type Scale**:
+    *   Mobile: text-2xl to text-4xl for h1
+    *   Desktop: text-4xl to text-6xl for h1
+    *   Progressive scaling ensures legibility across all devices
+
+### Radius & Border
+*   **Radius**: \`rounded-xl\` (12px) for cards and \`rounded-lg\` (8px) for inputs. Buttons are \`rounded-full\` or \`rounded-lg\`.
+*   **Borders**: Thin, 1px borders using the \`Border\` token.
+
+### Shadows & Effects
+This is where the design truly shines. **Colored shadows** replace neutral grays to reinforce the brand palette:
+
+*   **Default Card Shadow**: \`0 4px 20px -2px rgba(79, 70, 229, 0.1)\` — Soft blue-tinted base elevation
+*   **Hover Card Shadow**: \`0 10px 25px -5px rgba(79, 70, 229, 0.15), 0 8px 10px -6px rgba(79, 70, 229, 0.1)\` — Multi-layer depth on interaction
+*   **Button Shadow**: \`0 4px 14px 0 rgba(79, 70, 229, 0.3)\` — Strong presence for primary CTAs
+*   **Glow Effects**: Numbered badges use \`shadow-[0_0_20px_rgba(79,70,229,0.5)]\` for ethereal glow
+*   **Background Blobs**: Large gradient orbs with 3xl blur create atmospheric depth without distraction
+    *   \`blur-3xl filter\` combined with low opacity (20-50%)
+    *   Positioned absolutely to create layered depth
+*   **Gradients**:
+    *   **Primary Gradient**: \`from-indigo-600 to-violet-600\` — Used for buttons and active states
+    *   **Text Gradient**: Combined with \`bg-clip-text text-transparent\` for striking headlines
+    *   **Background Gradients**: Subtle \`from-indigo-100 to-violet-100\` for container backgrounds
+    *   **Final CTA Background**: \`from-indigo-900 to-indigo-950\` for dramatic dark section
+
+## 3. Component Stylings
+
+### Buttons
+*   **Primary**: Gradient background (Indigo to Violet). \`rounded-full\` or \`rounded-lg\`. White text. Slight shadow. Transition: Lift (\`-translate-y-0.5\`) and increase shadow on hover.
+*   **Secondary**: White background, Border \`E2E8F0\`, Text \`Slate 700\`. Hover: \`bg-slate-50\` and darker border.
+
+### Cards
+*   **Base**: White background, \`rounded-xl\`, \`border border-slate-100\`, \`shadow-soft\`.
+*   **Behavior**: On hover, slight lift and increased shadow intensity.
+*   **Feature Cards**: May feature an icon in a soft-colored circle (bg-indigo-50 text-indigo-600).
+
+### Inputs
+*   **Style**: \`bg-white\`, \`border-slate-200\`, \`rounded-lg\`.
+*   **Focus**: \`ring-2 ring-indigo-500 ring-offset-1\` and \`border-indigo-500\`.
+*   **Label**: \`text-sm font-semibold text-slate-700\`.
+
+## 4. Non-Generic Bold Choices
+
+The Corporate Trust aesthetic stands out through deliberate, sophisticated design decisions:
+
+### Isometric Depth & 3D Transforms
+*   **Hero Card**: \`perspective-[2000px]\` parent with \`rotate-x-[5deg] rotate-y-[-12deg]\` child creates subtle isometric effect
+*   **Hover Transforms**: \`hover:rotate-x-[2deg] hover:rotate-y-[-8deg]\` — Subtle 3D movement on interaction
+*   **Feature Cards**: Alternating \`rotate-y-[6deg]\` and \`rotate-y-[-6deg]\` based on layout position
+*   **Benefit Visualization**: \`rotate-x-6 rotate-y-12 transform\` on gradient container for dramatic depth
+
+### Strategic Gradient Usage
+*   **Split Headlines**: First 3 words in standard color, remaining words in gradient for visual hierarchy
+*   **Gradient Buttons**: Full background gradient with hover lift (\`-translate-y-0.5\`)
+*   **Badge Elements**: NEW badge with solid indigo background inside gradient-ringed container
+*   **Final CTA**: White button on dark gradient background creates dramatic contrast
+
+### Atmospheric Background Elements
+*   **Blur Orbs**: Large (400-600px) circular gradients with heavy blur positioned absolutely
+*   **Layered Positioning**: Multiple blobs at different z-indexes create depth
+*   **Subtle Animation**: \`animate-pulse duration-[4000ms]\` on floating cards for gentle movement
+
+### Elevated Card System
+*   **Default State**: Soft colored shadow with subtle border
+*   **Hover State**: Lift effect (\`-translate-y-1\`) combined with enhanced shadow
+*   **Transition**: Smooth \`duration-200\` for professional polish
+*   **Pricing Highlight**: Center card uses \`md:scale-105\` with special ring styling
+
+### Micro-Interactions
+*   **Arrow Icons**: \`transition-transform group-hover:translate-x-1\` for directional feedback
+*   **Image Zoom**: \`group-hover:scale-105\` on blog images with overlay fade-in
+*   **Chevron Rotation**: \`group-open:rotate-180\` for FAQ accordions
+*   **Button Lift**: Subtle upward movement on hover reinforces clickability
+
+## 5. Spacing & Layout
+*   **Container**: \`max-w-7xl\` (1280px) provides spacious, enterprise-appropriate width
+*   **Padding**: Responsive padding with \`px-4 sm:px-6\` pattern for consistent gutters
+*   **Vertical Rhythm**:
+    *   Mobile: \`py-16\` (64px)
+    *   Tablet: \`sm:py-20\` (80px)
+    *   Desktop: \`lg:py-24\` (96px)
+*   **Section Spacing**: Generous white space between sections creates breathing room
+*   **Grid Strategy**:
+    *   Hero: Two-column \`lg:grid-cols-2\` with text-first approach
+    *   Features: Alternating zig-zag with \`lg:flex-row\` and \`lg:flex-row-reverse\`
+    *   Pricing: Three-column \`md:grid-cols-3\` with center emphasis
+    *   Stats: Four-column \`md:grid-cols-4\` for metric display
+*   **Responsive Breakpoints**:
+    *   Mobile-first approach with progressive enhancement
+    *   sm: 640px, md: 768px, lg: 1024px, xl: 1280px
+*   **Text Width Constraints**: \`max-w-xl\` or \`max-w-2xl\` on paragraphs to maintain 60-75 character line lengths
+
+## 6. Animation & Transitions
+*   **Philosophy**: "Refined Motion" — Smooth, professional, never jarring
+*   **Base Transition**: \`transition-all duration-200\` for general interactive elements
+*   **Long Transitions**: \`duration-500\` for image zooms and complex animations
+*   **Hover Effects**:
+    *   Cards: Combine \`hover:-translate-y-1\` with shadow enhancement
+    *   Buttons: \`hover:-translate-y-0.5\` for subtle lift
+    *   Icons: \`transition-transform group-hover:translate-x-1\` for directional cues
+*   **Easing**: Default \`ease-out\` for natural deceleration
+*   **Pulse Animation**: \`animate-pulse duration-[4000ms]\` on decorative floating elements for gentle breathing effect
+*   **State Changes**: Smooth color transitions on links and buttons reinforce interactivity
+
+## 7. Iconography
+*   **Library**: \`lucide-react\` for consistent, modern icon system
+*   **Style**:
+    *   Default stroke width: \`2px\` (standard)
+    *   Size: \`h-4 w-4\` for inline icons, \`h-5 w-5\` or \`h-6 w-6\` for featured icons
+    *   Joins: Rounded for friendliness
+*   **Color Treatment**:
+    *   **Badge Icons**: Icon in \`text-indigo-600\` on \`bg-indigo-100\` container
+    *   **Navigation Icons**: Inherit text color, transition on hover
+    *   **Social Icons**: \`text-slate-400 hover:text-indigo-400\`
+*   **Icon Containers**:
+    *   Small badges: \`h-12 w-12 rounded-xl\` with soft background
+    *   Large features: \`h-14 w-14 rounded-xl\` for prominent sections
+    *   Circular: \`rounded-full\` for avatars or status indicators
+*   **Accessibility**: Icons are decorative with proper text alternatives or hidden from screen readers when paired with text
+
+## 8. Responsive Strategy
+*   **Mobile-First Philosophy**: Design begins at 375px width, progressively enhances
+*   **Touch Targets**: Minimum 44x44px for all interactive elements (buttons, links)
+*   **Typography Scaling**:
+    *   Headlines reduce from \`text-6xl\` (desktop) to \`text-4xl\` (mobile)
+    *   Body text maintains readability at \`text-base\` with responsive line heights
+*   **Layout Adaptations**:
+    *   Two-column layouts stack to single column on mobile
+    *   Navigation collapses to essential items (login hidden on mobile)
+    *   Pricing cards stack vertically with equal width
+    *   Footer columns stack progressively (4 col → 2 col → 1 col)
+*   **Spacing Compression**: Padding and margins reduce proportionally on smaller screens
+*   **Image Optimization**: Aspect ratios maintained, sizes adapt to container width
+*   **Horizontal Scrolling**: Never required; all content fits viewport width
+*   **Visual Hierarchy Preserved**: Even on mobile, clear distinction between heading levels maintained
+
+## 9. Accessibility & Best Practices
+*   **Color Contrast**: All text meets WCAG AA standards
+    *   Slate 900 on Slate 50 background: AAA compliant
+    *   White text on Indigo 900 background: AAA compliant
+    *   Link colors tested for 4.5:1 minimum ratio
+*   **Focus States**:
+    *   Visible ring on all interactive elements: \`focus-visible:ring-2 focus-visible:ring-indigo-500\`
+    *   Ring offset for clarity: \`focus-visible:ring-offset-2\`
+    *   Never remove focus indicators
+*   **Semantic HTML**:
+    *   Proper heading hierarchy (h1 → h2 → h3)
+    *   Native \`<button>\` elements for interactive actions
+    *   \`<nav>\` for navigation, \`<footer>\` for footer
+    *   Details/summary for FAQ accordions
+*   **Image Alt Text**: Descriptive alternatives for all images
+*   **Interactive States**:
+    *   Hover: Visual feedback on all clickable elements
+    *   Active: Subtle state change on click
+    *   Disabled: Reduced opacity with \`pointer-events-none\`
+*   **Motion Preferences**: Consider \`prefers-reduced-motion\` for users sensitive to animation
+*   **Screen Reader Support**: Proper ARIA labels where semantic HTML insufficient
+`,
+
+  botanical: `
+# Design Style: Botanical / Organic Serif
+
+## 1. Design Philosophy
+
+This style is a **digital ode to nature**—it breathes, flows, and grounds itself in organic beauty. It is **soft, sophisticated, and deeply intentional**, rejecting the rigid, hyper-digital sharpness of modern tech aesthetics in favor of **warmth, tactility, and natural imperfection**.
+
+### Core Essence
+The Botanical Organic style embodies the calming presence of a botanical garden, the earthy warmth of a ceramics studio, and the refined elegance of editorial design. It whispers rather than shouts. Every element feels **hand-touched, sun-warmed, and naturally crafted**.
+
+### Fundamental Principles
+
+*   **Vibe**: Peaceful, curated, artisanal, high-end wellness, sustainable luxury, botanical elegance
+*   **Visual DNA**:
+    *   **Organic Softness**: Hard angles are purposefully rare. Every corner is rounded, every shape flows like water-smoothed stones or unfurling leaves. The 200px arch radius on images creates iconic architectural moments.
+    *   **Typographic Elegance**: Typography is the protagonist—Playfair Display's high-contrast strokes command attention while maintaining grace. Italics add a handwritten, personal touch. Headlines breathe with generous scale (text-5xl to text-8xl).
+    *   **Earthbound Palette**: Every color derives from nature—forest floors, clay pottery, sage gardens, terracotta tiles. No artificial brights. Muted, sophisticated, grounded.
+    *   **Tactile Texture**: The subtle paper grain overlay is non-negotiable—it transforms cold digital pixels into warm, touchable surfaces. This is the secret ingredient that prevents flatness.
+    *   **Breathing Space**: Whitespace is sacred. Sections have generous vertical padding (py-32), cards float with ample gaps (gap-8, gap-16), and every element has room to exist without crowding.
+    *   **Intentional Movement**: Animations are slow, graceful, and fluid—like plants swaying in breeze. Duration-500 to duration-700 with ease-out curves. Nothing snaps or jerks.
+    *   **Staggered Rhythm**: Breaking the grid creates natural, organic flow. Every second feature card translates vertically. Images rotate subtly. The design breathes asymmetry within structure.
+
+## 2. Design Token System
+
+### Colors (Light Mode - Earthy & Muted)
+*   **Background**: \`#F9F8F4\` (Warm Alabaster / Rice Paper) - Not stark white.
+*   **Foreground**: \`#2D3A31\` (Deep Forest Green) - The primary text color. Softer than black.
+*   **Primary/Accent**: \`#8C9A84\` (Sage Green) - For buttons, highlights, icons.
+*   **Secondary/Muted**: \`#DCCFC2\` (Soft Clay / Mushroom) - For backgrounds of cards, secondary buttons.
+*   **Border**: \`#E6E2DA\` (Stone) - Very subtle, low contrast.
+*   **Interactive**: \`#C27B66\` (Terracotta) - Hover states or "call to action" pops.
+
+### Typography
+*   **Headings**: **"Playfair Display"** (Google Font). It is a transitional serif with high contrast strokes, feeling both classic and modern.
+    *   Weight: 600/700 for headlines.
+    *   Style: Italicize key words for emphasis.
+*   **Body**: **"Source Sans 3"** (Google Font). A clean, legible humanist sans-serif that pairs beautifully with Playfair.
+    *   Weight: 400/500.
+*   **Scaling**: Large. Headlines should feel airy and grand.
+
+### Radius & Shapes
+*   **Radius**: Highly rounded.
+    *   Standard Card: \`rounded-3xl\` (24px).
+    *   Buttons: \`rounded-full\` (Pill shape).
+    *   Images: Often \`rounded-t-full\` (Arch) or \`rounded-[40px]\`.
+*   **Border**: Thin, delicate. \`1px\` solid.
+
+### Shadows & Effects
+*   **Elevation**: Very soft, diffused shadows. No harsh dark drops.
+    *   Default: \`0 4px 6px -1px rgba(45, 58, 49, 0.05)\`
+    *   Medium: \`0 10px 15px -3px rgba(45, 58, 49, 0.05)\`
+    *   Large: \`0 20px 40px -10px rgba(45, 58, 49, 0.05)\`
+    *   Extra Large: \`0 25px 50px -12px rgba(45, 58, 49, 0.15)\`
+*   **Paper Grain Texture** (CRITICAL): A subtle SVG noise overlay is **mandatory** on the main background. This is applied as a fixed, full-screen overlay with \`opacity-[0.015]\` using an SVG fractal noise filter. This texture is the defining element that transforms the design from flat digital to warm, tactile, paper-like. Without it, the design loses its soul.
+    \`\`\`jsx
+    <div
+      className="pointer-events-none fixed inset-0 z-50 opacity-[0.015]"
+      style={{
+        backgroundImage: \`url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")\`,
+        backgroundRepeat: "repeat",
+      }}
+    />
+    \`\`\`
+*   **Blur Effects**: Use backdrop-blur-sm on overlays (like the hero quote card) to create depth and layering.
+
+## 3. Component Stylings
+
+### Buttons
+*   **Primary**: Pill-shaped (\`rounded-full\`). Background is **Deep Forest Green** (\`#2D3A31\`) with White text. On hover, it lightens slightly or shifts to Terracotta.
+*   **Secondary**: Transparent background with a **Sage Green** border (\`1px\`). Text is Sage Green.
+*   **Typography**: Uppercase, wide tracking (\`tracking-widest\`), small font size (text-sm).
+
+### Cards (Features, Pricing)
+*   **Background**: White (\`#FFFFFF\`) or Soft Clay (\`#F2F0EB\`).
+*   **Border**: None or very subtle Stone (\`#E6E2DA\`).
+*   **Shape**: \`rounded-3xl\`.
+*   **Hover**: Slight lift (\`-translate-y-1\`) and a bloom of soft shadow.
+
+### Inputs
+*   **Style**: Underlined only (Border-bottom) or pill-shaped with a very light background (\`#F2F0EB\`).
+*   **Focus**: No harsh blue rings. A soft Sage Green border transition.
+
+## 4. Non-Generic "Bold" Choices
+*   **Arch Imagery**: Use CSS \`clip-path\` or \`border-radius\` to turn standard rectangular images into **Arches** (classic Roman arch shape) or **Organic Blobs**.
+*   **Overlapping Typography**: Allow big serif headlines to slightly overlap images or background shapes.
+*   **Decorative Lines**: Use fine, 1px SVG lines that curve or meander to connect sections, mimicking vines or roots.
+*   **Italic Emphasis**: Frequently use the *Italic* variant of Playfair Display for single words within a bold headline.
+
+## 5. Layout Strategy & Spacing
+*   **Container**: \`max-w-7xl\`. We want airiness.
+*   **Whitespace**: Generous. \`gap-12\` or \`gap-16\` between grid items. \`py-24\` or \`py-32\` between sections.
+*   **Grid**: Break the grid. Use \`translate-y-12\` on every second card in a row to create a "staggered" natural look.
+
+## 6. Icons (Lucide React)
+*   **Style**: Thin stroke (\`stroke-width={1.5}\`).
+*   **Color**: Deep Forest Green or Sage.
+*   **Integration**: Don't put them in heavy boxes. Let them float, or place them in soft, pale circles.
+
+## 7. Animation & Micro-Interactions
+*   **Feel**: Slow, graceful, fluid. Everything moves like it's suspended in honey or swaying in a gentle breeze. "Eased out" significantly.
+*   **Durations**:
+    *   Fast interactions: \`duration-300\` (button hovers, link colors)
+    *   Standard: \`duration-500\` (card lifts, transforms)
+    *   Slow, dramatic: \`duration-700\` to \`duration-1000\` (image scales, hero image hover)
+*   **Hover Behaviors**:
+    *   Cards: \`-translate-y-1\` or \`-translate-y-2\` with shadow intensification
+    *   Images: \`scale-105\` with \`duration-700\` for smooth, luxurious feel
+    *   Buttons: \`bg-opacity-90\` subtle darkening with \`duration-300\`
+    *   Blog cards: Lift entire card while scaling image, arrow translates right (\`translate-x-1\`)
+*   **Focus States**: Sage green ring (\`ring-[#8C9A84]\`) with 2px width and offset for accessibility
+*   **Accordion**: Smooth height transitions with \`max-h-0\` to \`max-h-48\` and opacity fade
+*   **Mobile Menu**: Slide in from top with backdrop
+*   **Scroll**: Elements should gently fade up and float into place (\`opacity-0\` to \`opacity-100\`, \`translate-y-4\` to \`translate-y-0\`)
+
+## 8. Responsive Strategy
+*   **Mobile-First Approach**: The design gracefully adapts while maintaining its organic, sophisticated character.
+*   **Navigation**: Desktop shows horizontal nav with Sign In button. Mobile displays hamburger menu that opens a full-screen overlay with vertical nav links.
+*   **Hero Image**: Uses \`aspect-[3/4]\` on mobile, transitions to \`aspect-square\` with fixed height on md+ breakpoints. This prevents excessive height on small screens.
+*   **Grid Breakpoints**:
+    *   Features: \`grid-cols-1\` → \`md:grid-cols-3\`
+    *   Stats: \`grid-cols-2\` → \`md:grid-cols-4\`
+    *   Blog/Testimonials: \`grid-cols-1\` → \`md:grid-cols-3\`
+    *   Pricing: \`grid-cols-1\` → \`lg:grid-cols-3\`
+*   **Typography Scaling**: Headlines reduce from \`text-8xl\` to \`text-5xl\` on mobile. Body text remains \`text-lg\` but line-height adjusts.
+*   **Spacing Adjustments**: \`py-32\` becomes \`py-16\` on mobile, \`gap-16\` becomes \`gap-12\`, padding reduces from \`p-8\` to \`p-4\` where needed.
+*   **Touch Targets**: All buttons maintain minimum 44px height (\`h-12\`, \`h-14\`) for comfortable mobile tapping.
+*   **Staggered Cards**: The \`translate-y-12\` offset on alternating cards only applies at \`md:\` breakpoint and above to prevent awkward stacking on mobile.
+
+
+
+Botanical / Organic Serif
+
+Soft, earthy, elegant design inspired by nature. Features organic shapes, generous rounded corners, paper grain texture, muted earth tones, and sophisticated serif typography that breathes warmth and natural luxury.
+
+
+
+# Design Style: Botanical / Organic Serif
+
+## 1. Design Philosophy
+
+This style is a **digital ode to nature**—it breathes, flows, and grounds itself in organic beauty. It is **soft, sophisticated, and deeply intentional**, rejecting the rigid, hyper-digital sharpness of modern tech aesthetics in favor of **warmth, tactility, and natural imperfection**.
+
+### Core Essence
+The Botanical Organic style embodies the calming presence of a botanical garden, the earthy warmth of a ceramics studio, and the refined elegance of editorial design. It whispers rather than shouts. Every element feels **hand-touched, sun-warmed, and naturally crafted**.
+
+### Fundamental Principles
+
+*   **Vibe**: Peaceful, curated, artisanal, high-end wellness, sustainable luxury, botanical elegance
+*   **Visual DNA**:
+    *   **Organic Softness**: Hard angles are purposefully rare. Every corner is rounded, every shape flows like water-smoothed stones or unfurling leaves. The 200px arch radius on images creates iconic architectural moments.
+    *   **Typographic Elegance**: Typography is the protagonist—Playfair Display's high-contrast strokes command attention while maintaining grace. Italics add a handwritten, personal touch. Headlines breathe with generous scale (text-5xl to text-8xl).
+    *   **Earthbound Palette**: Every color derives from nature—forest floors, clay pottery, sage gardens, terracotta tiles. No artificial brights. Muted, sophisticated, grounded.
+    *   **Tactile Texture**: The subtle paper grain overlay is non-negotiable—it transforms cold digital pixels into warm, touchable surfaces. This is the secret ingredient that prevents flatness.
+    *   **Breathing Space**: Whitespace is sacred. Sections have generous vertical padding (py-32), cards float with ample gaps (gap-8, gap-16), and every element has room to exist without crowding.
+    *   **Intentional Movement**: Animations are slow, graceful, and fluid—like plants swaying in breeze. Duration-500 to duration-700 with ease-out curves. Nothing snaps or jerks.
+    *   **Staggered Rhythm**: Breaking the grid creates natural, organic flow. Every second feature card translates vertically. Images rotate subtly. The design breathes asymmetry within structure.
+
+## 2. Design Token System
+
+### Colors (Light Mode - Earthy & Muted)
+*   **Background**: \`#F9F8F4\` (Warm Alabaster / Rice Paper) - Not stark white.
+*   **Foreground**: \`#2D3A31\` (Deep Forest Green) - The primary text color. Softer than black.
+*   **Primary/Accent**: \`#8C9A84\` (Sage Green) - For buttons, highlights, icons.
+*   **Secondary/Muted**: \`#DCCFC2\` (Soft Clay / Mushroom) - For backgrounds of cards, secondary buttons.
+*   **Border**: \`#E6E2DA\` (Stone) - Very subtle, low contrast.
+*   **Interactive**: \`#C27B66\` (Terracotta) - Hover states or "call to action" pops.
+
+### Typography
+*   **Headings**: **"Playfair Display"** (Google Font). It is a transitional serif with high contrast strokes, feeling both classic and modern.
+    *   Weight: 600/700 for headlines.
+    *   Style: Italicize key words for emphasis.
+*   **Body**: **"Source Sans 3"** (Google Font). A clean, legible humanist sans-serif that pairs beautifully with Playfair.
+    *   Weight: 400/500.
+*   **Scaling**: Large. Headlines should feel airy and grand.
+
+### Radius & Shapes
+*   **Radius**: Highly rounded.
+    *   Standard Card: \`rounded-3xl\` (24px).
+    *   Buttons: \`rounded-full\` (Pill shape).
+    *   Images: Often \`rounded-t-full\` (Arch) or \`rounded-[40px]\`.
+*   **Border**: Thin, delicate. \`1px\` solid.
+
+### Shadows & Effects
+*   **Elevation**: Very soft, diffused shadows. No harsh dark drops.
+    *   Default: \`0 4px 6px -1px rgba(45, 58, 49, 0.05)\`
+    *   Medium: \`0 10px 15px -3px rgba(45, 58, 49, 0.05)\`
+    *   Large: \`0 20px 40px -10px rgba(45, 58, 49, 0.05)\`
+    *   Extra Large: \`0 25px 50px -12px rgba(45, 58, 49, 0.15)\`
+*   **Paper Grain Texture** (CRITICAL): A subtle SVG noise overlay is **mandatory** on the main background. This is applied as a fixed, full-screen overlay with \`opacity-[0.015]\` using an SVG fractal noise filter. This texture is the defining element that transforms the design from flat digital to warm, tactile, paper-like. Without it, the design loses its soul.
+    \`\`\`jsx
+    <div
+      className="pointer-events-none fixed inset-0 z-50 opacity-[0.015]"
+      style={{
+        backgroundImage: \`url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")\`,
+        backgroundRepeat: "repeat",
+      }}
+    />
+    \`\`\`
+*   **Blur Effects**: Use backdrop-blur-sm on overlays (like the hero quote card) to create depth and layering.
+
+## 3. Component Stylings
+
+### Buttons
+*   **Primary**: Pill-shaped (\`rounded-full\`). Background is **Deep Forest Green** (\`#2D3A31\`) with White text. On hover, it lightens slightly or shifts to Terracotta.
+*   **Secondary**: Transparent background with a **Sage Green** border (\`1px\`). Text is Sage Green.
+*   **Typography**: Uppercase, wide tracking (\`tracking-widest\`), small font size (text-sm).
+
+### Cards (Features, Pricing)
+*   **Background**: White (\`#FFFFFF\`) or Soft Clay (\`#F2F0EB\`).
+*   **Border**: None or very subtle Stone (\`#E6E2DA\`).
+*   **Shape**: \`rounded-3xl\`.
+*   **Hover**: Slight lift (\`-translate-y-1\`) and a bloom of soft shadow.
+
+### Inputs
+*   **Style**: Underlined only (Border-bottom) or pill-shaped with a very light background (\`#F2F0EB\`).
+*   **Focus**: No harsh blue rings. A soft Sage Green border transition.
+
+## 4. Non-Generic "Bold" Choices
+*   **Arch Imagery**: Use CSS \`clip-path\` or \`border-radius\` to turn standard rectangular images into **Arches** (classic Roman arch shape) or **Organic Blobs**.
+*   **Overlapping Typography**: Allow big serif headlines to slightly overlap images or background shapes.
+*   **Decorative Lines**: Use fine, 1px SVG lines that curve or meander to connect sections, mimicking vines or roots.
+*   **Italic Emphasis**: Frequently use the *Italic* variant of Playfair Display for single words within a bold headline.
+
+## 5. Layout Strategy & Spacing
+*   **Container**: \`max-w-7xl\`. We want airiness.
+*   **Whitespace**: Generous. \`gap-12\` or \`gap-16\` between grid items. \`py-24\` or \`py-32\` between sections.
+*   **Grid**: Break the grid. Use \`translate-y-12\` on every second card in a row to create a "staggered" natural look.
+
+## 6. Icons (Lucide React)
+*   **Style**: Thin stroke (\`stroke-width={1.5}\`).
+*   **Color**: Deep Forest Green or Sage.
+*   **Integration**: Don't put them in heavy boxes. Let them float, or place them in soft, pale circles.
+
+## 7. Animation & Micro-Interactions
+*   **Feel**: Slow, graceful, fluid. Everything moves like it's suspended in honey or swaying in a gentle breeze. "Eased out" significantly.
+*   **Durations**:
+    *   Fast interactions: \`duration-300\` (button hovers, link colors)
+    *   Standard: \`duration-500\` (card lifts, transforms)
+    *   Slow, dramatic: \`duration-700\` to \`duration-1000\` (image scales, hero image hover)
+*   **Hover Behaviors**:
+    *   Cards: \`-translate-y-1\` or \`-translate-y-2\` with shadow intensification
+    *   Images: \`scale-105\` with \`duration-700\` for smooth, luxurious feel
+    *   Buttons: \`bg-opacity-90\` subtle darkening with \`duration-300\`
+    *   Blog cards: Lift entire card while scaling image, arrow translates right (\`translate-x-1\`)
+*   **Focus States**: Sage green ring (\`ring-[#8C9A84]\`) with 2px width and offset for accessibility
+*   **Accordion**: Smooth height transitions with \`max-h-0\` to \`max-h-48\` and opacity fade
+*   **Mobile Menu**: Slide in from top with backdrop
+*   **Scroll**: Elements should gently fade up and float into place (\`opacity-0\` to \`opacity-100\`, \`translate-y-4\` to \`translate-y-0\`)
+
+## 8. Responsive Strategy
+*   **Mobile-First Approach**: The design gracefully adapts while maintaining its organic, sophisticated character.
+*   **Navigation**: Desktop shows horizontal nav with Sign In button. Mobile displays hamburger menu that opens a full-screen overlay with vertical nav links.
+*   **Hero Image**: Uses \`aspect-[3/4]\` on mobile, transitions to \`aspect-square\` with fixed height on md+ breakpoints. This prevents excessive height on small screens.
+*   **Grid Breakpoints**:
+    *   Features: \`grid-cols-1\` → \`md:grid-cols-3\`
+    *   Stats: \`grid-cols-2\` → \`md:grid-cols-4\`
+    *   Blog/Testimonials: \`grid-cols-1\` → \`md:grid-cols-3\`
+    *   Pricing: \`grid-cols-1\` → \`lg:grid-cols-3\`
+*   **Typography Scaling**: Headlines reduce from \`text-8xl\` to \`text-5xl\` on mobile. Body text remains \`text-lg\` but line-height adjusts.
+*   **Spacing Adjustments**: \`py-32\` becomes \`py-16\` on mobile, \`gap-16\` becomes \`gap-12\`, padding reduces from \`p-8\` to \`p-4\` where needed.
+*   **Touch Targets**: All buttons maintain minimum 44px height (\`h-12\`, \`h-14\`) for comfortable mobile tapping.
+*   **Staggered Cards**: The \`translate-y-12\` offset on alternating cards only applies at \`md:\` breakpoint and above to prevent awkward stacking on mobile.
+`,
+
+};

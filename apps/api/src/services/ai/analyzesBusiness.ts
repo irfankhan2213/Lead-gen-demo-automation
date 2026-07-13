@@ -56,6 +56,7 @@ Analyze this business and return ONLY valid JSON with exactly this structure —
   "brand_dna": "2-3 sentence brand summary capturing their vibe, audience, and identity",
   "primary_colors": ["#hex1", "#hex2"],
   "tone": "professional",
+  "design_language": "corporate",
   "pain_points": ["specific weakness 1", "specific weakness 2", "specific weakness 3"],
   "opportunity_score": 8,
   "opportunity_reason": "one sentence explaining the score — why do they need a better website and are they a profitable lead?",
@@ -75,6 +76,18 @@ SCORING GUIDE for opportunity_score (1–10):
 TONE must be one of: professional | playful | bold | warm | luxury | minimal
 RECOMMENDED_TEMPLATE must be one of: restaurant | clinic | gym | salon | generic
 ESTIMATED_REVENUE_POTENTIAL must be one of: Low | Medium | High
+DESIGN_LANGUAGE must be one of: luxury | swiss | flat | material | claymorphism | neumorphism | industrial | corporate | botanical
+
+DESIGN_LANGUAGE SELECTION GUIDE:
+- 'luxury': Premium/editorial, Vogue-style, high-end fashion, architecture, high-end wellness.
+- 'swiss': Asymmetric, objective typographic grid (Technical agencies, clinical laboratories, scientific).
+- 'flat': Simple 2D geometric blocks, zero shadows (Modern tech startups, local services).
+- 'material': Soft curves, pill-shaped actions, tactile (Gyms, beauty salons, general B2C).
+- 'claymorphism': Inflatable pastel shapes, child-like vinyl toys (B2C toys, children nurseries, creative studios).
+- 'neumorphism': Opposing shadows, monochromatic cool grey (Minimalist tech, designers).
+- 'industrial': ABS plastic, screws, mechanical slots, safety-orange (Auto repair, machine shops, hardware).
+- 'corporate': Classic navy/gold trust, serif typography (Lawyers, accountants, insurance, real estate).
+- 'botanical': Natural terracotta/sage palettes, organic serifs, paper grain (Florists, organic spas, organic foods).
 
 Be specific with the headline and CTA — reference their actual business name, location, and niche.
 CRITICAL: If the business looks like spam, a residential home, or has zero digital footprint indicating they are a real established business, score them very low (1-3) and set revenue potential to Low.
@@ -87,6 +100,7 @@ CRITICAL JSON FORMATTING RULES:
 
   try {
     const text = await callLLM(prompt, 1024, true);
+    console.log('RAW LLM RESPONSE:', text);
 
     // Parse JSON — strip any markdown code fences if present
     let jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
@@ -98,6 +112,12 @@ CRITICAL JSON FORMATTING RULES:
     // Validate required fields
     if (typeof analysis.opportunity_score !== 'number') {
       throw new Error('Invalid AI response: missing opportunity_score');
+    }
+
+    // Default design language if invalid
+    const validLanguages = ['luxury', 'swiss', 'flat', 'material', 'claymorphism', 'neumorphism', 'industrial', 'corporate', 'botanical'];
+    if (!analysis.design_language || !validLanguages.includes(analysis.design_language)) {
+      analysis.design_language = 'corporate';
     }
 
     logger.info(`AI analysis complete for ${businessData.business_name}`, {

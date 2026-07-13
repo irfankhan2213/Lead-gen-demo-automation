@@ -28,6 +28,18 @@ export type BusinessTone =
 
 export type TemplateType = 'restaurant' | 'clinic' | 'gym' | 'salon' | 'generic';
 
+export type DesignLanguage =
+  | 'luxury'
+  | 'swiss'
+  | 'flat'
+  | 'material'
+  | 'claymorphism'
+  | 'neumorphism'
+  | 'industrial'
+  | 'corporate'
+  | 'botanical';
+
+
 export type OutreachEventType =
   | 'sent'
   | 'opened'
@@ -104,6 +116,7 @@ export interface AIAnalysis {
   brand_dna: string;
   primary_colors: string[];
   tone: BusinessTone;
+  design_language: DesignLanguage;
   pain_points: string[];
   opportunity_score: number;
   opportunity_reason: string;
@@ -156,6 +169,7 @@ export interface Lead {
   opportunity_reason?: string;
   recommended_template?: TemplateType;
   tone?: BusinessTone;
+  design_language?: DesignLanguage;
   hero_headline?: string;
   hero_subline?: string;
   cta_text?: string;

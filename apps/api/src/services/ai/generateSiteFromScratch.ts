@@ -1,8 +1,12 @@
 import { callLLM } from './client.js';
 import logger from '../../lib/logger.js';
 import type { Lead } from '@acquisition-engine/shared';
+import { designLanguages } from './prompts/designLanguages.js';
 
 export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
+  const designStyle = lead.design_language || 'corporate';
+  const styleRules = designLanguages[designStyle] || designLanguages['corporate'];
+
   const prompt = `You are a world-class Webflow developer and UI/UX designer.
 Your task is to write the COMPLETE, single-file HTML code for a modern, hyper-premium landing page for a local business.
 You must use Tailwind CSS v3 via CDN (<script src="https://cdn.tailwindcss.com"></script>). Do not use any external CSS files or older Tailwind v2 CDN.
@@ -19,17 +23,25 @@ Phone: ${lead.phone || ''}
 Address: ${lead.address || ''}
 Hero Image URL: ${lead.hero_image_url || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
 
-CRITICAL DESIGN REQUIREMENTS (LIKE A PREMIUM WEBFLOW THEME):
-1. **Hero Section:** Must use the Hero Image URL as a background with a sleek dark overlay (e.g., bg-black/60). Use a massive, bold typography style for the headline (e.g., text-6xl md:text-8xl font-extrabold tracking-tighter). Include a glassmorphism floating badge and a prominent primary CTA button with hover effects.
-2. **Typography & Colors:** Use modern Google Fonts (e.g., 'Inter' or 'Plus Jakarta Sans'). Extract and use the provided Brand Colors via Tailwind arbitrary values (e.g., bg-[${lead.brand_colors?.[0] || '#2563eb'}]).
-3. **Structure & Layout:**
-   - **Navbar:** Sticky, glassmorphism backdrop (backdrop-blur-md bg-white/80 or black/80), with logo and a 'Contact' CTA.
-   - **Trust Bar:** A section below the hero showing "Trusted by 500+ locals in ${lead.city}" with 5-star icons.
-   - **About Section:** Split layout (grid grid-cols-1 md:grid-cols-2). Text on one side, and a beautiful overlapping image composition on the other side.
-   - **Services Section:** A CSS Grid layout with beautiful cards. Use hover micro-interactions (e.g., hover:-translate-y-2 hover:shadow-2xl transition-all duration-300).
-   - **Contact/Footer:** A dark, sleek footer area with phone number, address, and a contact form mockup.
-4. **CSS Features:** Heavily utilize rounded corners (rounded-2xl or rounded-3xl), subtle borders (border border-white/10), soft box-shadows, and gradients.
-5. **Output Constraints:** Return ONLY the raw HTML string starting with "<!DOCTYPE html>". No markdown formatting, no explanations.
+DESIGN SYSTEM INSTRUCTIONS (${designStyle.toUpperCase()} STYLE):
+${styleRules}
+
+PRE-BUILT TEMPLATE STRUCTURE:
+Your output HTML MUST follow this structural skeleton exactly:
+1. **Navbar**: Sticky navigation bar. Includes logo (business name), links to sections (About, Services, Testimonials, Contact), and a prominent CTA button.
+2. **Hero Section**: Large impact section. Incorporates the Hero Image URL, business name, main headline (${lead.hero_headline || lead.tagline || 'Premium Services'}), supporting subline (${lead.hero_subline || ''}), and CTA buttons.
+3. **Stats / Trust Bar**: Immediately below Hero. Displays Google Rating (${lead.google_rating || '4.8'} ⭐), customer/review count (${lead.google_review_count || '120'}+ happy locals), and years serving ${lead.city} or similar local trust signals.
+4. **About Section**: Multi-column layout. One column with about copy (brand DNA, owner background, mission) and another with a beautiful layout containing an image mockup (or stylized shape).
+5. **Services Section**: Grid of service cards showing details of the offered services: ${(lead.services || []).join(', ')}. Card layout should utilize the design style's card tokens.
+6. **Testimonials/Reviews Section**: Grids or cards containing 2-3 reviews showcasing social proof.
+7. **Contact / Form Section**: Split layout. One side shows location/address (${lead.address || ''}) and phone (${lead.phone || ''}) in a beautiful stylized list. The other side is an interactive contact form (Name, Email, Phone, Message) with a stylized submit button.
+8. **Footer**: Clean footer containing business name, footer navigation, copyright, and standard branding.
+9. **Claim Banner**: A fixed banner at the bottom stating "This is a free demo site built by Evolve Expert Agency. [Claim Your Site →]" which links to mailto:hello@evolve.agency.
+
+OUTPUT CONSTRAINTS:
+- Return ONLY the raw HTML string starting with "<!DOCTYPE html>". No markdown formatting, no explanations.
+- Ensure all Tailwind classes used match the ${designStyle.toUpperCase()} design system specifications above.
+- Make the page look extremely premium, complete, and polished.
 
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 
