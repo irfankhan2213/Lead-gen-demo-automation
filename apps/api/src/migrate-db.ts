@@ -17,6 +17,9 @@ async function migrate() {
     await client.query(`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS demo_mode VARCHAR(50) DEFAULT 'template';`);
     console.log('Successfully added demo_mode to campaigns table.');
     
+    await client.query(`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS job_id VARCHAR(255);`);
+    console.log('Successfully added job_id to campaigns table.');
+    
     // Also ensure leads has demo_mode if it was added there too
     await client.query(`ALTER TABLE leads ADD COLUMN IF NOT EXISTS demo_mode VARCHAR(50) DEFAULT 'template';`);
     console.log('Successfully added demo_mode to leads table.');
