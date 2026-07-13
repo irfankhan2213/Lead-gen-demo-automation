@@ -79,15 +79,15 @@ ESTIMATED_REVENUE_POTENTIAL must be one of: Low | Medium | High
 DESIGN_LANGUAGE must be one of: luxury | swiss | flat | material | claymorphism | neumorphism | industrial | corporate | botanical
 
 DESIGN_LANGUAGE SELECTION GUIDE:
-- 'luxury': Premium/editorial, Vogue-style, high-end fashion, architecture, high-end wellness.
-- 'swiss': Asymmetric, objective typographic grid (Technical agencies, clinical laboratories, scientific).
-- 'flat': Simple 2D geometric blocks, zero shadows (Modern tech startups, local services).
-- 'material': Soft curves, pill-shaped actions, tactile (Gyms, beauty salons, general B2C).
-- 'claymorphism': Inflatable pastel shapes, child-like vinyl toys (B2C toys, children nurseries, creative studios).
-- 'neumorphism': Opposing shadows, monochromatic cool grey (Minimalist tech, designers).
-- 'industrial': ABS plastic, screws, mechanical slots, safety-orange (Auto repair, machine shops, hardware).
-- 'corporate': Classic navy/gold trust, serif typography (Lawyers, accountants, insurance, real estate).
-- 'botanical': Natural terracotta/sage palettes, organic serifs, paper grain (Florists, organic spas, organic foods).
+- 'luxury': Premium/editorial, Vogue-style, generous white space (High-ticket enterprise SaaS, executive consultancies, high-end wellness, architecture).
+- 'swiss': Asymmetric, objective typographic grid, bold sans-serif, gridlines (Developer tools, technical infrastructure SaaS, clinical/scientific software).
+- 'flat': Simple 2D geometric blocks, solid colors, zero shadows (Modern B2B SaaS startups, local consumer services, mobile apps).
+- 'material': Soft curves, pill-shaped actions, tactile (Gyms, beauty salons, general B2C services).
+- 'claymorphism': Inflatable pastel shapes, child-like vinyl toys (Children nurseries, creative B2C studios, toy brands).
+- 'neumorphism': Opposing soft shadows, monochromatic cool grey (Design tools, minimalist developer portfolios, creative agencies).
+- 'industrial': ABS plastic, mechanical details, safety-orange (Auto repair, heavy machinery, logistics, hardware manufacturing).
+- 'corporate': Classic navy/gold trust, serif typography (Lawyers, accountants, insurance, real estate agencies, financial services).
+- 'botanical': Natural terracotta/sage palettes, organic serifs, paper grain (Florists, organic spas, natural foods, eco-brands).
 
 Be specific with the headline and CTA — reference their actual business name, location, and niche.
 CRITICAL: If the business looks like spam, a residential home, or has zero digital footprint indicating they are a real established business, score them very low (1-3) and set revenue potential to Low.
