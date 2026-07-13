@@ -1,12 +1,9 @@
 import pkg from 'pg';
 const { Client } = pkg;
 import * as dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Try to load .env from current directory (useful for local execution)
+dotenv.config();
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
