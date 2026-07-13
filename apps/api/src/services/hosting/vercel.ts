@@ -100,6 +100,30 @@ export async function deployDemoToVercel(
 
   logger.info(`Deployed successfully: ${demoUrl}`, { deploymentId, projectName });
 
+  // Disable Vercel Deployment Protection (SSO) for this project to ensure public accessibility
+  try {
+    const projectUrl = teamId
+      ? `${VERCEL_API}/v9/projects/${projectName}?teamId=${teamId}`
+      : `${VERCEL_API}/v9/projects/${projectName}`;
+
+    const patchResponse = await fetch(projectUrl, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({
+        ssoProtection: null,
+      }),
+    });
+
+    if (patchResponse.ok) {
+      logger.info(`Disabled Vercel deployment protection for project: ${projectName}`);
+    } else {
+      const errText = await patchResponse.text();
+      logger.warn(`Failed to disable Vercel deployment protection for project ${projectName}:`, { error: errText });
+    }
+  } catch (err) {
+    logger.warn(`Failed to disable Vercel deployment protection for project ${projectName}:`, { error: (err as Error).message });
+  }
+
   return { demoUrl, deploymentId };
 }
 
