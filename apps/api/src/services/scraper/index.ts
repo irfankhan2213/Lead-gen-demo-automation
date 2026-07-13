@@ -19,8 +19,10 @@ import { scrapeBusinessWebsite } from './website.js';
 import { scrapeRedditMentions } from './reddit.js';
 import { scrapeYelpReviews } from './yelp.js';
 import { scrapeInstagramProfile } from './instagram.js';
+import { chromium, Browser, BrowserContext } from 'playwright';
 import { analyzesBusiness } from '../ai/analyzesBusiness.js';
 import { generateQueue } from '../../lib/queue.js';
+import { updateCampaignStatus } from '../../db/queries.js';
 import type {
   ScrapeInput,
   LeadData,
@@ -52,6 +54,27 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
   const limit = input.limit === 'unlimited' ? 9999 : (input.limit ?? 20);
   let processedRawCount = 0;
 
+  // Initialize shared browser pool for the entire campaign scrape
+  log.log('🚀 Initializing shared browser pool for deep scraping...');
+  let browser: Browser | undefined;
+  let sharedContext: BrowserContext | undefined;
+  
+  try {
+    browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
+
+    sharedContext = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      viewport: { width: 1280, height: 800 },
+    });
+  } catch (err) {
+    log.error(`❌ Failed to initialize browser pool: ${(err as Error).message}`);
+    return;
+  }
+
   try {
     // Process each business sequentially to respect rate limits
     for await (const business of scrapeGoogleMaps(niche, city, 'unlimited')) {
@@ -67,14 +90,15 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
       // Run enrichment scrapers in parallel
       const [websiteResult, redditResult, yelpResult, igResult] = await Promise.allSettled([
         business.website_url
-          ? scrapeBusinessWebsite(business.website_url)
+          ? scrapeBusinessWebsite(business.website_url, sharedContext)
           : Promise.resolve<WebsiteScrapedData>({}),
         scrapeRedditMentions(business.name, city),
-        scrapeYelpReviews(business.name, city),
+        scrapeYelpReviews(business.name, city, sharedContext),
         scrapeInstagramProfile(
           typeof business === 'object' && 'social_links' in business
-            ? (business as GoogleMapsBusiness & { social_links?: { instagram?: string } }).social_links?.instagram
-            : undefined
+            ? (business as GoogleMapsBusiness & { social_links?: { instagram?: string } }).social_links?.instagram || ''
+            : '',
+          sharedContext
         ),
       ]);
 
@@ -120,8 +144,8 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         // From other scrapers
         reddit_mentions: redditData,
         yelp_reviews_summary: yelpData || undefined,
-        instagram_bio: igData.instagram_bio,
-        instagram_post_themes: igData.instagram_post_themes,
+        instagram_bio: igData.bio,
+        instagram_post_themes: igData.post_themes,
       };
 
       // Save to database
@@ -164,6 +188,22 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
   }
   } catch (err) {
     log.error(`❌ Scraping loop failed: ${(err as Error).message}`);
+    if (campaignId) {
+      await updateCampaignStatus(campaignId, 'failed').catch(() => {});
+    }
+  } finally {
+    // Cleanup shared browser pool
+    try {
+      if (sharedContext) await sharedContext.close();
+      if (browser) await browser.close();
+      log.log('🧹 Cleaned up browser pool.');
+    } catch (err) {
+      logger.error('Failed to cleanup browser pool', { error: (err as Error).message });
+    }
+  }
+
+  if (campaignId) {
+    await updateCampaignStatus(campaignId, 'completed').catch(() => {});
   }
 
   log.success(`🎉 Campaign scrape complete! Saved ${savedLeadsCount} filtered businesses (from ${processedRawCount} raw results).`);

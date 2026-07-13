@@ -8,7 +8,7 @@
  * @returns A summary string of review themes, or empty string if not found
  */
 
-import { chromium } from 'playwright';
+import { chromium, BrowserContext } from 'playwright';
 import * as cheerio from 'cheerio';
 import logger from '../../lib/logger.js';
 
@@ -18,22 +18,29 @@ const delay = (ms = 1500) => new Promise((r) => setTimeout(r, ms + Math.random()
  * Scrapes Yelp for a business's review summary.
  * @param businessName - Business name to search
  * @param city - City to narrow results
+ * @param sharedContext - Optional Playwright BrowserContext
  * @returns Review themes summary string
  */
 export async function scrapeYelpReviews(
   businessName: string,
-  city: string
+  city: string,
+  sharedContext?: BrowserContext
 ): Promise<string> {
-  const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
+  let browser;
+  let context = sharedContext;
 
-  const context = await browser.newContext({
-    userAgent:
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    viewport: { width: 1280, height: 900 },
-  });
+  if (!context) {
+    browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
+
+    context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      viewport: { width: 1280, height: 900 },
+    });
+  }
 
   try {
     const page = await context.newPage();
@@ -93,6 +100,8 @@ export async function scrapeYelpReviews(
     logger.warn('Yelp scrape failed', { error: (err as Error).message });
     return '';
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }

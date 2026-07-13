@@ -22,8 +22,14 @@ CREATE TABLE IF NOT EXISTS campaigns (
   demos_generated INTEGER NOT NULL DEFAULT 0,
   emails_sent INTEGER NOT NULL DEFAULT 0,
   replies_received INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  -- Configuration
+  demo_mode VARCHAR(50) DEFAULT 'template'
 );
+
+-- Migration: add demo_mode to existing campaigns
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS demo_mode VARCHAR(50) DEFAULT 'template';
 
 CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_campaigns_niche_city ON campaigns(niche, city);

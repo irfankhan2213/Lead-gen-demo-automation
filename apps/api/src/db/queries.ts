@@ -353,10 +353,11 @@ export async function createCampaign(data: {
   name: string;
   niche: string;
   city: string;
+  demo_mode?: string;
 }): Promise<Campaign> {
   const rows = await query<Campaign>(
-    `INSERT INTO campaigns (name, niche, city) VALUES ($1, $2, $3) RETURNING *`,
-    [data.name, data.niche, data.city]
+    `INSERT INTO campaigns (name, niche, city, demo_mode) VALUES ($1, $2, $3, $4) RETURNING *`,
+    [data.name, data.niche, data.city, data.demo_mode ?? 'template']
   );
   return rows[0];
 }
@@ -366,6 +367,15 @@ export async function createCampaign(data: {
  */
 export async function getCampaigns(): Promise<Campaign[]> {
   return query<Campaign>('SELECT * FROM campaigns ORDER BY created_at DESC');
+}
+
+/**
+ * Updates a campaign's status.
+ * @param id - Campaign UUID
+ * @param status - The new status ('active', 'completed', 'failed')
+ */
+export async function updateCampaignStatus(id: string, status: string): Promise<void> {
+  await query('UPDATE campaigns SET status = $1 WHERE id = $2', [status, id]);
 }
 
 /**

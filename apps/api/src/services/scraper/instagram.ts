@@ -10,31 +10,38 @@
  * @returns Bio and post theme hints
  */
 
-import { chromium } from 'playwright';
+import { chromium, BrowserContext } from 'playwright';
 import * as cheerio from 'cheerio';
 import logger from '../../lib/logger.js';
 
 /**
- * Scrapes an Instagram public profile for bio and basic engagement data.
- * @param instagramUrl - e.g. "https://www.instagram.com/businessname"
- * @returns Object with bio and post_themes strings
+ * Scrapes an Instagram profile for bio and recent post themes.
+ * Note: Instagram heavily rate limits and blocks scrapers. This uses a very
+ * light touch and bails quickly if blocked.
+ *
+ * @param instagramUrl - The full Instagram profile URL
+ * @param sharedContext - Optional Playwright BrowserContext
+ * @returns Object with bio and post_themes if successful
  */
-export async function scrapeInstagramProfile(instagramUrl?: string): Promise<{
-  instagram_bio?: string;
-  instagram_post_themes?: string;
+export async function scrapeInstagramProfile(instagramUrl: string, sharedContext?: BrowserContext): Promise<{
+  bio?: string;
+  post_themes?: string;
 }> {
-  if (!instagramUrl) return {};
+  let browser;
+  let context = sharedContext;
 
-  const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+  if (!context) {
+    browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
 
-  const context = await browser.newContext({
-    userAgent:
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-    viewport: { width: 390, height: 844 },
-  });
+    context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      viewport: { width: 1280, height: 900 },
+    });
+  }
 
   try {
     const page = await context.newPage();
@@ -70,13 +77,15 @@ export async function scrapeInstagramProfile(instagramUrl?: string): Promise<{
     logger.info(`Instagram scraped: ${instagramUrl}`, { bio: bio.slice(0, 50) });
 
     return {
-      instagram_bio: bio.slice(0, 200) || undefined,
-      instagram_post_themes: ogTitle ? `Profile: ${ogTitle}` : undefined,
+      bio: bio.slice(0, 200) || undefined,
+      post_themes: ogTitle ? `Profile: ${ogTitle}` : undefined,
     };
   } catch (err) {
-    logger.warn('Instagram scrape failed', { error: (err as Error).message });
+    logger.warn(`Instagram scrape failed for ${instagramUrl}`, { error: (err as Error).message });
     return {};
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }

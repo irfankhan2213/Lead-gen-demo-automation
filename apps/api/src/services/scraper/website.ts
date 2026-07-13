@@ -7,7 +7,7 @@
  * @returns WebsiteScrapedData object (all fields optional)
  */
 
-import { chromium } from 'playwright';
+import { chromium, BrowserContext } from 'playwright';
 import * as cheerio from 'cheerio';
 import logger from '../../lib/logger.js';
 import type { WebsiteScrapedData, SocialLinks } from '@acquisition-engine/shared';
@@ -51,25 +51,31 @@ function extractPhone(text: string): string | undefined {
 /**
  * Scrapes a business website for brand intelligence including contact info.
  * @param url - Full URL to scrape (e.g. "https://example.com")
+ * @param sharedContext - Optional Playwright BrowserContext for pooling to reduce memory/startup overhead
  * @returns Parsed brand data or empty object if scraping fails
  */
-export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrapedData> {
+export async function scrapeBusinessWebsite(url?: string, sharedContext?: BrowserContext): Promise<WebsiteScrapedData> {
   if (!url) return {};
 
   // Normalize URL
   let normalizedUrl = url;
   if (!url.startsWith('http')) normalizedUrl = `https://${url}`;
 
-  const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
+  let browser;
+  let context = sharedContext;
 
-  const context = await browser.newContext({
-    userAgent:
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    viewport: { width: 1280, height: 800 },
-  });
+  if (!context) {
+    browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
+
+    context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      viewport: { width: 1280, height: 800 },
+    });
+  }
 
   try {
     const page = await context.newPage();
@@ -189,27 +195,28 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
     const phoneFromText = extractPhone(pageText);
     let foundPhone = phoneFromTel || phoneFromText;
 
-    // ─── Visit common subpages for deeper extraction ────────────────────────────
+    // ─── Visit common subpages for deeper extraction (Parallel) ───────────────
     let contactEmail: string | undefined;
     let contactPhone: string | undefined;
 
-    const subpages = ['/contact', '/contact-us', '/about', '/about-us', '/team'];
-    const baseUrl = new URL(normalizedUrl);
-    
-    for (const path of subpages) {
-      // Stop searching if we found an email
-      if (contactEmail || (allEmails.length > 0)) break;
-
-      try {
+    // Only scrape subpages if we don't have an email
+    if (allEmails.length === 0) {
+      const subpages = ['/contact', '/contact-us', '/about', '/about-us', '/team'];
+      const baseUrl = new URL(normalizedUrl);
+      
+      const subpagePromises = subpages.map(async (path) => {
         const subpageUrl = `${baseUrl.origin}${path}`;
-        if (subpageUrl !== normalizedUrl) {
-          await page.goto(subpageUrl, { waitUntil: 'domcontentloaded', timeout: 10_000 });
-          const contactHtml = await page.content();
+        if (subpageUrl === normalizedUrl) return;
+
+        // Use the shared context to open a new tab concurrently
+        const subPageTab = await context.newPage();
+        try {
+          await subPageTab.goto(subpageUrl, { waitUntil: 'domcontentloaded', timeout: 10_000 });
+          const contactHtml = await subPageTab.content();
           const $c = cheerio.load(contactHtml);
 
           // mailto links on contact page
           $c('a[href^="mailto:"]').each((_, el) => {
-            if (contactEmail) return;
             const href = $c(el).attr('href') ?? '';
             const email = href.replace(/^mailto:/i, '').split('?')[0].trim();
             if (email && !JUNK_EMAIL_PATTERNS.test(email)) contactEmail = email;
@@ -229,10 +236,12 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
             });
             if (!contactPhone) contactPhone = extractPhone($c.text());
           }
+        } finally {
+          await subPageTab.close();
         }
-      } catch {
-        // Subpage may not exist — silently continue
-      }
+      });
+
+      await Promise.allSettled(subpagePromises);
     }
 
     const finalEmail = contactEmail ?? allEmails[0];
@@ -263,6 +272,8 @@ export async function scrapeBusinessWebsite(url?: string): Promise<WebsiteScrape
     logger.warn(`Website scrape failed for ${normalizedUrl}`, { error: (err as Error).message });
     return {};
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }
