@@ -93,6 +93,8 @@ export interface WebsiteScrapedData {
   email?: string;
   /** Phone found via tel: links or regex scan of the website / contact page */
   phone?: string;
+  logo_url?: string;
+  images?: string[];
 }
 
 export interface RedditMention {
@@ -182,6 +184,8 @@ export interface Lead {
   demo_deployed_at?: string;
   vercel_deployment_id?: string;
   hero_image_url?: string;
+  logo_url?: string;
+  scraped_images?: string[];
   // Outreach
   outreach_status: OutreachStatus;
   email_subject?: string;

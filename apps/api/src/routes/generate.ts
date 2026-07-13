@@ -42,7 +42,7 @@ router.post('/', async (req: Request, res: Response) => {
     await generateQueue.add('generate-demo' as any, {
       jobId,
       leadId,
-      demo_mode: lead.demo_mode ?? 'template',
+      demo_mode: lead.demo_mode ?? 'ai_scratch',
     }, { jobId: `gen-${leadId}` });
 
     logger.info(`Demo generation queued for lead ${leadId}`, { jobId });
@@ -76,7 +76,7 @@ router.post('/retry-failed', async (_req: Request, res: Response) => {
       await generateQueue.add('generate-demo' as any, {
         jobId,
         leadId: lead.id,
-        demo_mode: lead.demo_mode ?? 'template',
+        demo_mode: lead.demo_mode ?? 'ai_scratch',
       }, { jobId: `gen-${lead.id}` });
       queued++;
     }

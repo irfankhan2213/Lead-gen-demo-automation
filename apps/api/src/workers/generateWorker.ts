@@ -27,7 +27,7 @@ const worker = new Worker<GenerateJobData>(
     if (!lead) throw new Error(`Lead not found: ${leadId}`);
 
     // Generate HTML — prefer demo_mode from job data over DB value
-    const effectiveDemoMode = demo_mode ?? lead.demo_mode ?? 'template';
+    const effectiveDemoMode = demo_mode ?? lead.demo_mode ?? 'ai_scratch';
     log.log(`🎨 Building demo site for ${lead.business_name} (mode: ${effectiveDemoMode})...`);
     const leadWithMode = { ...lead, demo_mode: effectiveDemoMode } as typeof lead;
     const html = await buildDemoSite(leadWithMode);

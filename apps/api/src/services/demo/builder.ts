@@ -100,6 +100,18 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
   const primaryColor = brandColors[0] ?? defaultColors.primary;
   const accentColor = brandColors[1] ?? defaultColors.accent;
 
+  // Extract scraped images and logo
+  const scrapedImages = Array.isArray(lead.scraped_images) ? lead.scraped_images : [];
+  const logoImage = lead.logo_url || (scrapedImages.length > 0 ? scrapedImages[0] : '');
+  
+  // Hero image: use SerpAPI hero image if available, fallback to first scraped website image, fallback to default Unsplash
+  const heroImage = lead.hero_image_url || (scrapedImages.length > 0 ? scrapedImages[0] : 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600');
+  
+  // Content images: use scraped images or fallback to high-quality related Unsplash images
+  const img1 = scrapedImages[1] || scrapedImages[0] || 'https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&q=80&w=600';
+  const img2 = scrapedImages[2] || scrapedImages[0] || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600';
+  const img3 = scrapedImages[3] || scrapedImages[0] || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=600';
+
   // Generate AI copy
   let copy: Record<string, string> = {};
   try {
@@ -157,7 +169,11 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
     '{{YEAR}}':                  String(new Date().getFullYear()),
     '{{GOOGLE_MAPS_EMBED}}':     mapsEmbed,
     '{{FROM_EMAIL}}':            process.env.FROM_EMAIL ?? 'hello@evolveexpert.agency',
-    '{{HERO_IMAGE_URL}}':        lead.hero_image_url ?? 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600',
+    '{{HERO_IMAGE_URL}}':        heroImage,
+    '{{LOGO_URL}}':              logoImage,
+    '{{IMAGE_1}}':               img1,
+    '{{IMAGE_2}}':               img2,
+    '{{IMAGE_3}}':               img3,
   };
 
   // Replace all tokens in the HTML

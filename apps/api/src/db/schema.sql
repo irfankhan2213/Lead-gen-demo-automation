@@ -95,6 +95,8 @@ CREATE TABLE IF NOT EXISTS leads (
   demo_deployed_at TIMESTAMPTZ,
   vercel_deployment_id VARCHAR(255),
   hero_image_url TEXT,
+  logo_url TEXT,
+  scraped_images JSONB,
 
   -- Outreach
   outreach_status VARCHAR(50) NOT NULL DEFAULT 'pending',

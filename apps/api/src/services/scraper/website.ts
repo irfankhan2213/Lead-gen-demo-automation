@@ -294,6 +294,46 @@ export async function scrapeBusinessWebsite(url?: string, sharedContext?: Browse
     const finalEmail = contactEmail ?? allEmails[0];
     const finalPhone = contactPhone ?? foundPhone;
 
+    // ─── Extract Images ────────────────────────────────────────────────────────
+    const scrapedImages: string[] = [];
+    let logoUrl: string | undefined;
+
+    $('img').each((_, el) => {
+      const src = $(el).attr('src');
+      if (!src) return;
+
+      try {
+        const absoluteUrl = new URL(src, normalizedUrl).href;
+        if (absoluteUrl.startsWith('data:')) return;
+        if (absoluteUrl.includes('tracker') || absoluteUrl.includes('pixel') || absoluteUrl.includes('analytics') || absoluteUrl.includes('doubleclick') || absoluteUrl.includes('facebook.com/tr')) return;
+        if (/\.(svg|gif)$/i.test(absoluteUrl)) return;
+
+        // Simple duplicate check
+        if (scrapedImages.includes(absoluteUrl)) return;
+
+        // Classify logos
+        if (absoluteUrl.toLowerCase().includes('logo') && !logoUrl) {
+          logoUrl = absoluteUrl;
+        } else {
+          scrapedImages.push(absoluteUrl);
+        }
+      } catch {}
+    });
+
+    // Also extract background-image from styles
+    $('[style*="background-image"]').each((_, el) => {
+      const style = $(el).attr('style') ?? '';
+      const match = style.match(/url\(['"]?([^'")]+)['"]?\)/);
+      if (match?.[1]) {
+        try {
+          const absoluteUrl = new URL(match[1], normalizedUrl).href;
+          if (!scrapedImages.includes(absoluteUrl) && !absoluteUrl.startsWith('data:')) {
+            scrapedImages.push(absoluteUrl);
+          }
+        } catch {}
+      }
+    });
+
     const result: WebsiteScrapedData = {
       brand_colors: filteredColors.slice(0, 5),
       brand_fonts: fonts.slice(0, 3),
@@ -305,6 +345,8 @@ export async function scrapeBusinessWebsite(url?: string, sharedContext?: Browse
       meta_description: metaDesc || undefined,
       email: finalEmail,
       phone: finalPhone,
+      logo_url: logoUrl,
+      images: scrapedImages.slice(0, 12),
     };
 
     logger.info(`Website scraped: ${normalizedUrl}`, {

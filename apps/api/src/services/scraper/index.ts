@@ -181,7 +181,7 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         google_rating: business.google_rating,
         google_review_count: business.google_review_count,
         hero_image_url: business.hero_image_url,
-        demo_mode: input.demo_mode ?? 'template',
+        demo_mode: input.demo_mode ?? 'ai_scratch',
         // From website scraper
         brand_colors: websiteData.brand_colors,
         brand_fonts: websiteData.brand_fonts,
@@ -190,6 +190,8 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         services: websiteData.services,
         menu_or_pricing: websiteData.menu_or_pricing,
         social_links: websiteData.social_links,
+        logo_url: websiteData.logo_url,
+        scraped_images: websiteData.images,
         // From other scrapers
         reddit_mentions: redditData,
         yelp_reviews_summary: yelpData || undefined,
@@ -221,7 +223,7 @@ export async function scrapeFullBusinessProfile(input: ScrapeInput): Promise<voi
         await generateQueue.add('generate-demo' as any, {
           jobId: genJobId,
           leadId: lead.id,
-          demo_mode: input.demo_mode ?? 'template',
+          demo_mode: input.demo_mode ?? 'ai_scratch',
         });
         log.log(`📋 Queued for demo generation (score: ${analysis.opportunity_score}/10)`);
       } catch (aiErr) {

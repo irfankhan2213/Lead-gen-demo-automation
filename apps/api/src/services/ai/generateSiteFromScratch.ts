@@ -21,7 +21,14 @@ Services: ${(lead.services || []).join(', ')}
 Brand Colors: ${(lead.brand_colors || []).join(', ')}
 Phone: ${lead.phone || ''}
 Address: ${lead.address || ''}
-Hero Image URL: ${lead.hero_image_url || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
+Logo URL: ${lead.logo_url || ''}
+Scraped Website Images: ${(lead.scraped_images || []).join(', ')}
+Hero Image URL: ${lead.hero_image_url || (lead.scraped_images && lead.scraped_images[0]) || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
+
+IMAGE RULES:
+1. If a "Logo URL" is provided above, you MUST use it as the '<img>' src for the navigation bar and footer logo to make it authentic (with appropriate height constraint like 'h-10' or 'h-12').
+2. If "Scraped Website Images" are provided above, you MUST prioritize using these actual image URLs for the hero background, service/product cards, testimonial avatars, and gallery layout to display the business's real photos. Do not use generic Unsplash URLs if these are available!
+3. If no "Scraped Website Images" are available or if you need additional photos, use niche-specific, high-quality Unsplash image URLs.
 
 DESIGN SYSTEM INSTRUCTIONS (${designStyle.toUpperCase()} STYLE):
 ${styleRules}

@@ -61,7 +61,7 @@ function NewCampaignModal({
   const [niche, setNiche] = useState('');
   const [city, setCity] = useState('');
   const [limit, setLimit] = useState<string>('20');
-  const [demoMode, setDemoMode] = useState<'template' | 'ai_scratch'>('template');
+  const [demoMode, setDemoMode] = useState<'template' | 'ai_scratch'>('ai_scratch');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 

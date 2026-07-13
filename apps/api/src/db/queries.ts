@@ -89,14 +89,14 @@ export async function createLead(data: LeadData): Promise<Lead> {
       brand_colors, brand_fonts, tagline, about_text, services,
       menu_or_pricing, social_links, reddit_mentions, yelp_reviews_summary,
       instagram_bio, instagram_post_themes, demo_status, outreach_status,
-      hero_image_url, demo_mode
+      hero_image_url, demo_mode, logo_url, scraped_images
     ) VALUES (
       $1, $2, $3, $4, $5, $6,
       $7, $8, $9, $10, $11, $12,
       $13, $14, $15, $16, $17,
       $18, $19, $20, $21,
       $22, $23, 'none', 'pending',
-      $24, $25
+      $24, $25, $26, $27
     ) ON CONFLICT (business_name, city) DO NOTHING RETURNING *`,
     [
       data.campaign_id ?? null,
@@ -123,7 +123,9 @@ export async function createLead(data: LeadData): Promise<Lead> {
       data.instagram_bio ?? null,
       data.instagram_post_themes ?? null,
       data.hero_image_url ?? null,
-      data.demo_mode ?? 'template',
+      data.demo_mode ?? 'ai_scratch',
+      data.logo_url ?? null,
+      JSON.stringify(data.scraped_images ?? []),
     ]
   );
   
@@ -360,7 +362,7 @@ export async function createCampaign(data: {
 }): Promise<Campaign> {
   const rows = await query<Campaign>(
     `INSERT INTO campaigns (name, niche, city, demo_mode, job_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [data.name, data.niche, data.city, data.demo_mode ?? 'template', data.job_id]
+    [data.name, data.niche, data.city, data.demo_mode ?? 'ai_scratch', data.job_id]
   );
   return rows[0];
 }

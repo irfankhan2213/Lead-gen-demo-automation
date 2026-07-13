@@ -4,26 +4,25 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import logger from '../../lib/logger.js';
 
-const anthropicKey = process.env.ANTHROPIC_API_KEY;
-const groqKey = process.env.GROQ_API_KEY;
-
-// Detect if Groq key is used (either via GROQ_API_KEY or if ANTHROPIC_API_KEY has 'gsk_' prefix)
-const effectiveGroqKey = groqKey || (anthropicKey?.startsWith('gsk_') ? anthropicKey : undefined);
-const effectiveAnthropicKey = anthropicKey?.startsWith('gsk_') ? undefined : anthropicKey;
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const geminiKey = process.env.GEMINI_API_KEY;
-
 export async function callLLM(prompt: string, maxTokens = 1024, jsonMode = false): Promise<string> {
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const groqKey = process.env.GROQ_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  // Detect if Groq key is used (either via GROQ_API_KEY or if ANTHROPIC_API_KEY has 'gsk_' prefix)
+  const effectiveGroqKey = groqKey || (anthropicKey?.startsWith('gsk_') ? anthropicKey : undefined);
+  const effectiveAnthropicKey = anthropicKey?.startsWith('gsk_') ? undefined : anthropicKey;
+
   // 1. Try Gemini First
   if (geminiKey) {
     logger.info('Calling LLM via Gemini API...');
     try {
       const genAI = new GoogleGenerativeAI(geminiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+      const modelName = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+      const model = genAI.getGenerativeModel({ model: modelName });
       const generationConfig: any = { maxOutputTokens: maxTokens, temperature: 0.2 };
       if (jsonMode) {
         generationConfig.responseMimeType = 'application/json';
