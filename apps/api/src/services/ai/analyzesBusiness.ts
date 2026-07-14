@@ -110,9 +110,14 @@ CRITICAL JSON FORMATTING RULES:
     const analysis = JSON.parse(repairedJson) as AIAnalysis;
 
     // Validate required fields
-    if (typeof analysis.opportunity_score !== 'number') {
+    let score = analysis.opportunity_score;
+    if (typeof score === 'string') {
+      score = parseInt(score, 10);
+    }
+    if (typeof score !== 'number' || isNaN(score)) {
       throw new Error('Invalid AI response: missing opportunity_score');
     }
+    analysis.opportunity_score = score;
 
     // Default design language if invalid
     const validLanguages = ['luxury', 'swiss', 'flat', 'material', 'claymorphism', 'neumorphism', 'industrial', 'corporate', 'botanical'];
