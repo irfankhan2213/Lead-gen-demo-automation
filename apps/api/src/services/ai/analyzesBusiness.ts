@@ -107,23 +107,48 @@ CRITICAL JSON FORMATTING RULES:
     
     // Repair broken JSON emitted by LLM (unescaped quotes, newlines, etc.)
     const repairedJson = jsonrepair(jsonStr);
-    const analysis = JSON.parse(repairedJson) as AIAnalysis;
+    const rawAnalysis = JSON.parse(repairedJson);
 
-    // Validate required fields
-    let score = analysis.opportunity_score;
-    if (typeof score === 'string') {
-      score = parseInt(score, 10);
+    // Defensive parsing: Normalize camelCase keys to snake_case
+    const brand_dna = rawAnalysis.brand_dna || rawAnalysis.brandDna || '';
+    const primary_colors = rawAnalysis.primary_colors || rawAnalysis.primaryColors || [];
+    const tone = rawAnalysis.tone || 'professional';
+    const design_language = rawAnalysis.design_language || rawAnalysis.designLanguage || 'corporate';
+    const pain_points = rawAnalysis.pain_points || rawAnalysis.painPoints || [];
+    
+    let rawScore = rawAnalysis.opportunity_score ?? rawAnalysis.opportunityScore ?? rawAnalysis.score;
+    if (typeof rawScore === 'string') {
+      rawScore = parseInt(rawScore, 10);
     }
-    if (typeof score !== 'number' || isNaN(score)) {
-      throw new Error('Invalid AI response: missing opportunity_score');
+    if (typeof rawScore !== 'number' || isNaN(rawScore)) {
+      throw new Error(`Invalid AI response: missing opportunity_score (raw payload: ${JSON.stringify(rawAnalysis)})`);
     }
-    analysis.opportunity_score = score;
+
+    const opportunity_reason = rawAnalysis.opportunity_reason || rawAnalysis.opportunityReason || '';
+    const recommended_template = rawAnalysis.recommended_template || rawAnalysis.recommendedTemplate || 'generic';
+    const hero_headline = rawAnalysis.hero_headline || rawAnalysis.heroHeadline || '';
+    const hero_subline = rawAnalysis.hero_subline || rawAnalysis.heroSubline || '';
+    const cta_text = rawAnalysis.cta_text || rawAnalysis.ctaText || 'Get Started';
+    const estimated_revenue_potential = rawAnalysis.estimated_revenue_potential || rawAnalysis.estimatedRevenuePotential || 'Medium';
 
     // Default design language if invalid
     const validLanguages = ['luxury', 'swiss', 'flat', 'material', 'claymorphism', 'neumorphism', 'industrial', 'corporate', 'botanical'];
-    if (!analysis.design_language || !validLanguages.includes(analysis.design_language)) {
-      analysis.design_language = 'corporate';
-    }
+    const finalDesignLanguage = validLanguages.includes(design_language) ? design_language : 'corporate';
+
+    const analysis: AIAnalysis = {
+      brand_dna,
+      primary_colors,
+      tone,
+      design_language: finalDesignLanguage as any,
+      pain_points,
+      opportunity_score: rawScore,
+      opportunity_reason,
+      recommended_template,
+      hero_headline,
+      hero_subline,
+      cta_text,
+      estimated_revenue_potential,
+    };
 
     logger.info(`AI analysis complete for ${businessData.business_name}`, {
       score: analysis.opportunity_score,
