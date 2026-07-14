@@ -3,8 +3,5 @@
   "version": "1.0.0",
   "private": true,
   "main": "./types.ts",
-  "types": "./types.ts",
-  "scripts": {
-    "build": "echo 'No build needed'"
-  }
+  "types": "./types.ts"
 }

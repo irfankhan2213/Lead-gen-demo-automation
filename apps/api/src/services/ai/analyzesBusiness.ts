@@ -25,53 +25,81 @@ export async function analyzesBusiness(businessData: Partial<LeadData>): Promise
     business_name: businessData.business_name,
     niche: businessData.niche,
     city: businessData.city,
+    website_url: businessData.website_url,
     google_rating: businessData.google_rating,
     google_review_count: businessData.google_review_count,
+    address: businessData.address,
+    phone: businessData.phone,
     tagline: businessData.tagline,
-    about_text: businessData.about_text?.slice(0, 250),
-    services: businessData.services?.slice(0, 6),
+    about_text: businessData.about_text?.slice(0, 500),
+    services: businessData.services?.slice(0, 8),
+    brand_colors: businessData.brand_colors?.slice(0, 5),
+    brand_fonts: businessData.brand_fonts,
+    social_links: businessData.social_links,
+    reddit_mentions: businessData.reddit_mentions?.slice(0, 3).map(m => ({
+      subreddit: m.subreddit,
+      sentiment: m.sentiment,
+      text: m.text.slice(0, 150),
+    })),
+    yelp_reviews_summary: businessData.yelp_reviews_summary?.slice(0, 300),
+    instagram_bio: businessData.instagram_bio,
   };
 
-  const prompt = `Analyze this business for a web design outreach lead:
+  const prompt = `You are a B2B sales evaluator and digital strategist analyzing a local business for outreach purposes.
+A digital agency wants to build this business a free demo website as a cold outreach hook to eventually sell them high-ticket SEO or web design services.
+
+BUSINESS DATA:
 ${JSON.stringify(dataForPrompt, null, 2)}
 
-Return ONLY valid JSON with exactly this structure:
+Analyze this business and return ONLY valid JSON with exactly this structure — no markdown, no explanation:
 {
-  "brand_dna": "2 sentence summary of identity",
+  "brand_dna": "2-3 sentence brand summary capturing their vibe, audience, and identity",
   "primary_colors": ["#hex1", "#hex2"],
   "tone": "professional",
   "design_language": "corporate",
-  "pain_points": ["weakness 1", "weakness 2", "weakness 3"],
+  "pain_points": ["specific weakness 1", "specific weakness 2", "specific weakness 3"],
   "opportunity_score": 8,
-  "opportunity_reason": "why they need a website",
-  "recommended_template": "clinic",
-  "hero_headline": "headline for demo site",
-  "hero_subline": "subline for demo site",
-  "cta_text": "CTA button text",
+  "opportunity_reason": "one sentence explaining the score — why do they need a better website and are they a profitable lead?",
+  "recommended_template": "restaurant",
+  "hero_headline": "a powerful, specific headline for their demo site",
+  "hero_subline": "supporting line under headline, specific to their business",
+  "cta_text": "call to action button text specific to their business",
   "estimated_revenue_potential": "Medium"
 }
 
-Constraints:
-- TONE: professional | playful | bold | warm | luxury | minimal
-- RECOMMENDED_TEMPLATE: restaurant | clinic | gym | salon | generic
-- ESTIMATED_REVENUE_POTENTIAL: Low | Medium | High
-- DESIGN_LANGUAGE: luxury | swiss | flat | material | claymorphism | neumorphism | industrial | corporate | botanical
+SCORING GUIDE for opportunity_score (1–10):
+- 1–2: Fake/Spam business, extremely low budget, or no clear services — SKIP
+- 3–4: Business has a great modern website already, or very low LTV — SKIP
+- 5–6: Website exists but has issues, medium LTV — manual review
+- 7–10: High LTV (e.g. MedSpa, Lawyers, High-End Services), poor/no website, clearly established business — AUTO-GENERATE DEMO
 
-Design Style Guide:
-- luxury: premium, serif headings, Vogue style
-- swiss: typographic grid, bold sans-serif, clinical/tech
-- flat: simple blocks, no shadows, consumer services
-- material: soft curves, pill buttons, B2C services
-- claymorphism: inflatable shapes, creative
-- neumorphism: soft shadows, minimalist
-- industrial: mechanical, safety-orange, auto/repair/logistics
-- corporate: navy/gold trust, serif (lawyers, real estate)
-- botanical: terracotta/sage, organic (spas, florists)
+TONE must be one of: professional | playful | bold | warm | luxury | minimal
+RECOMMENDED_TEMPLATE must be one of: restaurant | clinic | gym | salon | generic
+ESTIMATED_REVENUE_POTENTIAL must be one of: Low | Medium | High
+DESIGN_LANGUAGE must be one of: luxury | swiss | flat | material | claymorphism | neumorphism | industrial | corporate | botanical
 
-Ensure JSON is valid. Escape newlines and quotes.`;
+DESIGN_LANGUAGE SELECTION GUIDE:
+- 'luxury': Premium/editorial, Vogue-style, generous white space (High-ticket enterprise SaaS, executive consultancies, high-end wellness, architecture).
+- 'swiss': Asymmetric, objective typographic grid, bold sans-serif, gridlines (Developer tools, technical infrastructure SaaS, clinical/scientific software).
+- 'flat': Simple 2D geometric blocks, solid colors, zero shadows (Modern B2B SaaS startups, local consumer services, mobile apps).
+- 'material': Soft curves, pill-shaped actions, tactile (Gyms, beauty salons, general B2C services).
+- 'claymorphism': Inflatable pastel shapes, child-like vinyl toys (Children nurseries, creative B2C studios, toy brands).
+- 'neumorphism': Opposing soft shadows, monochromatic cool grey (Design tools, minimalist developer portfolios, creative agencies).
+- 'industrial': ABS plastic, mechanical details, safety-orange (Auto repair, heavy machinery, logistics, hardware manufacturing).
+- 'corporate': Classic navy/gold trust, serif typography (Lawyers, accountants, insurance, real estate agencies, financial services).
+- 'botanical': Natural terracotta/sage palettes, organic serifs, paper grain (Florists, organic spas, natural foods, eco-brands).
+
+Be specific with the headline and CTA — reference their actual business name, location, and niche.
+CRITICAL: If the business looks like spam, a residential home, or has zero digital footprint indicating they are a real established business, score them very low (1-3) and set revenue potential to Low.
+If they are a high-ticket business (e.g. they sell expensive services/products), set revenue potential to High.
+
+CRITICAL JSON FORMATTING RULES:
+- Return ONLY valid JSON, nothing else. No markdown blocks.
+- Escape all newlines in the text using \\n. Do not use literal newlines inside the JSON string.
+- Escape any quotes using \\".`;
 
   try {
-    const text = await callLLM(prompt, 4000, true);
+    const text = await callLLM(prompt, 1024, true);
     console.log('RAW LLM RESPONSE:', text);
 
     // Parse JSON — strip any markdown code fences if present
@@ -79,48 +107,23 @@ Ensure JSON is valid. Escape newlines and quotes.`;
     
     // Repair broken JSON emitted by LLM (unescaped quotes, newlines, etc.)
     const repairedJson = jsonrepair(jsonStr);
-    const rawAnalysis = JSON.parse(repairedJson);
+    const analysis = JSON.parse(repairedJson) as AIAnalysis;
 
-    // Defensive parsing: Normalize camelCase keys to snake_case
-    const brand_dna = rawAnalysis.brand_dna || rawAnalysis.brandDna || '';
-    const primary_colors = rawAnalysis.primary_colors || rawAnalysis.primaryColors || [];
-    const tone = rawAnalysis.tone || 'professional';
-    const design_language = rawAnalysis.design_language || rawAnalysis.designLanguage || 'corporate';
-    const pain_points = rawAnalysis.pain_points || rawAnalysis.painPoints || [];
-    
-    let rawScore = rawAnalysis.opportunity_score ?? rawAnalysis.opportunityScore ?? rawAnalysis.score;
-    if (typeof rawScore === 'string') {
-      rawScore = parseInt(rawScore, 10);
+    // Validate required fields
+    let score = analysis.opportunity_score;
+    if (typeof score === 'string') {
+      score = parseInt(score, 10);
     }
-    if (typeof rawScore !== 'number' || isNaN(rawScore)) {
-      throw new Error(`Invalid AI response: missing opportunity_score (raw payload: ${JSON.stringify(rawAnalysis)})`);
+    if (typeof score !== 'number' || isNaN(score)) {
+      throw new Error('Invalid AI response: missing opportunity_score');
     }
-
-    const opportunity_reason = rawAnalysis.opportunity_reason || rawAnalysis.opportunityReason || '';
-    const recommended_template = rawAnalysis.recommended_template || rawAnalysis.recommendedTemplate || 'generic';
-    const hero_headline = rawAnalysis.hero_headline || rawAnalysis.heroHeadline || '';
-    const hero_subline = rawAnalysis.hero_subline || rawAnalysis.heroSubline || '';
-    const cta_text = rawAnalysis.cta_text || rawAnalysis.ctaText || 'Get Started';
-    const estimated_revenue_potential = rawAnalysis.estimated_revenue_potential || rawAnalysis.estimatedRevenuePotential || 'Medium';
+    analysis.opportunity_score = score;
 
     // Default design language if invalid
     const validLanguages = ['luxury', 'swiss', 'flat', 'material', 'claymorphism', 'neumorphism', 'industrial', 'corporate', 'botanical'];
-    const finalDesignLanguage = validLanguages.includes(design_language) ? design_language : 'corporate';
-
-    const analysis: AIAnalysis = {
-      brand_dna,
-      primary_colors,
-      tone,
-      design_language: finalDesignLanguage as any,
-      pain_points,
-      opportunity_score: rawScore,
-      opportunity_reason,
-      recommended_template,
-      hero_headline,
-      hero_subline,
-      cta_text,
-      estimated_revenue_potential,
-    };
+    if (!analysis.design_language || !validLanguages.includes(analysis.design_language)) {
+      analysis.design_language = 'corporate';
+    }
 
     logger.info(`AI analysis complete for ${businessData.business_name}`, {
       score: analysis.opportunity_score,
