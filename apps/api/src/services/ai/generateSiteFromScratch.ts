@@ -7,6 +7,10 @@ export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
   const designStyle = lead.design_language || 'corporate';
   const styleRules = designLanguages[designStyle] || designLanguages['corporate'];
 
+  const cleanAbout = (lead.about_text || '').slice(0, 400);
+  const cleanServices = (lead.services || []).slice(0, 6);
+  const cleanImages = (lead.scraped_images || []).slice(0, 5);
+
   const prompt = `You are a world-class Webflow developer and UI/UX designer.
 Your task is to write the COMPLETE, single-file HTML code for a modern, hyper-premium landing page for a local business.
 You must use Tailwind CSS v3 via CDN (<script src="https://cdn.tailwindcss.com"></script>). Do not use any external CSS files or older Tailwind v2 CDN.
@@ -16,14 +20,14 @@ Name: ${lead.business_name}
 City: ${lead.city}
 Niche: ${lead.niche}
 Tagline: ${lead.hero_headline || lead.tagline || ''}
-About: ${lead.about_text || ''}
-Services: ${(lead.services || []).join(', ')}
+About: ${cleanAbout}
+Services: ${cleanServices.join(', ')}
 Brand Colors: ${(lead.brand_colors || []).join(', ')}
 Phone: ${lead.phone || ''}
 Address: ${lead.address || ''}
 Logo URL: ${lead.logo_url || ''}
-Scraped Website Images: ${(lead.scraped_images || []).join(', ')}
-Hero Image URL: ${lead.hero_image_url || (lead.scraped_images && lead.scraped_images[0]) || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
+Scraped Website Images: ${cleanImages.join(', ')}
+Hero Image URL: ${lead.hero_image_url || cleanImages[0] || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
 
 IMAGE RULES:
 1. If a "Logo URL" is provided above, you MUST use it as the '<img>' src for the navigation bar and footer logo to make it authentic (with appropriate height constraint like 'h-10' or 'h-12').
@@ -60,7 +64,7 @@ OUTPUT CONSTRAINTS:
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 
   try {
-    const text = await callLLM(prompt, 5000, false);
+    const text = await callLLM(prompt, 3000, false);
     // Strip markdown code fences if Claude includes them despite instructions
     let html = text.replace(/```html?\n?/ig, '').replace(/```/g, '').trim();
     
