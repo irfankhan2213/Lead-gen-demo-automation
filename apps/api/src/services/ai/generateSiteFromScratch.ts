@@ -30,6 +30,12 @@ IMAGE RULES:
 2. If "Scraped Website Images" are provided above, you MUST prioritize using these actual image URLs for the hero background, service/product cards, testimonial avatars, and gallery layout to display the business's real photos. Do not use generic Unsplash URLs if these are available!
 3. If no "Scraped Website Images" are available or if you need additional photos, use niche-specific, high-quality Unsplash image URLs.
 
+HTML CODING CONSTRAINTS (CRITICAL):
+1. **NO REACT OR JSX:** Do NOT use React, Vue, JSX, or ES6 template string evaluations in the HTML. Do NOT write javascript mapping loops (e.g. 'services.map(...)') or use React braces '{service}' or '{service_name}'.
+2. **WRITE FULL STATIC HTML:** Write out the full HTML structure for every element manually. For the Services Section, write out exactly 3-4 separate, individual service card HTML blocks (each with its own icon, unique title, and description based on the business's services: ${(lead.services || []).join(', ')}).
+3. **USE ACTUAL CONTENT:** Replace all placeholders with actual text. Do NOT leave things like '{service_title}', '{phone}', or '{address}' in the output. If data is missing, write a realistic, niche-appropriate fallback value.
+4. **VALID IMG SRCs:** Ensure all image 'src' attributes contain valid, absolute URLs. Do NOT write placeholder values like 'src="{logo_url}"' or 'src="hero.jpg"'. Use the exact URLs provided in the business data or high-quality Unsplash links.
+
 DESIGN SYSTEM INSTRUCTIONS (${designStyle.toUpperCase()} STYLE):
 ${styleRules}
 
