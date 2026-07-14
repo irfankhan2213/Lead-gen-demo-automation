@@ -99,7 +99,7 @@ CRITICAL JSON FORMATTING RULES:
 - Escape any quotes using \\".`;
 
   try {
-    const text = await callLLM(prompt, 1024, true);
+    const text = await callLLM(prompt, 1024, false);
     console.log('RAW LLM RESPONSE:', text);
 
     // Parse JSON — strip any markdown code fences if present
