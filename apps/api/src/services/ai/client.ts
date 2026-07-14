@@ -11,11 +11,14 @@ export async function callLLM(
   prompt: string,
   maxTokens = 1024,
   jsonMode = false,
-  preferredProvider?: 'gemini' | 'groq' | 'anthropic'
+  preferredProvider?: 'gemini' | 'groq' | 'anthropic' | 'openai'
 ): Promise<string> {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
   const geminiKey = process.env.GEMINI_API_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const openaiBaseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+  const openaiModel = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
   // Detect if Groq key is used (either via GROQ_API_KEY or if ANTHROPIC_API_KEY has 'gsk_' prefix)
   const effectiveGroqKey = groqKey || (anthropicKey?.startsWith('gsk_') ? anthropicKey : undefined);
@@ -27,11 +30,13 @@ export async function callLLM(
   // Create an ordered list of providers to try
   const order: string[] = [];
   if (primaryProvider === 'groq') {
-    order.push('groq', 'gemini', 'anthropic');
+    order.push('groq', 'gemini', 'anthropic', 'openai');
   } else if (primaryProvider === 'anthropic') {
-    order.push('anthropic', 'gemini', 'groq');
+    order.push('anthropic', 'gemini', 'groq', 'openai');
+  } else if (primaryProvider === 'openai') {
+    order.push('openai', 'gemini', 'groq', 'anthropic');
   } else {
-    order.push('gemini', 'groq', 'anthropic');
+    order.push('gemini', 'groq', 'anthropic', 'openai');
   }
 
   const uniqueOrder = Array.from(new Set(order));
@@ -129,6 +134,48 @@ export async function callLLM(
         if (text) return text;
       } catch (err) {
         logger.error('Anthropic LLM call failed...', { error: (err as Error).message });
+      }
+    }
+
+    // 4. Try OpenAI-Compatible Custom Provider (e.g. AICredits, OpenRouter)
+    if (provider === 'openai' && openaiKey) {
+      logger.info(`Calling LLM via OpenAI-Compatible API (model: ${openaiModel})...`);
+      try {
+        const bodyPayload: any = {
+          model: openaiModel,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+          temperature: 0.2,
+        };
+        if (jsonMode) {
+          bodyPayload.response_format = { type: "json_object" };
+        }
+
+        const response = await fetch(`${openaiBaseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openaiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(bodyPayload),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`OpenAI-compatible service returned error: ${response.status} ${errorText}`);
+        }
+
+        const data = await response.json() as {
+          choices?: Array<{ message?: { content?: string } }>;
+        };
+        const content = data.choices?.[0]?.message?.content;
+        if (!content) {
+          throw new Error('OpenAI-compatible response did not contain content choices');
+        }
+
+        return content;
+      } catch (err) {
+        logger.error(`OpenAI-compatible LLM call failed for model ${openaiModel}`, { error: (err as Error).message });
       }
     }
   }
