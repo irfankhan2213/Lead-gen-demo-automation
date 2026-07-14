@@ -145,7 +145,6 @@ export async function callLLM(
           model: openaiModel,
           messages: [{ role: 'user', content: prompt }],
           max_tokens: maxTokens,
-          max_completion_tokens: maxTokens,
           temperature: 0.2,
         };
         if (jsonMode) {
