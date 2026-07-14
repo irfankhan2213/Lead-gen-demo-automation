@@ -94,9 +94,23 @@ app.use(
 );
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
-app.get('/health', (_req, res) => {
+import { pool } from './db/queries.js';
+
+// ─── Health Check ─────────────────────────────────────────────────────────────
+app.get('/health', async (_req, res) => {
+  let dbStatus = 'disconnected';
+  try {
+    const client = await pool.connect();
+    await client.query('SELECT 1');
+    client.release();
+    dbStatus = 'connected';
+  } catch (err) {
+    dbStatus = `error: ${(err as Error).message}`;
+  }
+
   res.json({
     status: 'ok',
+    database: dbStatus,
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     version: '1.0.0',
