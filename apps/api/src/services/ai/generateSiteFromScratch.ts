@@ -35,6 +35,7 @@ HTML CODING CONSTRAINTS (CRITICAL):
 2. **WRITE FULL STATIC HTML:** Write out the full HTML structure for every element manually. For the Services Section, write out exactly 3-4 separate, individual service card HTML blocks (each with its own icon, unique title, and description based on the business's services: ${(lead.services || []).join(', ')}).
 3. **USE ACTUAL CONTENT:** Replace all placeholders with actual text. Do NOT leave things like '{service_title}', '{phone}', or '{address}' in the output. If data is missing, write a realistic, niche-appropriate fallback value.
 4. **VALID IMG SRCs:** Ensure all image 'src' attributes contain valid, absolute URLs. Do NOT write placeholder values like 'src="{logo_url}"' or 'src="hero.jpg"'. Use the exact URLs provided in the business data or high-quality Unsplash links.
+5. **LENGTH AND DETAIL (CRITICAL):** The landing page MUST be a fully fleshed-out, comprehensive, long-form landing page. The output HTML MUST contain at least 250 to 450 lines of code. Write deep marketing copywriting, detailed descriptions for each section/card, and multiple interactive hover styles. DO NOT abbreviate, truncate, or leave '<!-- Rest of content -->' comments in the HTML.
 
 DESIGN SYSTEM INSTRUCTIONS (${designStyle.toUpperCase()} STYLE):
 ${styleRules}
@@ -59,7 +60,7 @@ OUTPUT CONSTRAINTS:
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 
   try {
-    const text = await callLLM(prompt, 5000, false);
+    const text = await callLLM(prompt, 5000, false, 'groq');
     // Strip markdown code fences if Claude includes them despite instructions
     let html = text.replace(/```html?\n?/ig, '').replace(/```/g, '').trim();
     
