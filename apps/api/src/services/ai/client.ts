@@ -151,6 +151,7 @@ export async function callLLM(
           bodyPayload.response_format = { type: "json_object" };
         }
 
+        logger.info('OpenAI-compatible request payload', { payload: JSON.stringify(bodyPayload) });
         const response = await fetch(`${openaiBaseUrl}/chat/completions`, {
           method: 'POST',
           headers: {
@@ -171,6 +172,10 @@ export async function callLLM(
         }
 
         const content = data.choices?.[0]?.message?.content;
+        logger.info('OpenAI-compatible completion finished', { 
+          finishReason: data.choices?.[0]?.finish_reason, 
+          usage: data.usage 
+        });
         if (!content) {
           throw new Error(`OpenAI-compatible response did not contain content choices. Raw response: ${JSON.stringify(data)}`);
         }
