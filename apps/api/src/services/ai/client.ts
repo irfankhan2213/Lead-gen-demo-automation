@@ -42,7 +42,7 @@ export async function callLLM(
       logger.info('Calling LLM via Gemini API...');
       try {
         const genAI = new GoogleGenerativeAI(geminiKey);
-        const modelName = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+        const modelName = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
         const model = genAI.getGenerativeModel({ model: modelName });
         const generationConfig: any = { maxOutputTokens: maxTokens, temperature: 0.2 };
         if (jsonMode) {

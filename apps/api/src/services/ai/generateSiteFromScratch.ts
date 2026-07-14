@@ -60,7 +60,7 @@ OUTPUT CONSTRAINTS:
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 
   try {
-    const text = await callLLM(prompt, 5000, false, 'groq');
+    const text = await callLLM(prompt, 5000, false);
     // Strip markdown code fences if Claude includes them despite instructions
     let html = text.replace(/```html?\n?/ig, '').replace(/```/g, '').trim();
     
