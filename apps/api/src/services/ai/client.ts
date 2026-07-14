@@ -165,12 +165,14 @@ export async function callLLM(
           throw new Error(`OpenAI-compatible service returned error: ${response.status} ${errorText}`);
         }
 
-        const data = await response.json() as {
-          choices?: Array<{ message?: { content?: string } }>;
-        };
+        const data = await response.json() as any;
+        if (data && data.error) {
+          throw new Error(`OpenAI-compatible service returned error payload: ${JSON.stringify(data.error)}`);
+        }
+
         const content = data.choices?.[0]?.message?.content;
         if (!content) {
-          throw new Error('OpenAI-compatible response did not contain content choices');
+          throw new Error(`OpenAI-compatible response did not contain content choices. Raw response: ${JSON.stringify(data)}`);
         }
 
         return content;
