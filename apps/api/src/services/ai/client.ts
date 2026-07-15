@@ -211,7 +211,11 @@ export async function callLLM(
             max_tokens: maxTokens,
             temperature: 0.2,
           };
-          if (jsonMode) bodyPayload.response_format = { type: 'json_object' };
+          // Some gateways (like AICredits) have bugs with response_format for Gemini models that cause them to truncate and return finish_reason: 'length' early.
+          // Since we have robust regex extraction in analyzesBusiness, we can just rely on the prompt for Gemini.
+          if (jsonMode && !openaiModel.includes('gemini')) {
+            bodyPayload.response_format = { type: 'json_object' };
+          }
 
           const response = await withTimeout(
             fetch(`${openaiBaseUrl}/chat/completions`, {
