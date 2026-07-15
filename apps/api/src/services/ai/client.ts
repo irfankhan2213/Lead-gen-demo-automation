@@ -47,7 +47,8 @@ export async function callLLM(
   prompt: string,
   maxTokens = 1024,
   jsonMode = false,
-  preferredProvider?: 'gemini' | 'groq' | 'anthropic' | 'openai'
+  preferredProvider?: 'gemini' | 'groq' | 'anthropic' | 'openai',
+  preferredModel?: string
 ): Promise<string> {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
@@ -55,9 +56,9 @@ export async function callLLM(
   const openaiKey = process.env.OPENAI_API_KEY;
   const openaiBaseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
   // Use namespaced model ID (e.g. google/gemini-3.5-flash for AICredits)
-  const openaiModel = jsonMode
+  const openaiModel = preferredModel || (jsonMode
     ? (process.env.OPENAI_ANALYSIS_MODEL || process.env.OPENAI_MODEL || 'google/gemini-3.5-flash')
-    : (process.env.OPENAI_MODEL || 'google/gemini-3.5-flash');
+    : (process.env.OPENAI_MODEL || 'google/gemini-3.5-flash'));
 
   const effectiveGroqKey = groqKey || (anthropicKey?.startsWith('gsk_') ? anthropicKey : undefined);
   const effectiveAnthropicKey = anthropicKey?.startsWith('gsk_') ? undefined : anthropicKey;
@@ -87,7 +88,7 @@ export async function callLLM(
         logger.info(`Calling LLM via Gemini API (attempt ${attempt + 1})...`);
         try {
           const genAI = new GoogleGenerativeAI(geminiKey);
-          const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
+          const modelName = preferredModel || process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
           const model = genAI.getGenerativeModel({ model: modelName });
           const generationConfig: any = { maxOutputTokens: maxTokens, temperature: 0.2 };
           if (jsonMode) generationConfig.responseMimeType = 'application/json';
@@ -120,7 +121,7 @@ export async function callLLM(
 
     // ── 2. Groq ──────────────────────────────────────────────────────────────
     if (provider === 'groq' && effectiveGroqKey) {
-      const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'gemma2-9b-it'];
+      const groqModels = preferredModel ? [preferredModel] : ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'gemma2-9b-it'];
 
       for (const model of groqModels) {
         for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -177,7 +178,7 @@ export async function callLLM(
           const client = new Anthropic({ apiKey: effectiveAnthropicKey });
           const response = await withTimeout(
             client.messages.create({
-              model: 'claude-3-5-sonnet-20241022',
+              model: preferredModel || 'claude-3-5-sonnet-20241022',
               max_tokens: maxTokens,
               messages: [{ role: 'user', content: prompt }],
             }),
