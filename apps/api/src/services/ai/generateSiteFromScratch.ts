@@ -11,6 +11,9 @@ import logger from '../../lib/logger.js';
 import type { Lead } from '@acquisition-engine/shared';
 import { designLanguages } from './prompts/designLanguages.js';
 
+const GEN_PROVIDER = (process.env.GENERATION_LLM_PROVIDER || 'openai') as any;
+const GEN_MODEL = process.env.OPENAI_GENERATION_MODEL || process.env.OPENAI_MODEL;
+
 export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
   // ── Primary: Chunked strategy ──────────────────────────────────────────────
   try {
@@ -78,7 +81,7 @@ OUTPUT CONSTRAINTS:
 START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
 
   try {
-    const text = await callLLM(prompt, 4096, false);
+    const text = await callLLM(prompt, 4096, false, GEN_PROVIDER, GEN_MODEL);
     return sanitizeHtml(text, lead);
   } catch (err) {
     logger.error('[SiteGen] Single-call fallback also failed', { error: (err as Error).message });

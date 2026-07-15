@@ -13,6 +13,9 @@ import type { LeadData, AIAnalysis } from '@acquisition-engine/shared';
 
 import { jsonrepair } from 'jsonrepair';
 
+const ANALYSIS_PROVIDER = (process.env.ANALYSIS_LLM_PROVIDER || 'openai') as any;
+const ANALYSIS_MODEL = process.env.OPENAI_ANALYSIS_MODEL || process.env.OPENAI_MODEL;
+
 /**
  * Calls Claude to analyze a business's brand and opportunity score.
  *
@@ -99,7 +102,7 @@ CRITICAL JSON FORMATTING RULES:
 - Escape any quotes using \\".`;
 
   try {
-    const text = await callLLM(prompt, 1024, true);
+    const text = await callLLM(prompt, 1024, true, ANALYSIS_PROVIDER, ANALYSIS_MODEL);
     console.log('RAW LLM RESPONSE:', text);
 
     // Parse JSON — reliably extract the JSON object block
