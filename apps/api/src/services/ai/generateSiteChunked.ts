@@ -10,6 +10,7 @@ import { callLLM } from './client.js';
 import logger from '../../lib/logger.js';
 import type { Lead } from '@acquisition-engine/shared';
 import { designLanguages } from './prompts/designLanguages.js';
+import { cleanScrapedImages, getNicheImages } from '../demo/images.js';
 
 // Pause between chunk calls to help with rate limits (1.5 seconds)
 const INTER_CHUNK_DELAY = 1500;
@@ -21,6 +22,15 @@ function sleep(ms: number) {
 // ─── Business context string (shared across all chunks) ───────────────────────
 
 function buildBusinessContext(lead: Lead): string {
+  const cleanedScraped = cleanScrapedImages(lead.scraped_images || []);
+  const nicheStock = getNicheImages(lead.niche || '');
+  
+  // Choose high-quality hero image: use custom scraped photo if it exists, else fall back to niche stock hero
+  const heroImage = lead.hero_image_url || cleanedScraped[0] || nicheStock[0];
+  
+  // Gather other high-res imagery
+  const galleryImages = cleanedScraped.length > 1 ? cleanedScraped.slice(1, 5) : nicheStock.slice(1, 4);
+
   return `
 BUSINESS DATA (use these values, do NOT use placeholder variables):
   Name: ${lead.business_name}
@@ -35,10 +45,16 @@ BUSINESS DATA (use these values, do NOT use placeholder variables):
   Brand Colors: ${(lead.brand_colors || []).join(', ') || '#1A1A2E, #F59E0B'}
   Google Rating: ${lead.google_rating || '4.8'} (${lead.google_review_count || '120'}+ reviews)
   Logo URL: ${lead.logo_url || ''}
-  Hero Image: ${lead.hero_image_url || (lead.scraped_images?.[0]) || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&w=1600&q=80'}
-  Scraped Images: ${(lead.scraped_images || []).slice(0, 4).join(', ')}
+  Hero Image: ${heroImage}
+  Section Gallery Images (Use these for about, services, testimonials, etc.): ${galleryImages.join(', ')}
   CTA Text: ${lead.cta_text || 'Get a Free Quote'}
-  Design Language: ${lead.design_language || 'corporate'}`.trim();
+  Design Language: ${lead.design_language || 'corporate'}
+
+CRITICAL IMAGE SELECTION RULES:
+  - You MUST use the exact URLs provided in "Hero Image" and "Section Gallery Images".
+  - Do NOT invent or make up any image URLs.
+  - Do NOT use tiny images, icons, or social media logos as section photos.
+  - Ensure the hero image is styled with CSS to cover the section (e.g., using Tailwind classes like 'bg-cover bg-center').`.trim();
 }
 
 // ─── Chunk 1: <head> + Navbar + Hero ─────────────────────────────────────────

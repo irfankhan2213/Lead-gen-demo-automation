@@ -29,6 +29,7 @@ import { join } from 'path';
 import logger from '../../lib/logger.js';
 import { generateSiteCopy } from '../ai/generateSite.js';
 import { generateSiteHtmlFromScratch } from '../ai/generateSiteFromScratch.js';
+import { cleanScrapedImages, getNicheImages } from './images.js';
 import type { Lead, TemplateType } from '@acquisition-engine/shared';
 
 const TEMPLATES_DIR = join(__dirname, 'templates');
@@ -100,17 +101,20 @@ export async function buildDemoSite(lead: Lead): Promise<string> {
   const primaryColor = brandColors[0] ?? defaultColors.primary;
   const accentColor = brandColors[1] ?? defaultColors.accent;
 
-  // Extract scraped images and logo
+  // Extract and clean scraped images and logo
   const scrapedImages = Array.isArray(lead.scraped_images) ? lead.scraped_images : [];
-  const logoImage = lead.logo_url || (scrapedImages.length > 0 ? scrapedImages[0] : '');
+  const cleanedScraped = cleanScrapedImages(scrapedImages);
+  const logoImage = lead.logo_url || (cleanedScraped.length > 0 ? cleanedScraped[0] : (scrapedImages[0] || ''));
   
-  // Hero image: use SerpAPI hero image if available, fallback to first scraped website image, fallback to default Unsplash
-  const heroImage = lead.hero_image_url || (scrapedImages.length > 0 ? scrapedImages[0] : 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600');
+  const nicheStock = getNicheImages(lead.niche || '');
   
-  // Content images: use scraped images or fallback to high-quality related Unsplash images
-  const img1 = scrapedImages[1] || scrapedImages[0] || 'https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&q=80&w=600';
-  const img2 = scrapedImages[2] || scrapedImages[0] || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600';
-  const img3 = scrapedImages[3] || scrapedImages[0] || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=600';
+  // Hero image: use SerpAPI hero image if available, fallback to first clean scraped website image, fallback to niche stock hero
+  const heroImage = lead.hero_image_url || cleanedScraped[0] || nicheStock[0];
+  
+  // Content images: use clean scraped images or fallback to niche stock gallery images
+  const img1 = cleanedScraped[1] || cleanedScraped[0] || nicheStock[1];
+  const img2 = cleanedScraped[2] || cleanedScraped[0] || nicheStock[2];
+  const img3 = cleanedScraped[3] || cleanedScraped[0] || nicheStock[3];
 
   // Generate AI copy
   let copy: Record<string, string> = {};
