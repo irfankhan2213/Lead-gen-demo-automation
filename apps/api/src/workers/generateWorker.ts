@@ -32,7 +32,15 @@ const worker = new Worker<GenerateJobData>(
     const leadWithMode = { ...lead, demo_mode: effectiveDemoMode } as typeof lead;
     const html = await buildDemoSite(leadWithMode);
     await updateLeadDemo(leadId, html, 'ready');
-    log.success(`✅ Demo HTML generated (${Math.round(html.length / 1024)}KB)`);
+    const htmlSizeKb = Math.round(html.length / 1024);
+    const lineCount = html.split('\n').length;
+    log.success(`✅ Demo HTML generated (${htmlSizeKb}KB, ${lineCount} lines)`);
+
+    // Quality gate — warn if output is suspiciously small
+    if (html.length < 10_000) {
+      logger.warn(`[GenerateWorker] ⚠️ LOW QUALITY output for lead ${leadId}: only ${htmlSizeKb}KB / ${lineCount} lines — may be truncated`);
+      log.warn(`⚠️ Demo HTML seems small (${htmlSizeKb}KB). If it looks incomplete, try regenerating.`);
+    }
 
     // Deploy to Vercel
     log.log(`🚀 Deploying to Vercel...`);
