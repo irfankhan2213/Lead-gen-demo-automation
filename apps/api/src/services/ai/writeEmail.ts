@@ -61,7 +61,8 @@ BODY:
       512,
       false,
       process.env.EMAIL_PROVIDER as any,
-      process.env.EMAIL_MODEL
+      process.env.EMAIL_MODEL,
+      true
     );
     
     // Parse the text output manually to avoid JSON escaping issues

@@ -104,7 +104,8 @@ CRITICAL JSON FORMATTING RULES:
       1024,
       true,
       process.env.ANALYSIS_PROVIDER as any,
-      process.env.ANALYSIS_MODEL
+      process.env.ANALYSIS_MODEL,
+      true
     );
     console.log('RAW LLM RESPONSE:', text);
 

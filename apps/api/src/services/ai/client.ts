@@ -48,7 +48,8 @@ export async function callLLM(
   maxTokens = 1024,
   jsonMode = false,
   preferredProvider?: 'gemini' | 'groq' | 'anthropic' | 'openai',
-  modelOverride?: string
+  modelOverride?: string,
+  disableOpenAI = false
 ): Promise<string> {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
@@ -64,17 +65,29 @@ export async function callLLM(
   const effectiveAnthropicKey = anthropicKey?.startsWith('gsk_') ? undefined : anthropicKey;
 
   const defaultProvider = process.env.PREFERRED_LLM_PROVIDER || 'openai';
-  const primaryProvider = preferredProvider || defaultProvider;
+  // If OpenAI is disabled, we cannot use it as primary provider
+  const primaryProvider = (disableOpenAI && (preferredProvider || defaultProvider) === 'openai')
+    ? 'gemini' // Fallback primary to gemini if openai is disabled
+    : (preferredProvider || defaultProvider);
 
-  const order: string[] = [];
+  let order: string[] = [];
   if (primaryProvider === 'groq') {
-    order.push('groq', 'openai', 'gemini', 'anthropic');
+    order = ['groq', 'gemini', 'anthropic'];
   } else if (primaryProvider === 'anthropic') {
-    order.push('anthropic', 'openai', 'gemini', 'groq');
-  } else if (primaryProvider === 'openai') {
-    order.push('openai', 'groq', 'gemini', 'anthropic');
+    order = ['anthropic', 'gemini', 'groq'];
+  } else if (primaryProvider === 'gemini') {
+    order = ['gemini', 'groq', 'anthropic'];
   } else {
-    order.push('gemini', 'openai', 'groq', 'anthropic');
+    order = ['gemini', 'groq', 'anthropic'];
+  }
+
+  // Only append OpenAI if not explicitly disabled
+  if (!disableOpenAI) {
+    if (primaryProvider === 'openai') {
+      order.unshift('openai');
+    } else {
+      order.push('openai');
+    }
   }
 
   const MAX_RETRIES = 3;
