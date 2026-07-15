@@ -5,7 +5,7 @@ import { Search, Filter, RefreshCw } from 'lucide-react';
 import LeadCard from '@/components/LeadCard';
 import type { Lead } from '@acquisition-engine/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = ''; // Use relative path to trigger Next.js rewrites (bypasses ISP blocks)
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);

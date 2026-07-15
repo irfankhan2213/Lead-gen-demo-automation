@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Send, RefreshCw, Zap, Mail, CheckCircle, X } from 'lucide-react';
 import type { Lead } from '@acquisition-engine/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = ''; // Use relative path to trigger Next.js rewrites (bypasses ISP blocks)
 
 function StatusBadge({ status }: { status: Lead['outreach_status'] }) {
   const cls = `badge badge-${status}`;

@@ -5,7 +5,7 @@ import { Users, Globe, Mail, TrendingUp, Play, X, Square, Loader2 } from 'lucide
 import LiveLog from '@/components/LiveLog';
 import type { DashboardStats } from '@acquisition-engine/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = ''; // Use relative path to trigger Next.js rewrites (bypasses ISP blocks)
 
 function StatCard({
   label,

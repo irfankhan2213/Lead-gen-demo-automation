@@ -11,7 +11,7 @@ import DemoPreview from '@/components/DemoPreview';
 import OutreachTimeline from '@/components/OutreachTimeline';
 import type { Lead, OutreachLog } from '@acquisition-engine/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = ''; // Use relative path to trigger Next.js rewrites (bypasses ISP blocks)
 
 function InfoRow({ label, value }: { label: string; value?: string | number | null }) {
   if (!value) return null;

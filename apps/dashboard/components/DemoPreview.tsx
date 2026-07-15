@@ -4,7 +4,7 @@ import { ExternalLink, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import type { Lead } from '@acquisition-engine/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = ''; // Use relative path to trigger Next.js rewrites (bypasses ISP blocks)
 
 /**
  * DemoPreview component — shows an iframe preview of a generated demo site,

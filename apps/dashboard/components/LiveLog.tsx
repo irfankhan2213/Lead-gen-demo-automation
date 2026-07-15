@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Terminal, Wifi, WifiOff, CheckCircle } from 'lucide-react';
 import type { SSEEvent } from '@acquisition-engine/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = ''; // Use relative path to trigger Next.js rewrites (bypasses ISP blocks)
 
 const LEVEL_ICONS: Record<SSEEvent['level'], string> = {
   info: '·',
