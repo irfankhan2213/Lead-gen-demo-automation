@@ -102,8 +102,13 @@ CRITICAL JSON FORMATTING RULES:
     const text = await callLLM(prompt, 1024, true);
     console.log('RAW LLM RESPONSE:', text);
 
-    // Parse JSON — strip any markdown code fences if present
-    let jsonStr = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    // Parse JSON — reliably extract the JSON object block even if wrapped in conversation
+    let jsonStr = text;
+    const match = jsonStr.match(/\{[\s\S]*\}/);
+    if (!match) {
+      throw new Error(`No JSON object found in response: ${text.slice(0, 100)}...`);
+    }
+    jsonStr = match[0];
     
     // Repair broken JSON emitted by LLM (unescaped quotes, newlines, etc.)
     const repairedJson = jsonrepair(jsonStr);
