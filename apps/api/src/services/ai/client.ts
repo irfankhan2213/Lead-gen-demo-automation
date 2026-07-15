@@ -237,7 +237,7 @@ export async function callLLM(
           const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
           const content = data.choices?.[0]?.message?.content;
           if (content) return content;
-          throw new Error('AICredits response missing content choices');
+          throw new Error(`AICredits response missing content choices: ${JSON.stringify(data)}`);
         } catch (err) {
           logger.error(`AICredits call failed (model: ${openaiModel}, attempt ${attempt + 1})`, { error: (err as Error).message });
           if (attempt < MAX_RETRIES - 1) await sleep(2000 * Math.pow(2, attempt));
