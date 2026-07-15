@@ -11,9 +11,6 @@ import logger from '../../lib/logger.js';
 import type { Lead } from '@acquisition-engine/shared';
 import { designLanguages } from './prompts/designLanguages.js';
 
-const GEN_PROVIDER = (process.env.GENERATION_LLM_PROVIDER || 'openai') as any;
-const GEN_MODEL = process.env.OPENAI_GENERATION_MODEL || process.env.OPENAI_MODEL;
-
 // Pause between chunk calls to help with rate limits (1.5 seconds)
 const INTER_CHUNK_DELAY = 1500;
 
@@ -64,7 +61,7 @@ OUTPUT INSTRUCTIONS:
   5. TRUST BAR: A row of stats directly below the hero: Google Rating (${lead.google_rating || '4.8'} ⭐), ${lead.google_review_count || '120'}+ Reviews, Years in Business, etc.
 - Stop output AFTER the trust bar's closing </section> tag. Do NOT include About, Services, or Footer.`;
 
-  const html = await callLLM(prompt, 2000, false, GEN_PROVIDER, GEN_MODEL);
+  const html = await callLLM(prompt, 2000, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
   return html;
 }
 
@@ -89,7 +86,7 @@ OUTPUT INSTRUCTIONS:
 
 - Stop after the closing </section> of the Services grid.`;
 
-  const html = await callLLM(prompt, 2000, false, GEN_PROVIDER, GEN_MODEL);
+  const html = await callLLM(prompt, 2000, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
   return html;
 }
 
@@ -115,7 +112,7 @@ OUTPUT INSTRUCTIONS:
 
 - Stop after the closing </section> of the contact section.`;
 
-  const html = await callLLM(prompt, 1800, false, GEN_PROVIDER, GEN_MODEL);
+  const html = await callLLM(prompt, 1800, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
   return html;
 }
 
@@ -132,7 +129,7 @@ OUTPUT INSTRUCTIONS:
 
 Then close the </body></html> tags.`;
 
-  const html = await callLLM(prompt, 800, false, GEN_PROVIDER, GEN_MODEL);
+  const html = await callLLM(prompt, 800, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
   return html;
 }
 

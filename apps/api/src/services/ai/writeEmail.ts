@@ -12,9 +12,6 @@ import { callLLM } from './client.js';
 import logger from '../../lib/logger.js';
 import type { Lead, GeneratedEmail } from '@acquisition-engine/shared';
 
-const EMAIL_PROVIDER = (process.env.EMAIL_LLM_PROVIDER || 'openai') as any;
-const EMAIL_MODEL = process.env.OPENAI_EMAIL_MODEL || process.env.OPENAI_ANALYSIS_MODEL || process.env.OPENAI_MODEL;
-
 /**
  * Writes a cold outreach email for a lead using Claude.
  *
@@ -59,7 +56,13 @@ BODY:
 [your email body here]`;
 
   try {
-    const text = await callLLM(prompt, 512, false, EMAIL_PROVIDER, EMAIL_MODEL);
+    const text = await callLLM(
+      prompt,
+      512,
+      false,
+      process.env.EMAIL_PROVIDER as any,
+      process.env.EMAIL_MODEL
+    );
     
     // Parse the text output manually to avoid JSON escaping issues
     let subject = '';
@@ -133,7 +136,7 @@ SUBJECT: Re: [original subject or short new subject]
 BODY:
 [your email body here]`;
 
-  const text = await callLLM(prompt, 256, false, EMAIL_PROVIDER, EMAIL_MODEL);
+  const text = await callLLM(prompt, 256);
   let subject = 'Re: Quick question';
   let body = text;
 

@@ -8,9 +8,8 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import rateLimit from 'express-rate-limit';
-import { scrapeQueue, generationQueue } from '../lib/queue.js';
-import { createCampaign } from '../db/queries.js';
-import db from '../db/client.js';
+import { scrapeQueue, generateQueue } from '../lib/queue.js';
+import { createCampaign, pool } from '../db/queries.js';
 import logger from '../lib/logger.js';
 
 const router = Router();
@@ -88,7 +87,7 @@ router.delete('/:jobId', async (req: Request, res: Response) => {
   const { jobId } = req.params;
   try {
     // 1. Mark campaign as stopped in DB
-    const resDb = await db.query(
+    const resDb = await pool.query(
       `UPDATE campaigns SET status = 'stopped' WHERE job_id = $1 RETURNING id`,
       [jobId]
     );
@@ -102,10 +101,16 @@ router.delete('/:jobId', async (req: Request, res: Response) => {
 
     // 3. Remove all queued generation jobs for this campaign
     if (campaignId) {
-      const waiting = await generationQueue.getWaiting();
-      const delayed = await generationQueue.getDelayed();
+      const leadRes = await pool.query(
+        `SELECT id FROM leads WHERE campaign_id = $1`,
+        [campaignId]
+      );
+      const leadIds = new Set(leadRes.rows.map((row: any) => row.id));
+
+      const waiting = await generateQueue.getWaiting();
+      const delayed = await generateQueue.getDelayed();
       for (const genJob of [...waiting, ...delayed]) {
-        if (genJob.data?.campaignId === campaignId) {
+        if (genJob.data?.leadId && leadIds.has(genJob.data.leadId)) {
           await genJob.remove();
         }
       }
