@@ -8,8 +8,9 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import rateLimit from 'express-rate-limit';
-import { scrapeQueue } from '../lib/queue.js';
+import { scrapeQueue, generationQueue } from '../lib/queue.js';
 import { createCampaign } from '../db/queries.js';
+import db from '../db/client.js';
 import logger from '../lib/logger.js';
 
 const router = Router();
@@ -86,18 +87,34 @@ router.post('/', scrapeRateLimit, async (req: Request, res: Response) => {
 router.delete('/:jobId', async (req: Request, res: Response) => {
   const { jobId } = req.params;
   try {
+    // 1. Mark campaign as stopped in DB
+    const resDb = await db.query(
+      `UPDATE campaigns SET status = 'stopped' WHERE job_id = $1 RETURNING id`,
+      [jobId]
+    );
+    const campaignId = resDb.rows[0]?.id;
+
+    // 2. Remove the scrape job
     const job = await scrapeQueue.getJob(jobId);
-    if (!job) {
-      return res.status(404).json({ error: `Job ${jobId} not found` });
+    if (job) {
+      await job.remove();
     }
 
-    // Remove job and obliterate from queue
-    await job.remove();
+    // 3. Remove all queued generation jobs for this campaign
+    if (campaignId) {
+      const waiting = await generationQueue.getWaiting();
+      const delayed = await generationQueue.getDelayed();
+      for (const genJob of [...waiting, ...delayed]) {
+        if (genJob.data?.campaignId === campaignId) {
+          await genJob.remove();
+        }
+      }
+    }
 
-    logger.info(`Scrape job cancelled: ${jobId}`);
-    res.json({ success: true, message: `Campaign ${jobId} cancelled` });
+    logger.info(`Campaign ${campaignId || jobId} fully stopped and queues cleared.`);
+    res.json({ success: true, message: `Campaign stopped.` });
   } catch (err) {
-    logger.error('Failed to cancel scrape job', { error: (err as Error).message });
+    logger.error('Failed to cancel campaign', { error: (err as Error).message });
     res.status(500).json({ error: 'Failed to cancel campaign' });
   }
 });
