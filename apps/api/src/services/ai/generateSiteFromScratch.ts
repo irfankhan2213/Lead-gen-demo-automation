@@ -10,6 +10,7 @@ import { sanitizeHtml } from './sanitizeHtml.js';
 import logger from '../../lib/logger.js';
 import type { Lead } from '@acquisition-engine/shared';
 import { designLanguages } from './prompts/designLanguages.js';
+import { getGuaranteedImages } from '../demo/images.js';
 
 export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
   // ── Primary: Chunked strategy ──────────────────────────────────────────────
@@ -26,11 +27,15 @@ export async function generateSiteHtmlFromScratch(lead: Lead): Promise<string> {
   // ── Fallback: Single large LLM call (legacy) ───────────────────────────────
   logger.info(`[SiteGen] Attempting single-call fallback for "${lead.business_name}"...`);
   const designStyle = lead.design_language || 'corporate';
-  const styleRules = designLanguages[designStyle] || designLanguages['corporate'];
+  const styleRules = (designLanguages[designStyle] || designLanguages['corporate']).slice(0, 4000);
+  const [heroImage, img1, img2, img3] = getGuaranteedImages(lead);
 
   const prompt = `You are a world-class Webflow developer and UI/UX designer.
-Your task is to write the COMPLETE, single-file HTML code for a modern, hyper-premium landing page for a local business.
-You must use Tailwind CSS v3 via CDN (<script src="https://cdn.tailwindcss.com"></script>). Do not use any external CSS files or older Tailwind v2 CDN.
+Your task is to write the COMPLETE, single-file HTML code for a modern, hyper-premium landing page.
+You MUST use Tailwind CSS v3 via CDN (<script src="https://cdn.tailwindcss.com"></script>).
+
+═══ MANDATORY DESIGN STYLE: ${designStyle.toUpperCase()} ═══
+Apply every design system rule below for the ${designStyle} style — colors, typography, radius, shadows, layout.
 
 BUSINESS DATA:
 Name: ${lead.business_name}
@@ -43,39 +48,39 @@ Brand Colors: ${(lead.brand_colors || []).join(', ')}
 Phone: ${lead.phone || ''}
 Address: ${lead.address || ''}
 Logo URL: ${lead.logo_url || ''}
-Scraped Website Images: ${(lead.scraped_images || []).join(', ')}
-Hero Image URL: ${lead.hero_image_url || (lead.scraped_images && lead.scraped_images[0]) || 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=1600'}
 
-IMAGE RULES:
-1. If a "Logo URL" is provided above, you MUST use it as the '<img>' src for the navigation bar and footer logo.
-2. If "Scraped Website Images" are provided above, you MUST prioritize using these actual image URLs for the hero background, service/product cards, testimonial avatars, and gallery layout to display the business's real photos.
-3. If no "Scraped Website Images" are available, use niche-specific, high-quality Unsplash image URLs.
+━━━ IMAGE URLS — MANDATORY (copy these EXACTLY into src and background-image) ━━━
+HERO_IMAGE    = ${heroImage}
+GALLERY_IMG_1 = ${img1}
+GALLERY_IMG_2 = ${img2}
+GALLERY_IMG_3 = ${img3}
 
-HTML CODING CONSTRAINTS (CRITICAL):
-1. **NO REACT OR JSX:** Do NOT use React, Vue, JSX, or ES6 template string evaluations in the HTML.
-2. **WRITE FULL STATIC HTML:** Write out the full HTML structure for every element manually.
-3. **USE ACTUAL CONTENT:** Replace all placeholders with actual text.
-4. **VALID IMG SRCs:** Ensure all image 'src' attributes contain valid, absolute URLs.
-5. **LENGTH AND DETAIL (CRITICAL):** Output MUST be at least 200 lines of code. Do NOT abbreviate.
+⚠️  IMAGE RULES (CRITICAL):
+1. Hero section MUST use style="background-image:url(${heroImage})" or <img src="${heroImage}">.
+2. Use GALLERY_IMG_1, GALLERY_IMG_2, GALLERY_IMG_3 in About, Services, Testimonials.
+3. DO NOT invent or hallucinate any image URLs. Only use the 4 URLs listed above.
+4. All <img> tags must have a valid src — never src="" or src="undefined".
 
-DESIGN SYSTEM INSTRUCTIONS (${designStyle.toUpperCase()} STYLE):
-${styleRules.slice(0, 3000)}
+DESIGN SYSTEM (${designStyle.toUpperCase()}):
+${styleRules}
 
-PRE-BUILT TEMPLATE STRUCTURE:
-1. **Navbar**: Sticky navigation bar. Logo, links, CTA button.
-2. **Hero Section**: Large impact section with background image, headline, subline, CTAs.
-3. **Stats / Trust Bar**: Google Rating (${lead.google_rating || '4.8'} ⭐), review count, trust signals.
-4. **About Section**: 2-column layout with about copy and image.
-5. **Services Section**: Grid of ${(lead.services || []).length || 3} service cards with icons, titles, descriptions.
-6. **Testimonials**: 3 review cards with names and ratings.
-7. **Contact Section**: Address/phone on left, contact form on right.
-8. **Footer**: Business name, links, copyright.
-9. **Claim Banner**: Fixed bottom bar — "This is a free demo site built by Evolve Expert Agency. [Claim Your Site →]" linking to mailto:hello@evolve.agency.
+PAGE STRUCTURE (write all sections):
+1. Sticky Navbar: Logo, nav links (About, Services, Contact), CTA button.
+2. Hero Section: Full-viewport, background image, overlay, headline, subline, 2 CTAs, scroll indicator.
+3. Trust Bar: Google Rating (${lead.google_rating || '4.8'} ⭐), ${lead.google_review_count || '120'}+ Reviews, years in business.
+4. About Section: 2-col layout with brand story and image.
+5. Services Section: ${(lead.services || []).length || 3} service cards/items matching the design style.
+6. Testimonials: 3 review cards with star ratings, quotes, reviewer names.
+7. Contact Section: Business info + contact form with Submit button.
+8. Footer: Business name, nav links, copyright © ${new Date().getFullYear()}.
+9. Claim Banner: Fixed bottom bar — "🚀 This is a free demo site built by Evolve Expert Agency." + "Claim Your Site →" (mailto:hello@evolve.agency).
 
-OUTPUT CONSTRAINTS:
-- Return ONLY the raw HTML string starting with "<!DOCTYPE html>". No markdown formatting, no explanations.
+CODE RULES:
+- Static HTML only. No React, no JSX, no template literals.
+- Output MUST be at least 300 lines.
+- Return ONLY raw HTML starting with <!DOCTYPE html>.
 
-START YOUR RESPONSE WITH "<!DOCTYPE html>".`;
+START YOUR RESPONSE WITH <!DOCTYPE html>.`;
 
   try {
     const text = await callLLM(prompt, 4096, false);
