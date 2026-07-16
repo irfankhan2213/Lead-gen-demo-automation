@@ -101,8 +101,16 @@ export async function callLLM(
         logger.info(`Calling LLM via Gemini API (attempt ${attempt + 1})...`);
         try {
           const genAI = new GoogleGenerativeAI(geminiKey);
-          const modelName = modelOverride || process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
-          const model = genAI.getGenerativeModel({ model: modelName });
+          // Only use modelOverride if it is a valid Gemini model name.
+          // If the override is a namespaced model like 'anthropic/claude-sonnet-4-5'
+          // (intended for OpenAI-compatible gateways), ignore it and fall back to
+          // the configured Gemini model so the free API works as a reliable fallback.
+          const isValidGeminiModel = modelOverride && modelOverride.startsWith('gemini-');
+          const resolvedGeminiModel = isValidGeminiModel
+            ? modelOverride
+            : (process.env.GEMINI_MODEL || 'gemini-2.0-flash');
+          logger.info(`[Gemini] Using model: ${resolvedGeminiModel}${!isValidGeminiModel && modelOverride ? ` (override "${modelOverride}" ignored — not a Gemini model)` : ''}`);
+          const model = genAI.getGenerativeModel({ model: resolvedGeminiModel! });
           const generationConfig: any = { maxOutputTokens: maxTokens, temperature: 0.2 };
           if (jsonMode) generationConfig.responseMimeType = 'application/json';
 
