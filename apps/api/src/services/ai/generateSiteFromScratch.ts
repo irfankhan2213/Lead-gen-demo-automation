@@ -83,7 +83,7 @@ CODE RULES:
 START YOUR RESPONSE WITH <!DOCTYPE html>.`;
 
   try {
-    const text = await callLLM(prompt, 4096, false);
+    const text = await callLLM(prompt, 4096, false, undefined, undefined, false, true);
     return sanitizeHtml(text, lead);
   } catch (err) {
     logger.error('[SiteGen] Single-call fallback also failed', { error: (err as Error).message });

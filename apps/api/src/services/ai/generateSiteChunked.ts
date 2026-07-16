@@ -212,7 +212,7 @@ OUTPUT — write ONLY these elements, nothing else:
 CRITICAL: Stop output AFTER the trust bar's closing </section>. Do NOT write About, Services, or any further sections.
 Return RAW HTML only — no markdown, no explanations.`;
 
-  const html = await callLLM(prompt, 3500, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
+  const html = await callLLM(prompt, 3500, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL, false, true);
   return html;
 }
 
@@ -251,7 +251,7 @@ OUTPUT — write ONLY these two sections as raw HTML, no markdown, no <!DOCTYPE>
 Stop after the closing </section> of the Services block.
 Return RAW HTML only.`;
 
-  const html = await callLLM(prompt, 3500, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
+  const html = await callLLM(prompt, 3500, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL, false, true);
   return html;
 }
 
@@ -288,7 +288,7 @@ OUTPUT — write ONLY these two sections as raw HTML, no markdown, no <!DOCTYPE>
 Stop after the closing </section> of the contact section.
 Return RAW HTML only.`;
 
-  const html = await callLLM(prompt, 2500, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
+  const html = await callLLM(prompt, 2500, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL, false, true);
   return html;
 }
 
@@ -315,7 +315,7 @@ OUTPUT — write ONLY these two elements as raw HTML, then close the document:
 
 Return RAW HTML only. The output MUST end with </body></html>.`;
 
-  const html = await callLLM(prompt, 1200, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL);
+  const html = await callLLM(prompt, 1200, false, process.env.SITE_GEN_PROVIDER as any, process.env.SITE_GEN_MODEL, false, true);
   return html;
 }
 

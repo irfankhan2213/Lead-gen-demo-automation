@@ -49,7 +49,8 @@ export async function callLLM(
   jsonMode = false,
   preferredProvider?: 'gemini' | 'groq' | 'anthropic' | 'openai',
   modelOverride?: string,
-  disableOpenAI = false
+  disableOpenAI = false,
+  disableGroq = false
 ): Promise<string> {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
@@ -88,6 +89,11 @@ export async function callLLM(
     } else {
       order.push('openai');
     }
+  }
+
+  // Filter out Groq if explicitly requested (e.g. for large demo/website generation tasks)
+  if (disableGroq) {
+    order = order.filter(provider => provider !== 'groq');
   }
 
   const MAX_RETRIES = 3;
